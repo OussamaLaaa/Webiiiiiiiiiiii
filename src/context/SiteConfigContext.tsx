@@ -161,11 +161,43 @@ const applyDesignSystemVariables = (siteConfig: SiteConfig) => {
   }
 };
 
+const applyBrowserMetadata = (siteConfig: SiteConfig) => {
+  if (typeof document === 'undefined') return;
+
+  const browserConfig = siteConfig.dashboard.browser;
+  const fallback = DEFAULT_SITE_CONFIG.dashboard.browser;
+  const nextTitle = (browserConfig.browserTabTitle || fallback.browserTabTitle).trim();
+  const nextFavicon = (browserConfig.faviconUrl || fallback.faviconUrl).trim();
+
+  if (nextTitle) {
+    document.title = nextTitle;
+  }
+
+  if (!nextFavicon) return;
+
+  const updateIconLink = (selector: string, relValue: string) => {
+    let link = document.querySelector<HTMLLinkElement>(selector);
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = relValue;
+      document.head.appendChild(link);
+    }
+    link.href = nextFavicon;
+  };
+
+  updateIconLink("link[rel='icon']", 'icon');
+  updateIconLink("link[rel='shortcut icon']", 'shortcut icon');
+};
+
 export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [siteConfig, setSiteConfig] = useState<SiteConfig>(() => getInitialSiteConfig());
 
   useEffect(() => {
     applyDesignSystemVariables(siteConfig);
+  }, [siteConfig]);
+
+  useEffect(() => {
+    applyBrowserMetadata(siteConfig);
   }, [siteConfig]);
 
   useEffect(() => {

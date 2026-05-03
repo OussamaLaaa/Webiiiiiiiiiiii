@@ -381,6 +381,11 @@ export interface SiteMotionSystem {
   hoverLiftPx: number;
 }
 
+export interface SiteTimelineSectionLabels {
+  eyebrow: string;
+  title: string;
+}
+
 export interface SiteConfig {
   introText: string;
   featured: {
@@ -399,6 +404,7 @@ export interface SiteConfig {
   projects: SiteProject[];
   experienceMarquee: SiteExperienceMarqueeItem[];
   journeyTimeline: SiteTimelineEvent[];
+  timelineSection: SiteTimelineSectionLabels;
   testimonials: SiteTestimonial[];
   scene05: {
     badge: string;
@@ -434,6 +440,9 @@ export interface SiteConfig {
   };
   persistentUI: {
     logoAlt: string;
+    logoLightSrc: string;
+    logoDarkSrc: string;
+    musicToggleAriaLabel: string;
     navItems: SiteNavItem[];
     letsTalkLabel: string;
     letsTalkHref: string;
@@ -458,6 +467,7 @@ export interface SiteConfig {
     searchPlaceholder: string;
     continueReadingLabel: string;
     minReadLabel: string;
+    undatedLabel: string;
     byAuthorPrefix: string;
     articleNotFoundTitle: string;
     articleNotFoundDescription: string;
@@ -656,6 +666,10 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
       visible: true
     }
   ],
+  timelineSection: {
+    eyebrow: 'Experience',
+    title: 'Journey & Timeline',
+  },
   testimonials: [
     {
       id: 'testimonial-1',
@@ -815,6 +829,9 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
   },
   persistentUI: {
     logoAlt: 'Oussama Lassoued',
+    logoLightSrc: '/logo-black.png',
+    logoDarkSrc: '/logo-white.png',
+    musicToggleAriaLabel: 'Toggle Music',
     navItems: [
       { id: 'nav-home', label: 'Home', section: 'home', visible: true },
       { id: 'nav-about', label: 'About Me', section: 'about', visible: true },
@@ -859,6 +876,7 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
     searchPlaceholder: 'Search articles...',
     continueReadingLabel: 'Continue Reading',
     minReadLabel: 'min read',
+    undatedLabel: 'Undated',
     byAuthorPrefix: 'By',
     articleNotFoundTitle: 'Article Not Found',
     articleNotFoundDescription: 'This article was not found or is currently unpublished.',
@@ -1412,6 +1430,7 @@ export const hydrateSiteConfig = (value: unknown): SiteConfig => {
   const persistentUI = isRecord(value.persistentUI) ? value.persistentUI : {};
   const footer = isRecord(value.footer) ? value.footer : {};
   const articlesPage = isRecord(value.articlesPage) ? value.articlesPage : {};
+  const timelineSection = isRecord(value.timelineSection) ? value.timelineSection : {};
   const footerSocialRecord = isRecord(footer.socialLinks) ? footer.socialLinks : {};
   const footerSocialArray = Array.isArray(footer.socialLinks) ? footer.socialLinks : [];
   const designSystem = isRecord(value.designSystem) ? value.designSystem : {};
@@ -1817,6 +1836,10 @@ export const hydrateSiteConfig = (value: unknown): SiteConfig => {
     projects: projects.length > 0 ? projects : DEFAULT_SITE_CONFIG.projects,
     experienceMarquee: experienceMarquee.length > 0 ? experienceMarquee : DEFAULT_SITE_CONFIG.experienceMarquee,
     journeyTimeline: journeyTimeline.length > 0 ? journeyTimeline : DEFAULT_SITE_CONFIG.journeyTimeline,
+    timelineSection: {
+      eyebrow: asString(timelineSection.eyebrow, DEFAULT_SITE_CONFIG.timelineSection.eyebrow),
+      title: asString(timelineSection.title, DEFAULT_SITE_CONFIG.timelineSection.title),
+    },
     testimonials: testimonials.length > 0 ? testimonials : DEFAULT_SITE_CONFIG.testimonials,
     scene05: {
       badge: asString(scene05.badge, DEFAULT_SITE_CONFIG.scene05.badge),
@@ -1865,6 +1888,12 @@ export const hydrateSiteConfig = (value: unknown): SiteConfig => {
     },
     persistentUI: {
       logoAlt: asString(persistentUI.logoAlt, DEFAULT_SITE_CONFIG.persistentUI.logoAlt),
+      logoLightSrc: asString(persistentUI.logoLightSrc, DEFAULT_SITE_CONFIG.persistentUI.logoLightSrc),
+      logoDarkSrc: asString(persistentUI.logoDarkSrc, DEFAULT_SITE_CONFIG.persistentUI.logoDarkSrc),
+      musicToggleAriaLabel: asString(
+        persistentUI.musicToggleAriaLabel,
+        DEFAULT_SITE_CONFIG.persistentUI.musicToggleAriaLabel,
+      ),
       navItems: navItemsWithArticles,
       letsTalkLabel: asString(persistentUI.letsTalkLabel, DEFAULT_SITE_CONFIG.persistentUI.letsTalkLabel),
       letsTalkHref: asString(persistentUI.letsTalkHref, DEFAULT_SITE_CONFIG.persistentUI.letsTalkHref),
@@ -1901,6 +1930,7 @@ export const hydrateSiteConfig = (value: unknown): SiteConfig => {
         DEFAULT_SITE_CONFIG.articlesPage.continueReadingLabel,
       ),
       minReadLabel: asString(articlesPage.minReadLabel, DEFAULT_SITE_CONFIG.articlesPage.minReadLabel),
+      undatedLabel: asString(articlesPage.undatedLabel, DEFAULT_SITE_CONFIG.articlesPage.undatedLabel),
       byAuthorPrefix: asString(
         articlesPage.byAuthorPrefix,
         DEFAULT_SITE_CONFIG.articlesPage.byAuthorPrefix,

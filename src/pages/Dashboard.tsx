@@ -27,7 +27,9 @@ import {
   type SiteSection,
   type SiteTestimonial,
   type SiteTimelineEvent,
+  type SiteExperienceMarqueeItem,
   type SiteScene05Certification,
+  type SiteScene05LogoItem,
   type SiteInboxMessage,
   type SiteMessageStatus,
 } from '../config/siteConfig';
@@ -794,6 +796,32 @@ export const Dashboard: React.FC = () => {
           item.id === certificationId ? updater(item) : item,
         ),
       },
+    }));
+  };
+
+  const updateScene05LogoItem = (
+    group: 'learningLogos' | 'companyLogos',
+    logoId: string,
+    updater: (item: SiteScene05LogoItem) => SiteScene05LogoItem,
+  ) => {
+    updateConfig((prev) => ({
+      ...prev,
+      scene05: {
+        ...prev.scene05,
+        [group]: prev.scene05[group].map((item) => (item.id === logoId ? updater(item) : item)),
+      },
+    }));
+  };
+
+  const updateExperienceMarqueeItem = (
+    itemId: string,
+    updater: (item: SiteExperienceMarqueeItem) => SiteExperienceMarqueeItem,
+  ) => {
+    updateConfig((prev) => ({
+      ...prev,
+      experienceMarquee: prev.experienceMarquee.map((item) =>
+        item.id === itemId ? updater(item) : item,
+      ),
     }));
   };
 
@@ -1917,6 +1945,93 @@ export const Dashboard: React.FC = () => {
       case 'timeline':
         return (
           <div className="grid gap-4">
+            <Card title="Timeline Section Labels" subtitle="Headings shown above the timeline">
+              <Input
+                label="Section eyebrow"
+                value={siteConfig.timelineSection.eyebrow}
+                onChange={(next) =>
+                  updateConfig((prev) => ({
+                    ...prev,
+                    timelineSection: { ...prev.timelineSection, eyebrow: next },
+                  }))
+                }
+              />
+              <Input
+                label="Section title"
+                value={siteConfig.timelineSection.title}
+                onChange={(next) =>
+                  updateConfig((prev) => ({
+                    ...prev,
+                    timelineSection: { ...prev.timelineSection, title: next },
+                  }))
+                }
+              />
+            </Card>
+
+            <Card title="Experience Marquee" subtitle="Ticker labels shown before the timeline">
+              {siteConfig.experienceMarquee.map((item) => (
+                <div key={item.id} className={listItemClass}>
+                  <SelectInput
+                    label="Item type"
+                    value={item.type}
+                    options={[
+                      { value: 'text', label: 'Text' },
+                      { value: 'logo', label: 'Logo URL' },
+                    ]}
+                    onChange={(next) =>
+                      updateExperienceMarqueeItem(item.id, (prev) => ({
+                        ...prev,
+                        type: next === 'logo' ? 'logo' : 'text',
+                      }))
+                    }
+                  />
+                  <Input
+                    label={item.type === 'logo' ? 'Logo URL' : 'Label text'}
+                    value={item.value}
+                    onChange={(next) => updateExperienceMarqueeItem(item.id, (prev) => ({ ...prev, value: next }))}
+                  />
+                  <Toggle
+                    label="Visible"
+                    checked={item.visible}
+                    onChange={(next) =>
+                      updateExperienceMarqueeItem(item.id, (prev) => ({ ...prev, visible: next }))
+                    }
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      updateConfig((prev) => ({
+                        ...prev,
+                        experienceMarquee: prev.experienceMarquee.filter((entry) => entry.id !== item.id),
+                      }));
+                    }}
+                    className="rounded-[8px] border border-[#111217]/20 bg-[#111217]/6 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[#111217] hover:bg-[#111217]/10"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+
+              <button
+                type="button"
+                onClick={() => {
+                  const newItem: SiteExperienceMarqueeItem = {
+                    id: `xp-${Date.now()}`,
+                    type: 'text',
+                    value: 'New Experience',
+                    visible: true,
+                  };
+                  updateConfig((prev) => ({
+                    ...prev,
+                    experienceMarquee: [...prev.experienceMarquee, newItem],
+                  }));
+                }}
+                className="rounded-[8px] border border-white/20 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-white hover:bg-white/10"
+              >
+                Add Experience Label
+              </button>
+            </Card>
+
             <Card title="Journey Timeline" subtitle="Edit vertical timeline events">
               {siteConfig.journeyTimeline.map((event) => (
                 <div key={event.id} className={listItemClass}>
@@ -2129,6 +2244,45 @@ export const Dashboard: React.FC = () => {
 
               <div className="grid gap-3 rounded-[12px] border border-white/10 bg-black/20 p-3 md:grid-cols-2">
                 <Input
+                  label="Undated fallback label"
+                  value={siteConfig.articlesPage.undatedLabel}
+                  onChange={(next) => updateArticlesPageField('undatedLabel', next)}
+                />
+                <Input
+                  label="Videos section title"
+                  value={siteConfig.articlesPage.videosSectionTitle}
+                  onChange={(next) => updateArticlesPageField('videosSectionTitle', next)}
+                />
+                <Textarea
+                  label="Videos section description"
+                  value={siteConfig.articlesPage.videosSectionDescription}
+                  rows={2}
+                  onChange={(next) => updateArticlesPageField('videosSectionDescription', next)}
+                />
+                <Input
+                  label="Related video label"
+                  value={siteConfig.articlesPage.relatedVideoLabel}
+                  onChange={(next) => updateArticlesPageField('relatedVideoLabel', next)}
+                />
+                <Input
+                  label="Open video label"
+                  value={siteConfig.articlesPage.openVideoLabel}
+                  onChange={(next) => updateArticlesPageField('openVideoLabel', next)}
+                />
+                <Input
+                  label="Watch video label"
+                  value={siteConfig.articlesPage.watchVideoLabel}
+                  onChange={(next) => updateArticlesPageField('watchVideoLabel', next)}
+                />
+                <Input
+                  label="No thumbnail label"
+                  value={siteConfig.articlesPage.noThumbnailLabel}
+                  onChange={(next) => updateArticlesPageField('noThumbnailLabel', next)}
+                />
+              </div>
+
+              <div className="grid gap-3 rounded-[12px] border border-white/10 bg-black/20 p-3 md:grid-cols-2">
+                <Input
                   label="No results title"
                   value={siteConfig.articlesPage.noResultsTitle}
                   onChange={(next) => updateArticlesPageField('noResultsTitle', next)}
@@ -2244,6 +2398,46 @@ export const Dashboard: React.FC = () => {
                       ...prev.persistentUI,
                       musicVolume: toSafeNumber(next, prev.persistentUI.musicVolume),
                     },
+                  }))
+                }
+              />
+              <Input
+                label="Music toggle aria label"
+                value={siteConfig.persistentUI.musicToggleAriaLabel}
+                onChange={(next) =>
+                  updateConfig((prev) => ({
+                    ...prev,
+                    persistentUI: { ...prev.persistentUI, musicToggleAriaLabel: next },
+                  }))
+                }
+              />
+              <Input
+                label="Logo alt text"
+                value={siteConfig.persistentUI.logoAlt}
+                onChange={(next) =>
+                  updateConfig((prev) => ({
+                    ...prev,
+                    persistentUI: { ...prev.persistentUI, logoAlt: next },
+                  }))
+                }
+              />
+              <Input
+                label="Logo source (light mode)"
+                value={siteConfig.persistentUI.logoLightSrc}
+                onChange={(next) =>
+                  updateConfig((prev) => ({
+                    ...prev,
+                    persistentUI: { ...prev.persistentUI, logoLightSrc: next },
+                  }))
+                }
+              />
+              <Input
+                label="Logo source (dark mode)"
+                value={siteConfig.persistentUI.logoDarkSrc}
+                onChange={(next) =>
+                  updateConfig((prev) => ({
+                    ...prev,
+                    persistentUI: { ...prev.persistentUI, logoDarkSrc: next },
                   }))
                 }
               />
@@ -2731,6 +2925,16 @@ export const Dashboard: React.FC = () => {
                 onChange={(next) => updateVisibility('testimonialsSection', next)}
               />
               <Toggle
+                label="Experience marquee"
+                checked={siteConfig.visibility.experienceMarqueeSection}
+                onChange={(next) => updateVisibility('experienceMarqueeSection', next)}
+              />
+              <Toggle
+                label="Journey timeline"
+                checked={siteConfig.visibility.journeyTimelineSection}
+                onChange={(next) => updateVisibility('journeyTimelineSection', next)}
+              />
+              <Toggle
                 label="CTA block"
                 checked={siteConfig.visibility.featuredCtaSection}
                 onChange={(next) => updateVisibility('featuredCtaSection', next)}
@@ -2901,6 +3105,20 @@ export const Dashboard: React.FC = () => {
                   updateConfig((prev) => ({ ...prev, scene05: { ...prev.scene05, portraitAlt: next } }))
                 }
               />
+              <Input
+                label="Portrait caption"
+                value={siteConfig.scene05.portraitCaption}
+                onChange={(next) =>
+                  updateConfig((prev) => ({ ...prev, scene05: { ...prev.scene05, portraitCaption: next } }))
+                }
+              />
+              <Input
+                label="Vision title"
+                value={siteConfig.scene05.visionTitle}
+                onChange={(next) =>
+                  updateConfig((prev) => ({ ...prev, scene05: { ...prev.scene05, visionTitle: next } }))
+                }
+              />
               <Textarea
                 label="Vision text"
                 value={siteConfig.scene05.visionText}
@@ -2951,6 +3169,20 @@ export const Dashboard: React.FC = () => {
                 value={siteConfig.scene05.certificationsTitle}
                 onChange={(next) =>
                   updateConfig((prev) => ({ ...prev, scene05: { ...prev.scene05, certificationsTitle: next } }))
+                }
+              />
+              <Input
+                label="Learning logos title"
+                value={siteConfig.scene05.learningLogosTitle}
+                onChange={(next) =>
+                  updateConfig((prev) => ({ ...prev, scene05: { ...prev.scene05, learningLogosTitle: next } }))
+                }
+              />
+              <Input
+                label="Company logos title"
+                value={siteConfig.scene05.companyLogosTitle}
+                onChange={(next) =>
+                  updateConfig((prev) => ({ ...prev, scene05: { ...prev.scene05, companyLogosTitle: next } }))
                 }
               />
 
@@ -3079,6 +3311,163 @@ export const Dashboard: React.FC = () => {
                   }))
                 }
               />
+
+              <div className="space-y-3 rounded-[12px] border border-white/10 bg-black/20 p-3">
+                <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/70">Learning logos</p>
+
+                {siteConfig.scene05.learningLogos.map((item) => (
+                  <div key={item.id} className={listItemClass}>
+                    <Input
+                      label="Name"
+                      value={item.name}
+                      onChange={(next) =>
+                        updateScene05LogoItem('learningLogos', item.id, (prev) => ({ ...prev, name: next }))
+                      }
+                    />
+                    <Input
+                      label="Logo URL"
+                      value={item.logoSrc}
+                      onChange={(next) =>
+                        updateScene05LogoItem('learningLogos', item.id, (prev) => ({ ...prev, logoSrc: next }))
+                      }
+                    />
+                    <Input
+                      label="Link URL"
+                      value={item.href}
+                      onChange={(next) =>
+                        updateScene05LogoItem('learningLogos', item.id, (prev) => ({ ...prev, href: next }))
+                      }
+                    />
+
+                    <div className="flex items-center justify-between gap-4 mt-2">
+                      <Toggle
+                        label="Visible"
+                        checked={item.visible}
+                        onChange={(next) =>
+                          updateScene05LogoItem('learningLogos', item.id, (prev) => ({ ...prev, visible: next }))
+                        }
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          updateConfig((prev) => ({
+                            ...prev,
+                            scene05: {
+                              ...prev.scene05,
+                              learningLogos: prev.scene05.learningLogos.filter((entry) => entry.id !== item.id),
+                            },
+                          }));
+                        }}
+                        className="rounded-[8px] border border-[#111217]/20 bg-[#111217]/6 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[#111217] hover:bg-[#111217]/10"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newLogo: SiteScene05LogoItem = {
+                      id: `learning-${Date.now()}`,
+                      name: 'New Learning Brand',
+                      logoSrc: '',
+                      href: '#',
+                      visible: true,
+                    };
+                    updateConfig((prev) => ({
+                      ...prev,
+                      scene05: {
+                        ...prev.scene05,
+                        learningLogos: [...prev.scene05.learningLogos, newLogo],
+                      },
+                    }));
+                  }}
+                  className="rounded-[8px] border border-white/20 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-white hover:bg-white/10"
+                >
+                  Add Learning Logo
+                </button>
+              </div>
+
+              <div className="space-y-3 rounded-[12px] border border-white/10 bg-black/20 p-3">
+                <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/70">Company logos</p>
+
+                {siteConfig.scene05.companyLogos.map((item) => (
+                  <div key={item.id} className={listItemClass}>
+                    <Input
+                      label="Name"
+                      value={item.name}
+                      onChange={(next) =>
+                        updateScene05LogoItem('companyLogos', item.id, (prev) => ({ ...prev, name: next }))
+                      }
+                    />
+                    <Input
+                      label="Logo URL"
+                      value={item.logoSrc}
+                      onChange={(next) =>
+                        updateScene05LogoItem('companyLogos', item.id, (prev) => ({ ...prev, logoSrc: next }))
+                      }
+                    />
+                    <Input
+                      label="Link URL"
+                      value={item.href}
+                      onChange={(next) =>
+                        updateScene05LogoItem('companyLogos', item.id, (prev) => ({ ...prev, href: next }))
+                      }
+                    />
+
+                    <div className="flex items-center justify-between gap-4 mt-2">
+                      <Toggle
+                        label="Visible"
+                        checked={item.visible}
+                        onChange={(next) =>
+                          updateScene05LogoItem('companyLogos', item.id, (prev) => ({ ...prev, visible: next }))
+                        }
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          updateConfig((prev) => ({
+                            ...prev,
+                            scene05: {
+                              ...prev.scene05,
+                              companyLogos: prev.scene05.companyLogos.filter((entry) => entry.id !== item.id),
+                            },
+                          }));
+                        }}
+                        className="rounded-[8px] border border-[#111217]/20 bg-[#111217]/6 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[#111217] hover:bg-[#111217]/10"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newLogo: SiteScene05LogoItem = {
+                      id: `company-${Date.now()}`,
+                      name: 'New Company',
+                      logoSrc: '',
+                      href: '#',
+                      visible: true,
+                    };
+                    updateConfig((prev) => ({
+                      ...prev,
+                      scene05: {
+                        ...prev.scene05,
+                        companyLogos: [...prev.scene05.companyLogos, newLogo],
+                      },
+                    }));
+                  }}
+                  className="rounded-[8px] border border-white/20 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-white hover:bg-white/10"
+                >
+                  Add Company Logo
+                </button>
+              </div>
+
               <Input
                 label="AI section title"
                 value={siteConfig.scene05.aiTitle}

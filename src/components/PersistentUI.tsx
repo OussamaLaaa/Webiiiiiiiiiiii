@@ -223,6 +223,11 @@ export const PersistentUI: React.FC<PersistentUIProps> = ({ isLightMode = false 
     return () => clearTimeout(t);
   }, []);
 
+  const navigationLogoSrc = isLightMode
+    ? persistentUI.logoLightSrc || '/logo-black.png'
+    : persistentUI.logoDarkSrc || '/logo-white.png';
+  const musicToggleAriaLabel = persistentUI.musicToggleAriaLabel || 'Toggle Music';
+
   useEffect(() => {
     const handleNavbarToggle = (e: Event) => {
       const customEvent = e as CustomEvent<{ show: boolean }>;
@@ -311,7 +316,7 @@ export const PersistentUI: React.FC<PersistentUIProps> = ({ isLightMode = false 
               className="pointer-events-auto flex items-center hover:opacity-70 transition-opacity"
             >
               <img
-                src={isLightMode ? '/logo-black.png' : '/logo-white.png'}
+                src={navigationLogoSrc}
                 alt={persistentUI.logoAlt}
                 className={`h-8 md:h-[50px] w-auto object-contain transition-all duration-500 ${
                   isLightMode
@@ -397,7 +402,7 @@ export const PersistentUI: React.FC<PersistentUIProps> = ({ isLightMode = false 
                   isLightMode ? 'shadow-sys-soft-light' : 'shadow-sys-soft-dark'
                 }`,
               )}
-              aria-label="Toggle Music"
+              aria-label={musicToggleAriaLabel}
             >
               {isMusicPlaying ? (
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">

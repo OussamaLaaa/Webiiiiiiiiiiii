@@ -3,6 +3,8 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Testimonials } from './Testimonials';
 import { Footer } from './Footer';
+import { ExperienceMarquee } from './ExperienceMarquee';
+import { JourneyTimeline } from './JourneyTimeline';
 import { useSiteConfig } from '../context/SiteConfigContext';
 import { getButtonClass, getCardClass, getGlassClass, getScaledRem } from './designSystem';
 
@@ -430,6 +432,10 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({ isActive }) => {
 
       <div className="next-page-slide relative z-[250] w-full rounded-t-[8px] bg-white pt-28 pb-0 shadow-[0_-16px_42px_rgba(0,0,0,0.045)] md:pt-32">
         <div className="mx-auto w-full max-w-[1600px] px-6 md:px-12 lg:px-20">
+          {visibility.experienceMarqueeSection ? <ExperienceMarquee isActive={isActive} /> : null}
+
+          {visibility.journeyTimelineSection ? <JourneyTimeline isActive={isActive} /> : null}
+
           {visibility.testimonialsSection ? <Testimonials isActive={isActive} /> : null}
 
           {visibility.featuredCtaSection ? (
