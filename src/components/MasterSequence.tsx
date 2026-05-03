@@ -60,6 +60,22 @@ export const MasterSequence: React.FC<MasterSequenceProps> = ({
 
     let resizeCallback = 0;
     let lastDrawnIndex = 0;
+    let isVisible = true;
+    let isRendering = false;
+
+    // Visibility-based optimization: pause rendering when not visible
+    const observer = new IntersectionObserver((entries) => {
+      isVisible = entries[0].isIntersecting;
+      if (isVisible && !isRendering) {
+        isRendering = true;
+        // Redraw the last frame when becoming visible
+        drawFrame(lastDrawnIndex);
+      }
+    }, { threshold: 0.1 });
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
 
     const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
     const clampProgress = (value: number) => {
@@ -92,10 +108,10 @@ export const MasterSequence: React.FC<MasterSequenceProps> = ({
         canvas.width = innerWidth;
         canvas.height = innerHeight;
       }
-      
+
       const isScene07 = safeIndex >= scene07Start;
 
-      drawCoverFrame(ctx, drawableImage, { 
+      drawCoverFrame(ctx, drawableImage, {
         zoomFactor: 1,
         objectFit: isScene07 ? 'contain' : 'cover'
       });
@@ -151,8 +167,11 @@ export const MasterSequence: React.FC<MasterSequenceProps> = ({
         }
       }
 
-      drawFrame(targetIndex);
-      
+      // Only draw if visible
+      if (isVisible) {
+        drawFrame(targetIndex);
+      }
+
       if (onGlobalProgressRef.current) {
         onGlobalProgressRef.current(clampP);
       }
@@ -221,7 +240,7 @@ export const MasterSequence: React.FC<MasterSequenceProps> = ({
     const handleTouchStart = (e: TouchEvent) => {
       touchStartY = e.touches[0].clientY;
     };
-    
+
     const handleTouchMove = (e: TouchEvent) => {
       if (isInputLocked) {
         stopMomentum();
@@ -230,7 +249,7 @@ export const MasterSequence: React.FC<MasterSequenceProps> = ({
       const touchEndY = e.touches[0].clientY;
       const diff = touchStartY - touchEndY;
       queueMomentum(diff, scrollSettings.touchMultiplier);
-      touchStartY = touchEndY; 
+      touchStartY = touchEndY;
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -284,6 +303,7 @@ export const MasterSequence: React.FC<MasterSequenceProps> = ({
       cancelAnimationFrame(resizeCallback);
       stopMomentum();
       playheadTween?.kill();
+      observer.disconnect();
     };
   }, [
     l1,
@@ -299,20 +319,20 @@ export const MasterSequence: React.FC<MasterSequenceProps> = ({
   ]); 
 
   return (
-    <section 
-      ref={containerRef} 
+    <section
+      ref={containerRef}
       className="relative w-full h-screen overflow-hidden"
       data-surface="hero"
     >
       <div className="absolute inset-0 w-full h-full overflow-hidden bg-black flex items-center justify-center" data-surface="media">
-        <div 
-          ref={parallaxWrapperRef} 
+        <div
+          ref={parallaxWrapperRef}
           className="absolute inset-0 w-full h-full"
           data-surface="media"
         >
-          <canvas 
-            ref={canvasRef} 
-            className="w-full h-full pointer-events-none block"
+          <canvas
+            ref={canvasRef}
+            className="cinematic-canvas w-full h-full pointer-events-none block"
           />
         </div>
         <WebGLFog />

@@ -70,16 +70,6 @@ function App() {
         >
           <Dashboard />
         </Suspense>
-      ) : route.page === 'articles' ? (
-        <Suspense
-          fallback={
-            <main className="flex min-h-screen items-center justify-center bg-[#f4f6fa] text-[#111217]">
-              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#111217]/60">Loading articles...</p>
-            </main>
-          }
-        >
-          <Articles slug={route.slug} />
-        </Suspense>
       ) : (
         <Home />
       )}

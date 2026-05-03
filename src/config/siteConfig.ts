@@ -47,6 +47,7 @@ export interface SiteProject {
   img: string;
   behance: string;
   live: string;
+  buttonType: 'live' | 'caseStudy';
   visible: boolean;
 }
 
@@ -314,6 +315,8 @@ export interface SiteCardStylePreset {
   lightBackground: string;
   darkBorder: string;
   lightBorder: string;
+  darkText: string;
+  lightText: string;
   darkShadowOpacity: number;
   lightShadowOpacity: number;
 }
@@ -334,6 +337,73 @@ export interface SiteDesignFoundation {
     contentMaxWidthPx: number;
     columnGapRem: number;
     maxGridColumns: number;
+  };
+}
+
+export interface SiteDesignTokens {
+  brand: {
+    primary: Record<string, string>;
+    neutral: Record<string, string>;
+    error: Record<string, string>;
+    warning: Record<string, string>;
+    success: Record<string, string>;
+  };
+  semantic: {
+    background: Record<string, Record<string, string>>;
+    border: Record<string, Record<string, string>>;
+    text: Record<string, Record<string, string>>;
+    icons: Record<string, Record<string, string>>;
+  };
+  spacing: {
+    gap: Record<string, number>;
+    padding: Record<string, number>;
+    input: Record<string, number>;
+    components: Record<string, number>;
+  };
+  radius: Record<string, number>;
+  typography: {
+    display: {
+      family: string;
+      weights: {
+        regular: number;
+        medium: number;
+        semiBold: number;
+        bold: number;
+      };
+      sizes: {
+        webXXL: number;
+        webXL: number;
+        webL: number;
+        webM: number;
+        webS: number;
+        webXS: number;
+        headlineXXL: number;
+      };
+      lineHeight: number;
+      letterSpacing: number;
+    };
+    body: {
+      family: string;
+      weights: {
+        regular: number;
+        medium: number;
+      };
+      sizes: {
+        textM: number;
+        textS: number;
+        textXS: number;
+      };
+      lineHeight: number;
+      letterSpacing: number;
+    };
+    labels: {
+      sizeXL: number;
+      weightMedium: number;
+    };
+    subtitles: {
+      sizeXXL: number;
+      weightSemiBold: number;
+    };
   };
 }
 
@@ -386,8 +456,204 @@ export interface SiteTimelineSectionLabels {
   title: string;
 }
 
+// New types for Personal Hub
+export type PartnerStatus = 'prospect' | 'contacted' | 'negotiating' | 'active' | 'completed' | 'lost';
+export type PartnerType = 'freelance' | 'agency' | 'startup' | 'enterprise' | 'individual';
+
+export interface SitePartner {
+  id: string;
+  name: string;
+  type: PartnerType;
+  status: PartnerStatus;
+  website: string;
+  email: string;
+  phone: string;
+  logo: string;
+  description: string;
+  notes: string;
+  createdAt: string;
+  lastContacted: string;
+  nextFollowUp: string;
+  tags: string[];
+  visible: boolean;
+}
+
+export type ProjectStatus = 'planning' | 'in_progress' | 'on_hold' | 'completed' | 'cancelled';
+export type ProjectPriority = 'low' | 'medium' | 'high' | 'urgent';
+
+export interface SitePersonalProject {
+  id: string;
+  title: string;
+  description: string;
+  status: ProjectStatus;
+  priority: ProjectPriority;
+  startDate: string;
+  endDate: string;
+  estimatedBudget: number;
+  actualBudget: number;
+  client: string;
+  category: string;
+  tags: string[];
+  progress: number;
+  notes: string;
+  visible: boolean;
+}
+
+export type SocialPlatform = 'twitter' | 'instagram' | 'linkedin' | 'facebook' | 'youtube' | 'tiktok' | 'github' | 'behance' | 'dribbble';
+
+export interface SiteSocialAccount {
+  id: string;
+  platform: SocialPlatform;
+  username: string;
+  displayName: string;
+  profileUrl: string;
+  followerCount: number;
+  connected: boolean;
+  lastSynced: string;
+  visible: boolean;
+}
+
+export interface SiteSocialPost {
+  id: string;
+  content: string;
+  platforms: SocialPlatform[];
+  mediaUrls: string[];
+  scheduledFor: string;
+  publishedAt: string;
+  status: 'draft' | 'scheduled' | 'published';
+  engagement: {
+    likes: number;
+    comments: number;
+    shares: number;
+    views: number;
+  };
+  visible: boolean;
+}
+
+export type TransactionType = 'income' | 'expense';
+export type TransactionCategory = 'salary' | 'freelance' | 'investment' | 'software' | 'hardware' | 'marketing' | 'office' | 'travel' | 'other';
+
+export interface SiteFinancialTransaction {
+  id: string;
+  type: TransactionType;
+  category: TransactionCategory;
+  amount: number;
+  currency: string;
+  description: string;
+  date: string;
+  projectId?: string;
+  invoiceNumber?: string;
+  receiptUrl?: string;
+  tags: string[];
+  visible: boolean;
+}
+
+export interface SiteInvestment {
+  id: string;
+  name: string;
+  type: 'stocks' | 'crypto' | 'real_estate' | 'business' | 'other';
+  amount: number;
+  currentValue: number;
+  purchaseDate: string;
+  notes: string;
+  visible: boolean;
+}
+
+export interface SiteInvoice {
+  id: string;
+  invoiceNumber: string;
+  clientId: string;
+  projectId?: string;
+  amount: number;
+  currency: string;
+  status: 'draft' | 'sent' | 'paid' | 'overdue';
+  dueDate: string;
+  paidDate: string;
+  items: Array<{
+    description: string;
+    quantity: number;
+    rate: number;
+  }>;
+  notes: string;
+  visible: boolean;
+}
+
+export type EmailFolder = 'inbox' | 'sent' | 'drafts' | 'archive' | 'spam';
+export type EmailStatus = 'unread' | 'read' | 'replied' | 'forwarded';
+
+export interface SiteEmail {
+  id: string;
+  from: string;
+  to: string[];
+  cc?: string[];
+  bcc?: string[];
+  subject: string;
+  body: string;
+  htmlBody?: string;
+  attachments: Array<{
+    filename: string;
+    url: string;
+    size: number;
+  }>;
+  folder: EmailFolder;
+  status: EmailStatus;
+  receivedAt: string;
+  sentAt: string;
+  threadId?: string;
+  labels: string[];
+  visible: boolean;
+}
+
+export type NoteCategory = 'work' | 'personal' | 'ideas' | 'meeting' | 'reference' | 'other';
+
+export interface SiteNote {
+  id: string;
+  title: string;
+  content: string;
+  category: NoteCategory;
+  tags: string[];
+  createdAt: string;
+  updatedAt: string;
+  pinned: boolean;
+  color: string;
+  visible: boolean;
+}
+
+export type AITrackingType = 'news' | 'market' | 'influencer' | 'competitor' | 'trend';
+export type AIFrequency = 'hourly' | 'daily' | 'weekly' | 'monthly';
+
+export interface SiteAITracking {
+  id: string;
+  name: string;
+  type: AITrackingType;
+  keywords: string[];
+  sources: string[];
+  frequency: AIFrequency;
+  enabled: boolean;
+  lastReport: string;
+  nextReport: string;
+  notes: string;
+  visible: boolean;
+}
+
+export interface SiteAIReport {
+  id: string;
+  trackingId: string;
+  title: string;
+  summary: string;
+  content: string;
+  insights: string[];
+  recommendations: string[];
+  generatedAt: string;
+  read: boolean;
+  visible: boolean;
+}
+
 export interface SiteConfig {
   introText: string;
+  introScrollPrompt: string;
+  introOverlayBackdropColor: string;
+  introOverlayBackdropOpacity: number;
   featured: {
     titleLine1: string;
     titleLine2: string;
@@ -535,6 +801,9 @@ export interface SiteConfig {
       cardShadowOpacity: number;
       glassTintColor: string;
       glassBorderColor: string;
+      glowEnabled: boolean;
+      glowColor: string;
+      glowIntensity: number;
     };
     components: {
       globalGlassVariant: SiteGlassVariant;
@@ -556,6 +825,7 @@ export interface SiteConfig {
       cards: Record<SiteCardVariant, SiteCardStylePreset>;
     };
     foundation: SiteDesignFoundation;
+    tokens: SiteDesignTokens;
   };
   animation: {
     activeCursorAnimation: SiteCursorAnimationMode;
@@ -573,6 +843,21 @@ export interface SiteConfig {
   cinematicSequence: SiteCinematicSequenceConfig;
   globalFrame: SiteGlobalFrameConfig;
   visibility: SiteVisibilityConfig;
+  // Personal Hub sections
+  partners: SitePartner[];
+  personalProjects: SitePersonalProject[];
+  socialAccounts: SiteSocialAccount[];
+  socialPosts: SiteSocialPost[];
+  financialTransactions: SiteFinancialTransaction[];
+  investments: SiteInvestment[];
+  invoices: SiteInvoice[];
+  // Communication
+  emails: SiteEmail[];
+  // Notes
+  notes: SiteNote[];
+  // AI Intelligence
+  aiTracking: SiteAITracking[];
+  aiReports: SiteAIReport[];
 }
 
 export const SITE_CONFIG_STORAGE_KEY = 'portfolio.site-config.v1';
@@ -580,6 +865,9 @@ export const SITE_CONFIG_STORAGE_KEY = 'portfolio.site-config.v1';
 export const DEFAULT_SITE_CONFIG: SiteConfig = {
   introText:
     'I design thoughtful digital products and cinematic user experiences that connect user needs with business success through AI.',
+  introScrollPrompt: 'Scroll to explore the work',
+  introOverlayBackdropColor: 'rgba(0, 0, 0, 0.6)',
+  introOverlayBackdropOpacity: 0.35,
   featured: {
     titleLine1: 'Featured',
     titleLine2: 'Work',
@@ -603,6 +891,7 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
       img: '/frames/scene-02-desk-focus/ezgif-frame-001.jpg',
       behance: '#',
       live: '#',
+      buttonType: 'live',
       visible: true,
     },
     {
@@ -612,6 +901,7 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
       img: '/frames/scene-04/ezgif-frame-001.jpg',
       behance: '#',
       live: '#',
+      buttonType: 'live',
       visible: true,
     },
     {
@@ -621,6 +911,7 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
       img: '/frames/scene-03-screen-entry/ezgif-frame-001.jpg',
       behance: '#',
       live: '#',
+      buttonType: 'caseStudy',
       visible: true,
     },
     {
@@ -630,6 +921,7 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
       img: '/frames/scene- 05/ezgif-frame-001.jpg',
       behance: '#',
       live: '#',
+      buttonType: 'live',
       visible: true,
     },
   ],
@@ -837,7 +1129,7 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
       { id: 'nav-about', label: 'About Me', section: 'about', visible: true },
       { id: 'nav-projects', label: 'Projects', section: 'projects', visible: true },
       { id: 'nav-testimonials', label: 'Testimonials', section: 'testimonials', visible: true },
-      { id: 'nav-articles', label: 'Articles', section: 'articles', visible: true },
+      { id: 'nav-articles', label: 'Articles', section: 'articles', visible: false },
     ],
     letsTalkLabel: "Let's Talk",
     letsTalkHref: 'mailto:hello@example.com',
@@ -863,7 +1155,7 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
       { id: 'footer-nav-about', label: 'About Me', href: '#about', visible: true },
       { id: 'footer-nav-projects', label: 'Projects', href: '#projects', visible: true },
       { id: 'footer-nav-testimonials', label: 'Testimonials', href: '#testimonials', visible: true },
-      { id: 'footer-nav-articles', label: 'Articles', href: '#/articles', visible: true },
+      { id: 'footer-nav-articles', label: 'Articles', href: '#/articles', visible: false },
     ],
   },
   articlesPage: {
@@ -1036,25 +1328,28 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
   designSystem: {
     theme: {
       primaryColor: '#111217',
-      secondaryColor: '#7A8192',
-      onPrimaryColor: '#FFFFFF',
-      onSecondaryColor: '#FFFFFF',
+      secondaryColor: '#7a8192',
+      onPrimaryColor: '#ffffff',
+      onSecondaryColor: '#ffffff',
       headingScale: 1,
-      displayTitleSizeRem: 8.4,
-      sectionTitleSizeRem: 2.7,
-      bodyTextSizeRem: 1.08,
-      headingWeight: 610,
-      headingLetterSpacingEm: -0.02,
-      bodyLineHeight: 1.6,
-      buttonRadius: 8,
-      buttonBorderWidth: 1,
-      buttonShadowOpacity: 0.1,
-      cardRadius: 18,
-      cardBorderWidth: 1,
-      cardBlurPx: 18,
-      cardShadowOpacity: 0.1,
-      glassTintColor: 'rgba(18,18,20,0.5)',
-      glassBorderColor: 'rgba(255,255,255,0.14)',
+      displayTitleSizeRem: 3,
+      sectionTitleSizeRem: 2.5,
+      bodyTextSizeRem: 1,
+      headingWeight: 600,
+      headingLetterSpacingEm: -0.025,
+      bodyLineHeight: 1.7,
+      buttonRadius: 12,
+      buttonBorderWidth: 1.5,
+      buttonShadowOpacity: 0.12,
+      cardRadius: 16,
+      cardBorderWidth: 1.5,
+      cardBlurPx: 20,
+      cardShadowOpacity: 0.15,
+      glassTintColor: 'rgba(18,18,20,0.6)',
+      glassBorderColor: 'rgba(255,255,255,0.18)',
+      glowEnabled: true,
+      glowColor: '#f7d9a7',
+      glowIntensity: 0.75,
     },
     components: {
       globalGlassVariant: 'glass-2',
@@ -1074,91 +1369,363 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
     componentStyles: {
       buttons: {
         'button-1': {
-          radiusPx: 10,
-          borderWidthPx: 1.2,
-          darkBackground: '#111217',
-          darkBorder: '#2a2e39',
-          darkText: '#ffffff',
-          darkHoverBackground: '#1f2431',
-          lightBackground: '#111217',
-          lightBorder: '#2a2e39',
-          lightText: '#ffffff',
-          lightHoverBackground: '#262d3d',
+          radiusPx: 12,
+          borderWidthPx: 1.5,
+          darkBackground: '#FFFFFF',
+          darkBorder: '#E5E5E5',
+          darkText: '#000000',
+          darkHoverBackground: '#F8F8F8',
+          lightBackground: '#000000',
+          lightBorder: '#333333',
+          lightText: '#FFFFFF',
+          lightHoverBackground: '#1A1A1A',
         },
         'button-2': {
-          radiusPx: 10,
-          borderWidthPx: 1,
-          darkBackground: 'rgba(255,255,255,0.03)',
-          darkBorder: '#7a8192',
-          darkText: '#d2d7e2',
+          radiusPx: 12,
+          borderWidthPx: 1.5,
+          darkBackground: 'rgba(255,255,255,0.08)',
+          darkBorder: 'rgba(255,255,255,0.15)',
+          darkText: '#FFFFFF',
           darkHoverBackground: 'rgba(255,255,255,0.12)',
-          lightBackground: 'rgba(255,255,255,0.45)',
-          lightBorder: 'rgba(17,18,23,0.28)',
-          lightText: '#111217',
-          lightHoverBackground: 'rgba(17,18,23,0.14)',
+          lightBackground: 'rgba(0,0,0,0.05)',
+          lightBorder: 'rgba(0,0,0,0.1)',
+          lightText: '#000000',
+          lightHoverBackground: 'rgba(0,0,0,0.08)',
         },
         'button-3': {
-          radiusPx: 999,
-          borderWidthPx: 1,
-          darkBackground: 'rgba(255,255,255,0.12)',
-          darkBorder: 'rgba(255,255,255,0.22)',
-          darkText: '#ffffff',
-          darkHoverBackground: 'rgba(255,255,255,0.2)',
-          lightBackground: 'rgba(248,250,255,0.8)',
-          lightBorder: 'rgba(17,18,23,0.18)',
-          lightText: '#111217',
-          lightHoverBackground: 'rgba(255,255,255,0.98)',
+          radiusPx: 12,
+          borderWidthPx: 1.5,
+          darkBackground: 'rgba(255,255,255,0.05)',
+          darkBorder: 'rgba(255,255,255,0.12)',
+          darkText: '#FFFFFF',
+          darkHoverBackground: 'rgba(255,255,255,0.08)',
+          lightBackground: 'rgba(0,0,0,0.03)',
+          lightBorder: 'rgba(0,0,0,0.08)',
+          lightText: '#000000',
+          lightHoverBackground: 'rgba(0,0,0,0.06)',
         },
       },
       cards: {
         'card-1': {
-          radiusPx: 18,
-          borderWidthPx: 1,
-          darkBackground: 'rgba(255,255,255,0.06)',
-          lightBackground: 'rgba(255,255,255,0.74)',
-          darkBorder: 'rgba(255,255,255,0.12)',
-          lightBorder: 'rgba(17,18,23,0.18)',
-          darkShadowOpacity: 0.12,
-          lightShadowOpacity: 0.08,
+          radiusPx: 16,
+          borderWidthPx: 1.5,
+          darkBackground: 'rgba(255,255,255,0.08)',
+          lightBackground: 'rgba(255,255,255,0.85)',
+          darkBorder: 'rgba(255,255,255,0.15)',
+          lightBorder: 'rgba(0,0,0,0.08)',
+          darkText: '#FFFFFF',
+          lightText: '#000000',
+          darkShadowOpacity: 0.18,
+          lightShadowOpacity: 0.1,
         },
         'card-2': {
-          radiusPx: 20,
-          borderWidthPx: 1,
-          darkBackground: 'rgba(8,10,16,0.74)',
-          lightBackground: 'rgba(240,245,255,0.68)',
-          darkBorder: 'rgba(255,255,255,0.14)',
-          lightBorder: 'rgba(17,18,23,0.2)',
-          darkShadowOpacity: 0.14,
-          lightShadowOpacity: 0.09,
+          radiusPx: 18,
+          borderWidthPx: 1.5,
+          darkBackground: 'rgba(255,255,255,0.06)',
+          lightBackground: 'rgba(255,255,255,0.9)',
+          darkBorder: 'rgba(255,255,255,0.12)',
+          lightBorder: 'rgba(0,0,0,0.06)',
+          darkText: '#FFFFFF',
+          lightText: '#000000',
+          darkShadowOpacity: 0.22,
+          lightShadowOpacity: 0.12,
         },
         'card-3': {
-          radiusPx: 22,
-          borderWidthPx: 1.2,
-          darkBackground: 'rgba(5,6,11,0.86)',
-          lightBackground: 'rgba(255,255,255,0.82)',
-          darkBorder: 'rgba(255,255,255,0.18)',
-          lightBorder: 'rgba(17,18,23,0.24)',
-          darkShadowOpacity: 0.16,
-          lightShadowOpacity: 0.1,
+          radiusPx: 20,
+          borderWidthPx: 1.5,
+          darkBackground: 'rgba(255,255,255,0.04)',
+          lightBackground: 'rgba(255,255,255,0.95)',
+          darkBorder: 'rgba(255,255,255,0.1)',
+          lightBorder: 'rgba(0,0,0,0.04)',
+          darkText: '#FFFFFF',
+          lightText: '#000000',
+          darkShadowOpacity: 0.25,
+          lightShadowOpacity: 0.14,
         },
       },
     },
     foundation: {
       typography: {
-        eyebrowSizeRem: 0.72,
-        eyebrowWeight: 720,
-        eyebrowLetterSpacingEm: 0.28,
+        eyebrowSizeRem: 0.75,
+        eyebrowWeight: 600,
+        eyebrowLetterSpacingEm: 0.25,
       },
       spacing: {
-        sectionPaddingRem: 4.5,
-        stackGapRem: 1.2,
-        gridGapRem: 1.5,
-        cardPaddingRem: 1.6,
+        sectionPaddingRem: 5,
+        stackGapRem: 1.5,
+        gridGapRem: 2,
+        cardPaddingRem: 2,
       },
       layout: {
         contentMaxWidthPx: 1400,
-        columnGapRem: 1.4,
+        columnGapRem: 1.5,
         maxGridColumns: 12,
+      },
+    },
+    tokens: {
+      brand: {
+        primary: {
+          50: '#E6EDFF',
+          100: '#CDDBFE',
+          200: '#9AB6FE',
+          300: '#6892FD',
+          400: '#356DFD',
+          500: '#0349FC',
+          600: '#023ACA',
+          700: '#011D65',
+          800: '#010F32',
+          900: '#010F32',
+          950: '#000719',
+        },
+        neutral: {
+          50: '#F9FAFB',
+          100: '#F3F4F6',
+          200: '#E5E7EB',
+          300: '#D1D5DB',
+          400: '#9CA3AF',
+          500: '#6B7280',
+          600: '#4B5563',
+          700: '#374151',
+          800: '#1F2937',
+          900: '#18181B',
+          950: '#0B121F',
+          White: '#FFFFFF',
+          'Off-white': '#F9F8F4',
+          Black: '#0C0C0D',
+        },
+        error: {
+          50: '#FEF2F2',
+          100: '#FEE2E2',
+          200: '#FECACA',
+          300: '#FCA5A5',
+          400: '#F87171',
+          500: '#EF4444',
+          600: '#DC2626',
+          700: '#B91C1C',
+          800: '#991B1B',
+          900: '#7F1D1D',
+          950: '#5F1616',
+        },
+        warning: {
+          50: '#FFFBEB',
+          100: '#FEF3C7',
+          200: '#FDE68A',
+          300: '#FCD34D',
+          400: '#FBBF24',
+          500: '#F59E0B',
+          600: '#D97706',
+          700: '#B45309',
+          800: '#92400E',
+          900: '#78350F',
+          950: '#52240A',
+        },
+        success: {
+          50: '#F0FDF4',
+          100: '#DCFCE7',
+          200: '#BBF7D0',
+          300: '#86EFAC',
+          400: '#4ADE80',
+          500: '#22C55E',
+          600: '#16A34A',
+          700: '#15803D',
+          800: '#166534',
+          900: '#14532D',
+          950: '#0E3A1F',
+        },
+      },
+      semantic: {
+        background: {
+          base: {
+            'bg-primary': '#FFFFFF',
+            'bg-warm': '#F8F9FA',
+            'bg-primary-cards': '#FFFFFF',
+            'bg-secondary': '#F9FAFB',
+            'bg-tertiary': '#F3F4F6',
+            'bg-quaternary': '#E5E7EB',
+            'bg-senary': '#D1D5DB',
+          },
+          solid: {
+            'bg-solid-primary': '#18181B',
+            'bg-solid-secondary': '#1F2937',
+            'bg-solid-tertiary': '#374151',
+            'bg-solid-quarternary': '#6B7280',
+          },
+          brand: {
+            'bg-brand-primary': '#F9FAFB',
+            'bg-brand-secondary': '#F3F4F6',
+            'bg-brand-tertiary': '#E5E7EB',
+            'bg-brand-quaternary': '#6B7280',
+            'bg-brand-quinary': '#4B5563',
+            'bg-brand-senary': '#374151',
+            'bg-green-cards': '#F9FAFB',
+          },
+          success: {
+            'bg-success-primary': '#F0FDF4',
+            'bg-success-secondary': '#DCFCE7',
+            'bg-success-tertiary': '#22C55E',
+            'bg-success-quarternary': '#16A34A',
+            'bg-success-senery': '#15803D',
+          },
+          warning: {
+            'bg-warning': '#FFFBEB',
+          },
+          error: {
+            'bg-error-primary': '#FEF2F2',
+            'bg-error-secondary': '#FEE2E2',
+            'bg-error-tertiary': '#FECACA',
+            'bg-error-quarternary': '#DC2626',
+            'bg-error-quinary': '#B91C1C',
+            'bg-error-senary': '#991B1B',
+          },
+        },
+        border: {
+          base: {
+            'border-primary': '#D1D5DB',
+            'border-secondary': '#E5E7EB',
+            'border-tertiary': '#F3F4F6',
+            'border-disabled': '#D1D5DB',
+            'border-solid': '#4B5563',
+            'border-white': '#FFFFFF',
+          },
+          brand: {
+            'border-brand': '#6B7280',
+            'border-brand-hover': '#4B5563',
+            'border-brand-click': '#374151',
+            'border-brand-subtle': '#E5E7EB',
+          },
+          error: {
+            'border-error': '#DC2626',
+            'border-error-hover': '#B91C1C',
+            'border-error-click': '#991B1B',
+            'border-error-subtle': '#FCA5A5',
+            'border-error-disabled': '#FECACA',
+          },
+        },
+        text: {
+          heading: {
+            'heading-primary': '#0C0C0D',
+            'heading-secondary': '#374151',
+            'heading-inverted': '#FFFFFF',
+          },
+          body: {
+            body: '#4B5563',
+            'body-inverted': '#E5E7EB',
+            'body-on-brand': '#F9FAFB',
+          },
+          utility: {
+            placeholder: '#6B7280',
+            'sub-headline-brand': '#6B7280',
+            'footer-headline': '#6B7280',
+            'footer-headline-inverted': '#FFFFFF',
+            disabled: '#9CA3AF',
+            'error-primary': '#DC2626',
+            'error-secondary': '#EF4444',
+          },
+        },
+        icons: {
+          tokens: {
+            'icon-primary': '#18181B',
+            'icon-secondary': '#1F2937',
+            'icon-tertiary': '#374151',
+            'icon-quaternary': '#4B5563',
+            'icon-quinary': '#6B7280',
+            'icon-senary': '#9CA3AF',
+            'icon-septenary': '#D1D5DB',
+            'icon-on-fill': '#FFFFFF',
+          },
+        },
+      },
+      spacing: {
+        gap: {
+          None: 0,
+          'X Small': 4,
+          Small: 8,
+          Large: 16,
+          XLarge: 20,
+          '2X Large': 24,
+          '3X Large': 32,
+          '4X Large': 40,
+          '5X Large': 48,
+          '6X Large': 56,
+          '7X Large': 64,
+        },
+        padding: {
+          None: 0,
+          'X Small': 2,
+          Small: 4,
+          Large: 12,
+          XLarge: 16,
+          '2X Large': 20,
+          '3X Large': 24,
+          '4X Large': 32,
+          '5X Large': 40,
+          '6X Large': 48,
+        },
+        input: {
+          'Padding v': 8,
+          'Padding h': 12,
+          Gap: 4,
+        },
+        components: {
+          'Border - focus': 2,
+        },
+      },
+      radius: {
+        None: 0,
+        'X Small': 2,
+        Small: 4,
+        Medium: 6,
+        Large: 8,
+        XLarge: 10,
+        '2X Large': 12,
+        '3X Large': 16,
+        '4X Large': 24,
+        '5X Large': 32,
+        Full: 9999,
+      },
+      typography: {
+        display: {
+          family: 'Plus Jakarta Sans',
+          weights: {
+            regular: 400,
+            medium: 500,
+            semiBold: 600,
+            bold: 700,
+          },
+          sizes: {
+            webXXL: 48,
+            webXL: 42,
+            webL: 40,
+            webM: 38,
+            webS: 36,
+            webXS: 34,
+            headlineXXL: 40,
+          },
+          lineHeight: 1.2,
+          letterSpacing: 0,
+        },
+        body: {
+          family: 'Plus Jakarta Sans',
+          weights: {
+            regular: 400,
+            medium: 500,
+          },
+          sizes: {
+            textM: 14,
+            textS: 12,
+            textXS: 10,
+          },
+          lineHeight: 1.2,
+          letterSpacing: 0,
+        },
+        labels: {
+          sizeXL: 18,
+          weightMedium: 500,
+        },
+        subtitles: {
+          sizeXXL: 32,
+          weightSemiBold: 600,
+        },
       },
     },
   },
@@ -1269,9 +1836,9 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
     skipScene06Exit: false,
     scene06PauseMs: 900,
     scroll: {
-      wheelIntensity: 0.00005,
+      wheelIntensity: 0.00015,
       maxWheelDelta: 48,
-      smoothDurationMs: 680,
+      smoothDurationMs: 400,
       momentumDamping: 0.86,
       touchMultiplier: 1.6,
       keyboardStep: 0.07,
@@ -1293,7 +1860,7 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
   visibility: {
     globalFrameOverlay: true,
     cursorAnimation: true,
-    introOverlay: false,
+    introOverlay: true,
     scene05Overlay: true,
     persistentUI: true,
     navigationLogo: true,
@@ -1315,6 +1882,21 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
     footerNavLinks: true,
     footerOffice: true,
   },
+  // Personal Hub defaults
+  partners: [],
+  personalProjects: [],
+  socialAccounts: [],
+  socialPosts: [],
+  financialTransactions: [],
+  investments: [],
+  invoices: [],
+  // Communication defaults
+  emails: [],
+  // Notes defaults
+  notes: [],
+  // AI Intelligence defaults
+  aiTracking: [],
+  aiReports: [],
 };
 
 const isRecord = (value: unknown): value is Record<string, unknown> => {
@@ -1422,6 +2004,33 @@ const asBoundedNumber = (value: unknown, fallback: number, min: number, max: num
   return Math.min(max, Math.max(min, parsed));
 };
 
+const mergeStringRecord = (value: unknown, fallback: Record<string, string>) => {
+  if (!isRecord(value)) return fallback;
+  return Object.keys(fallback).reduce<Record<string, string>>((acc, key) => {
+    acc[key] = asString(value[key], fallback[key]);
+    return acc;
+  }, {});
+};
+
+const mergeNumberRecord = (value: unknown, fallback: Record<string, number>) => {
+  if (!isRecord(value)) return fallback;
+  return Object.keys(fallback).reduce<Record<string, number>>((acc, key) => {
+    acc[key] = asNumber(value[key], fallback[key]);
+    return acc;
+  }, {});
+};
+
+const mergeNestedStringRecord = (
+  value: unknown,
+  fallback: Record<string, Record<string, string>>,
+) => {
+  if (!isRecord(value)) return fallback;
+  return Object.keys(fallback).reduce<Record<string, Record<string, string>>>((acc, key) => {
+    acc[key] = mergeStringRecord(value[key], fallback[key]);
+    return acc;
+  }, {});
+};
+
 export const hydrateSiteConfig = (value: unknown): SiteConfig => {
   if (!isRecord(value)) return DEFAULT_SITE_CONFIG;
 
@@ -1443,6 +2052,20 @@ export const hydrateSiteConfig = (value: unknown): SiteConfig => {
   const foundationTypography = isRecord(designFoundation.typography) ? designFoundation.typography : {};
   const foundationSpacing = isRecord(designFoundation.spacing) ? designFoundation.spacing : {};
   const foundationLayout = isRecord(designFoundation.layout) ? designFoundation.layout : {};
+  const designTokens = isRecord(designSystem.tokens) ? designSystem.tokens : {};
+  const tokenBrand = isRecord(designTokens.brand) ? designTokens.brand : {};
+  const tokenSemantic = isRecord(designTokens.semantic) ? designTokens.semantic : {};
+  const tokenSpacing = isRecord(designTokens.spacing) ? designTokens.spacing : {};
+  const tokenRadius = isRecord(designTokens.radius) ? designTokens.radius : {};
+  const tokenTypography = isRecord(designTokens.typography) ? designTokens.typography : {};
+  const tokenDisplay = isRecord(tokenTypography.display) ? tokenTypography.display : {};
+  const tokenDisplayWeights = isRecord(tokenDisplay.weights) ? tokenDisplay.weights : {};
+  const tokenDisplaySizes = isRecord(tokenDisplay.sizes) ? tokenDisplay.sizes : {};
+  const tokenBody = isRecord(tokenTypography.body) ? tokenTypography.body : {};
+  const tokenBodyWeights = isRecord(tokenBody.weights) ? tokenBody.weights : {};
+  const tokenBodySizes = isRecord(tokenBody.sizes) ? tokenBody.sizes : {};
+  const tokenLabels = isRecord(tokenTypography.labels) ? tokenTypography.labels : {};
+  const tokenSubtitles = isRecord(tokenTypography.subtitles) ? tokenTypography.subtitles : {};
   const buttonStyles = isRecord(designComponentStyles.buttons) ? designComponentStyles.buttons : {};
   const cardStyles = isRecord(designComponentStyles.cards) ? designComponentStyles.cards : {};
   const animation = isRecord(value.animation) ? value.animation : {};
@@ -1581,7 +2204,7 @@ export const hydrateSiteConfig = (value: unknown): SiteConfig => {
       id: 'nav-articles',
       label: 'Articles',
       section: 'articles' as const,
-      visible: true,
+      visible: false,
     };
 
   const navItemsWithArticles = (navItems.length > 0 ? navItems : DEFAULT_SITE_CONFIG.persistentUI.navItems).some(
@@ -1597,7 +2220,7 @@ export const hydrateSiteConfig = (value: unknown): SiteConfig => {
       id: 'footer-nav-articles',
       label: 'Articles',
       href: '#/articles',
-      visible: true,
+      visible: false,
     };
 
   const navLinksWithArticles = (navLinks.length > 0 ? navLinks : DEFAULT_SITE_CONFIG.footer.navLinks).some(
@@ -1820,6 +2443,17 @@ export const hydrateSiteConfig = (value: unknown): SiteConfig => {
 
   return {
     introText: asString(value.introText, DEFAULT_SITE_CONFIG.introText),
+    introScrollPrompt: asString(value.introScrollPrompt, DEFAULT_SITE_CONFIG.introScrollPrompt),
+    introOverlayBackdropColor: asString(
+      value.introOverlayBackdropColor,
+      DEFAULT_SITE_CONFIG.introOverlayBackdropColor,
+    ),
+    introOverlayBackdropOpacity: asBoundedNumber(
+      value.introOverlayBackdropOpacity,
+      DEFAULT_SITE_CONFIG.introOverlayBackdropOpacity,
+      0,
+      0.95,
+    ),
     featured: {
       titleLine1: asString(featured.titleLine1, DEFAULT_SITE_CONFIG.featured.titleLine1),
       titleLine2: asString(featured.titleLine2, DEFAULT_SITE_CONFIG.featured.titleLine2),
@@ -1833,7 +2467,12 @@ export const hydrateSiteConfig = (value: unknown): SiteConfig => {
       ctaButtonText: asString(featured.ctaButtonText, DEFAULT_SITE_CONFIG.featured.ctaButtonText),
       ctaButtonHref: asString(featured.ctaButtonHref, DEFAULT_SITE_CONFIG.featured.ctaButtonHref),
     },
-    projects: projects.length > 0 ? projects : DEFAULT_SITE_CONFIG.projects,
+    projects: projects.length > 0
+      ? projects.map((project) => ({
+          ...project,
+          buttonType: (project as any).buttonType || 'live',
+        }))
+      : DEFAULT_SITE_CONFIG.projects,
     experienceMarquee: experienceMarquee.length > 0 ? experienceMarquee : DEFAULT_SITE_CONFIG.experienceMarquee,
     journeyTimeline: journeyTimeline.length > 0 ? journeyTimeline : DEFAULT_SITE_CONFIG.journeyTimeline,
     timelineSection: {
@@ -2175,6 +2814,20 @@ export const hydrateSiteConfig = (value: unknown): SiteConfig => {
         glassBorderColor: asString(
           designTheme.glassBorderColor,
           DEFAULT_SITE_CONFIG.designSystem.theme.glassBorderColor,
+        ),
+        glowEnabled: asBoolean(
+          designTheme.glowEnabled,
+          DEFAULT_SITE_CONFIG.designSystem.theme.glowEnabled,
+        ),
+        glowColor: asString(
+          designTheme.glowColor,
+          DEFAULT_SITE_CONFIG.designSystem.theme.glowColor,
+        ),
+        glowIntensity: asBoundedNumber(
+          designTheme.glowIntensity,
+          DEFAULT_SITE_CONFIG.designSystem.theme.glowIntensity,
+          0,
+          1.2,
         ),
       },
       components: {
@@ -2579,6 +3232,192 @@ export const hydrateSiteConfig = (value: unknown): SiteConfig => {
             6,
             18,
           ),
+        },
+      },
+      tokens: {
+        brand: {
+          primary: mergeStringRecord(
+            tokenBrand.primary,
+            DEFAULT_SITE_CONFIG.designSystem.tokens.brand.primary,
+          ),
+          neutral: mergeStringRecord(
+            tokenBrand.neutral,
+            DEFAULT_SITE_CONFIG.designSystem.tokens.brand.neutral,
+          ),
+          error: mergeStringRecord(
+            tokenBrand.error,
+            DEFAULT_SITE_CONFIG.designSystem.tokens.brand.error,
+          ),
+          warning: mergeStringRecord(
+            tokenBrand.warning,
+            DEFAULT_SITE_CONFIG.designSystem.tokens.brand.warning,
+          ),
+          success: mergeStringRecord(
+            tokenBrand.success,
+            DEFAULT_SITE_CONFIG.designSystem.tokens.brand.success,
+          ),
+        },
+        semantic: {
+          background: mergeNestedStringRecord(
+            tokenSemantic.background,
+            DEFAULT_SITE_CONFIG.designSystem.tokens.semantic.background,
+          ),
+          border: mergeNestedStringRecord(
+            tokenSemantic.border,
+            DEFAULT_SITE_CONFIG.designSystem.tokens.semantic.border,
+          ),
+          text: mergeNestedStringRecord(
+            tokenSemantic.text,
+            DEFAULT_SITE_CONFIG.designSystem.tokens.semantic.text,
+          ),
+          icons: mergeNestedStringRecord(
+            tokenSemantic.icons,
+            DEFAULT_SITE_CONFIG.designSystem.tokens.semantic.icons,
+          ),
+        },
+        spacing: {
+          gap: mergeNumberRecord(
+            tokenSpacing.gap,
+            DEFAULT_SITE_CONFIG.designSystem.tokens.spacing.gap,
+          ),
+          padding: mergeNumberRecord(
+            tokenSpacing.padding,
+            DEFAULT_SITE_CONFIG.designSystem.tokens.spacing.padding,
+          ),
+          input: mergeNumberRecord(
+            tokenSpacing.input,
+            DEFAULT_SITE_CONFIG.designSystem.tokens.spacing.input,
+          ),
+          components: mergeNumberRecord(
+            tokenSpacing.components,
+            DEFAULT_SITE_CONFIG.designSystem.tokens.spacing.components,
+          ),
+        },
+        radius: mergeNumberRecord(
+          tokenRadius,
+          DEFAULT_SITE_CONFIG.designSystem.tokens.radius,
+        ),
+        typography: {
+          display: {
+            family: asString(
+              tokenDisplay.family,
+              DEFAULT_SITE_CONFIG.designSystem.tokens.typography.display.family,
+            ),
+            weights: {
+              regular: asNumber(
+                tokenDisplayWeights.regular,
+                DEFAULT_SITE_CONFIG.designSystem.tokens.typography.display.weights.regular,
+              ),
+              medium: asNumber(
+                tokenDisplayWeights.medium,
+                DEFAULT_SITE_CONFIG.designSystem.tokens.typography.display.weights.medium,
+              ),
+              semiBold: asNumber(
+                tokenDisplayWeights.semiBold,
+                DEFAULT_SITE_CONFIG.designSystem.tokens.typography.display.weights.semiBold,
+              ),
+              bold: asNumber(
+                tokenDisplayWeights.bold,
+                DEFAULT_SITE_CONFIG.designSystem.tokens.typography.display.weights.bold,
+              ),
+            },
+            sizes: {
+              webXXL: asNumber(
+                tokenDisplaySizes.webXXL,
+                DEFAULT_SITE_CONFIG.designSystem.tokens.typography.display.sizes.webXXL,
+              ),
+              webXL: asNumber(
+                tokenDisplaySizes.webXL,
+                DEFAULT_SITE_CONFIG.designSystem.tokens.typography.display.sizes.webXL,
+              ),
+              webL: asNumber(
+                tokenDisplaySizes.webL,
+                DEFAULT_SITE_CONFIG.designSystem.tokens.typography.display.sizes.webL,
+              ),
+              webM: asNumber(
+                tokenDisplaySizes.webM,
+                DEFAULT_SITE_CONFIG.designSystem.tokens.typography.display.sizes.webM,
+              ),
+              webS: asNumber(
+                tokenDisplaySizes.webS,
+                DEFAULT_SITE_CONFIG.designSystem.tokens.typography.display.sizes.webS,
+              ),
+              webXS: asNumber(
+                tokenDisplaySizes.webXS,
+                DEFAULT_SITE_CONFIG.designSystem.tokens.typography.display.sizes.webXS,
+              ),
+              headlineXXL: asNumber(
+                tokenDisplaySizes.headlineXXL,
+                DEFAULT_SITE_CONFIG.designSystem.tokens.typography.display.sizes.headlineXXL,
+              ),
+            },
+            lineHeight: asNumber(
+              tokenDisplay.lineHeight,
+              DEFAULT_SITE_CONFIG.designSystem.tokens.typography.display.lineHeight,
+            ),
+            letterSpacing: asNumber(
+              tokenDisplay.letterSpacing,
+              DEFAULT_SITE_CONFIG.designSystem.tokens.typography.display.letterSpacing,
+            ),
+          },
+          body: {
+            family: asString(
+              tokenBody.family,
+              DEFAULT_SITE_CONFIG.designSystem.tokens.typography.body.family,
+            ),
+            weights: {
+              regular: asNumber(
+                tokenBodyWeights.regular,
+                DEFAULT_SITE_CONFIG.designSystem.tokens.typography.body.weights.regular,
+              ),
+              medium: asNumber(
+                tokenBodyWeights.medium,
+                DEFAULT_SITE_CONFIG.designSystem.tokens.typography.body.weights.medium,
+              ),
+            },
+            sizes: {
+              textM: asNumber(
+                tokenBodySizes.textM,
+                DEFAULT_SITE_CONFIG.designSystem.tokens.typography.body.sizes.textM,
+              ),
+              textS: asNumber(
+                tokenBodySizes.textS,
+                DEFAULT_SITE_CONFIG.designSystem.tokens.typography.body.sizes.textS,
+              ),
+              textXS: asNumber(
+                tokenBodySizes.textXS,
+                DEFAULT_SITE_CONFIG.designSystem.tokens.typography.body.sizes.textXS,
+              ),
+            },
+            lineHeight: asNumber(
+              tokenBody.lineHeight,
+              DEFAULT_SITE_CONFIG.designSystem.tokens.typography.body.lineHeight,
+            ),
+            letterSpacing: asNumber(
+              tokenBody.letterSpacing,
+              DEFAULT_SITE_CONFIG.designSystem.tokens.typography.body.letterSpacing,
+            ),
+          },
+          labels: {
+            sizeXL: asNumber(
+              tokenLabels.sizeXL,
+              DEFAULT_SITE_CONFIG.designSystem.tokens.typography.labels.sizeXL,
+            ),
+            weightMedium: asNumber(
+              tokenLabels.weightMedium,
+              DEFAULT_SITE_CONFIG.designSystem.tokens.typography.labels.weightMedium,
+            ),
+          },
+          subtitles: {
+            sizeXXL: asNumber(
+              tokenSubtitles.sizeXXL,
+              DEFAULT_SITE_CONFIG.designSystem.tokens.typography.subtitles.sizeXXL,
+            ),
+            weightSemiBold: asNumber(
+              tokenSubtitles.weightSemiBold,
+              DEFAULT_SITE_CONFIG.designSystem.tokens.typography.subtitles.weightSemiBold,
+            ),
+          },
         },
       },
     },

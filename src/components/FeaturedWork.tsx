@@ -337,10 +337,10 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({ isActive }) => {
             <h1
               className="fw-header-text opacity-0 text-[#0f1219]"
               style={{
-                fontSize: `clamp(${getScaledRem(siteConfig.designSystem.theme.displayTitleSizeRem * 0.34, siteConfig.designSystem.theme.headingScale)}, 12vw, ${getScaledRem(siteConfig.designSystem.theme.displayTitleSizeRem * 0.86, siteConfig.designSystem.theme.headingScale)})`,
+                fontSize: `clamp(${getScaledRem(siteConfig.designSystem.theme.displayTitleSizeRem * 0.85, siteConfig.designSystem.theme.headingScale)}, 14vw, ${getScaledRem(siteConfig.designSystem.theme.displayTitleSizeRem * 1.65, siteConfig.designSystem.theme.headingScale)})`,
                 lineHeight: 0.92,
                 letterSpacing: `${siteConfig.designSystem.theme.headingLetterSpacingEm}em`,
-                fontWeight: siteConfig.designSystem.theme.headingWeight,
+                fontWeight: 400,
               }}
             >
               {featured.titleLine1}
@@ -370,42 +370,43 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({ isActive }) => {
                   <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(15,18,25,0.02),rgba(15,18,25,0.28))]" />
                 </div>
 
-                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#0f1219]/56 md:text-[11px]">{project.tags}</p>
-                <h3 className="mt-3 font-sans text-[2.1rem] leading-[0.95] tracking-tight text-[#0f1219] md:text-[2.6rem]">
+                <h3 className="font-sans text-[2.1rem] leading-[0.95] tracking-tight text-[#0f1219] md:text-[2.6rem]">
                   {project.title}
                 </h3>
 
-                <div className="mt-5 flex flex-wrap items-center gap-3">
-                  <a
-                    href={project.behance}
-                    onClick={(e) => handlePlaceholderLinkClick(e, project.behance)}
-                    target={isPlaceholderHref(project.behance) ? undefined : '_blank'}
-                    rel={isPlaceholderHref(project.behance) ? undefined : 'noopener noreferrer'}
-                    className={getButtonClass(
-                      designSystem.components.featuredProjectButtonVariant,
-                      'light',
-                      'sm',
-                      'min-w-[138px] justify-center',
-                    )}
-                  >
-                    {featured.caseStudyLabel}
-                  </a>
-
-                  <a
-                    href={project.live}
-                    onClick={(e) => handlePlaceholderLinkClick(e, project.live)}
-                    target={isPlaceholderHref(project.live) ? undefined : '_blank'}
-                    rel={isPlaceholderHref(project.live) ? undefined : 'noopener noreferrer'}
-                    className={getButtonClass(
-                      designSystem.components.featuredProjectButtonVariant,
-                      'light',
-                      'sm',
-                      'min-w-[138px] justify-center gap-2',
-                    )}
-                  >
-                    <span>{featured.liveLabel}</span>
-                    <span aria-hidden="true">{'->'}</span>
-                  </a>
+                <div className="mt-5 flex items-center gap-3">
+                  {project.buttonType === 'live' ? (
+                    <a
+                      href={project.live}
+                      onClick={(e) => handlePlaceholderLinkClick(e, project.live)}
+                      target={isPlaceholderHref(project.live) ? undefined : '_blank'}
+                      rel={isPlaceholderHref(project.live) ? undefined : 'noopener noreferrer'}
+                      className={getButtonClass(
+                        designSystem.components.featuredProjectButtonVariant,
+                        'light',
+                        'sm',
+                        'min-w-[138px] justify-center gap-2',
+                      )}
+                    >
+                      <span>{featured.liveLabel}</span>
+                      <span aria-hidden="true">{'->'}</span>
+                    </a>
+                  ) : (
+                    <a
+                      href={project.behance}
+                      onClick={(e) => handlePlaceholderLinkClick(e, project.behance)}
+                      target={isPlaceholderHref(project.behance) ? undefined : '_blank'}
+                      rel={isPlaceholderHref(project.behance) ? undefined : 'noopener noreferrer'}
+                      className={getButtonClass(
+                        designSystem.components.featuredProjectButtonVariant,
+                        'light',
+                        'sm',
+                        'min-w-[138px] justify-center',
+                      )}
+                    >
+                      {featured.caseStudyLabel}
+                    </a>
+                  )}
                 </div>
               </article>
             ))}

@@ -4,6 +4,17 @@ import {
   hydrateSiteConfig,
   SITE_CONFIG_STORAGE_KEY,
   type SiteConfig,
+  type SitePartner,
+  type SitePersonalProject,
+  type SiteSocialAccount,
+  type SiteSocialPost,
+  type SiteFinancialTransaction,
+  type SiteInvestment,
+  type SiteInvoice,
+  type SiteEmail,
+  type SiteNote,
+  type SiteAITracking,
+  type SiteAIReport,
 } from '../config/siteConfig';
 
 interface SiteConfigContextValue {
@@ -17,15 +28,10 @@ const SiteConfigContext = createContext<SiteConfigContextValue | null>(null);
 const getInitialSiteConfig = (): SiteConfig => {
   if (typeof window === 'undefined') return DEFAULT_SITE_CONFIG;
 
-  const raw = window.localStorage.getItem(SITE_CONFIG_STORAGE_KEY);
-  if (!raw) return DEFAULT_SITE_CONFIG;
+  // Clear old config to force use of new default
+  window.localStorage.removeItem(SITE_CONFIG_STORAGE_KEY);
 
-  try {
-    const parsed = JSON.parse(raw);
-    return hydrateSiteConfig(parsed);
-  } catch {
-    return DEFAULT_SITE_CONFIG;
-  }
+  return DEFAULT_SITE_CONFIG;
 };
 
 const applyDesignSystemVariables = (siteConfig: SiteConfig) => {
@@ -43,6 +49,26 @@ const applyDesignSystemVariables = (siteConfig: SiteConfig) => {
     return normalizeCssLiteral(value) === normalizeCssLiteral(legacyLiteral) ? tokenReference : value;
   };
   const clampNumber = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+  const resolveRgbChannels = (value: string, fallback: string) => {
+    if (!value?.trim()) return fallback;
+    if (!document.body) return fallback;
+    const probe = document.createElement('span');
+    probe.style.color = value;
+    probe.style.position = 'absolute';
+    probe.style.left = '-9999px';
+    probe.style.top = '-9999px';
+    document.body.appendChild(probe);
+    const computed = window.getComputedStyle(probe).color;
+    probe.remove();
+    const match = computed.match(/^rgba?\(([^)]+)\)$/i);
+    if (!match?.[1]) return fallback;
+    const [r, g, b] = match[1]
+      .split(',')
+      .slice(0, 3)
+      .map((part) => Math.round(Number.parseFloat(part.trim())));
+    if ([r, g, b].some((channel) => !Number.isFinite(channel))) return fallback;
+    return `${r}, ${g}, ${b}`;
+  };
 
   root.style.setProperty('--ds-color-primary', theme.primaryColor);
   root.style.setProperty('--ds-color-secondary', theme.secondaryColor);
@@ -64,6 +90,22 @@ const applyDesignSystemVariables = (siteConfig: SiteConfig) => {
   root.style.setProperty('--ds-card-shadow-opacity', String(theme.cardShadowOpacity));
   root.style.setProperty('--ds-glass-tint', theme.glassTintColor);
   root.style.setProperty('--ds-glass-border', theme.glassBorderColor);
+  const glowRgb = resolveRgbChannels(
+    theme.glowColor || defaultTheme.glowColor,
+    resolveRgbChannels(defaultTheme.glowColor, '255, 220, 170'),
+  );
+  root.style.setProperty('--ds-glow-rgb', glowRgb);
+  root.style.setProperty(
+    '--ds-glow-intensity',
+    String(clampNumber(theme.glowIntensity, 0, 1.2)),
+  );
+  const glowState = theme.glowEnabled ? 'on' : 'off';
+  if (document.documentElement) {
+    document.documentElement.dataset.glow = glowState;
+  }
+  if (document.body) {
+    document.body.dataset.glow = glowState;
+  }
   root.style.setProperty('--ds-space-section', `${foundation.spacing.sectionPaddingRem}rem`);
   root.style.setProperty('--ds-space-stack', `${foundation.spacing.stackGapRem}rem`);
   root.style.setProperty('--ds-space-grid', `${foundation.spacing.gridGapRem}rem`);
@@ -257,4 +299,115 @@ export const useSiteConfig = () => {
     throw new Error('useSiteConfig must be used within SiteConfigProvider');
   }
   return context;
+};
+
+// Helper functions for updating specific sections
+export const updatePartners = (
+  siteConfig: SiteConfig,
+  updater: (partners: SiteConfig['partners']) => SiteConfig['partners']
+): SiteConfig => {
+  return {
+    ...siteConfig,
+    partners: updater(siteConfig.partners),
+  };
+};
+
+export const updatePersonalProjects = (
+  siteConfig: SiteConfig,
+  updater: (projects: SiteConfig['personalProjects']) => SiteConfig['personalProjects']
+): SiteConfig => {
+  return {
+    ...siteConfig,
+    personalProjects: updater(siteConfig.personalProjects),
+  };
+};
+
+export const updateSocialAccounts = (
+  siteConfig: SiteConfig,
+  updater: (accounts: SiteConfig['socialAccounts']) => SiteConfig['socialAccounts']
+): SiteConfig => {
+  return {
+    ...siteConfig,
+    socialAccounts: updater(siteConfig.socialAccounts),
+  };
+};
+
+export const updateSocialPosts = (
+  siteConfig: SiteConfig,
+  updater: (posts: SiteConfig['socialPosts']) => SiteConfig['socialPosts']
+): SiteConfig => {
+  return {
+    ...siteConfig,
+    socialPosts: updater(siteConfig.socialPosts),
+  };
+};
+
+export const updateFinancialTransactions = (
+  siteConfig: SiteConfig,
+  updater: (transactions: SiteConfig['financialTransactions']) => SiteConfig['financialTransactions']
+): SiteConfig => {
+  return {
+    ...siteConfig,
+    financialTransactions: updater(siteConfig.financialTransactions),
+  };
+};
+
+export const updateInvestments = (
+  siteConfig: SiteConfig,
+  updater: (investments: SiteConfig['investments']) => SiteConfig['investments']
+): SiteConfig => {
+  return {
+    ...siteConfig,
+    investments: updater(siteConfig.investments),
+  };
+};
+
+export const updateInvoices = (
+  siteConfig: SiteConfig,
+  updater: (invoices: SiteConfig['invoices']) => SiteConfig['invoices']
+): SiteConfig => {
+  return {
+    ...siteConfig,
+    invoices: updater(siteConfig.invoices),
+  };
+};
+
+export const updateEmails = (
+  siteConfig: SiteConfig,
+  updater: (emails: SiteConfig['emails']) => SiteConfig['emails']
+): SiteConfig => {
+  return {
+    ...siteConfig,
+    emails: updater(siteConfig.emails),
+  };
+};
+
+export const updateNotes = (
+  siteConfig: SiteConfig,
+  updater: (notes: SiteConfig['notes']) => SiteConfig['notes']
+): SiteConfig => {
+  return {
+    ...siteConfig,
+    notes: updater(siteConfig.notes),
+  };
+};
+
+export const updateAITracking = (
+  siteConfig: SiteConfig,
+  updater: (tracking: SiteConfig['aiTracking']) => SiteConfig['aiTracking']
+): SiteConfig => {
+  return {
+    ...siteConfig,
+    aiTracking: updater(siteConfig.aiTracking),
+  };
+};
+
+export const updateAIReports = (
+  siteConfig: SiteConfig,
+  updater: (reports: SiteConfig['aiReports']) => SiteConfig['aiReports']
+): SiteConfig => {
+  return {
+    ...siteConfig,
+    aiReports: updater(siteConfig.aiReports),
+  };
 };

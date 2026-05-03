@@ -7,6 +7,7 @@ import { IntroTextOverlay } from '../components/IntroTextOverlay';
 import { PersistentUI } from '../components/PersistentUI';
 import CursorAnimationLayer from '../components/CursorAnimationLayer';
 import { useSiteConfig } from '../context/SiteConfigContext';
+import { CRTEdgeOverlay } from '../components/CRTFrame';
 
 import { Scene05Overlay } from '../components/Scene05Overlay';
 import { FeaturedWork } from '../components/FeaturedWork';
@@ -66,6 +67,9 @@ export const Home: React.FC = () => {
 
   return (
     <div className="bg-[#111113] min-h-screen text-white selection:bg-white/20" data-surface="base">
+      {/* CRT Edge Overlay - Full Screen Retro TV Effect */}
+      <CRTEdgeOverlay intensity="low" />
+
       {visibility.globalFrameOverlay ? (
         <GlobalFrameOverlay innerShadowIntensity={hasStarted ? 0.3 : 0} frameConfig={globalFrame} />
       ) : null}

@@ -1278,6 +1278,27 @@ export default function SplashCursor({
     updateKeywords();
     initFramebuffers();
     resizeCanvas();
+
+    // Visibility-based optimization: pause rendering when not visible
+    let isVisible = true;
+    let isRendering = false;
+    const observer = new IntersectionObserver((entries) => {
+      isVisible = entries[0].isIntersecting;
+      if (isVisible && !isRendering) {
+        isRendering = true;
+        updateFrame();
+      } else if (!isVisible) {
+        isRendering = false;
+        cancelAnimationFrame(animationFrameId);
+      }
+    }, { threshold: 0.1 });
+
+    if (canvas) {
+      observer.observe(canvas);
+    }
+
+    // Explicitly kickstart the render
+    isRendering = true;
     updateFrame();
 
     const getCanvasPosition = (clientX: number, clientY: number) => {

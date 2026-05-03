@@ -4,15 +4,15 @@ import {
   Mail,
 } from 'lucide-react';
 import {
-  FaDribbble as Dribbble,
-  FaFacebook as Facebook,
-  FaFigma as Figma,
-  FaGithub as Github,
-  FaInstagram as Instagram,
-  FaLinkedin as Linkedin,
-  FaTwitter as Twitter,
-  FaYoutube as Youtube,
-} from 'react-icons/fa';
+  AiOutlineDribbble as Dribbble,
+  AiOutlineFacebook as Facebook,
+  AiOutlineGithub as Github,
+  AiOutlineInstagram as Instagram,
+  AiOutlineLinkedin as Linkedin,
+  AiOutlineTwitter as Twitter,
+  AiOutlineYoutube as Youtube,
+} from 'react-icons/ai';
+import { SiFigma as Figma } from 'react-icons/si';
 import type { SiteSocialIconKey } from '../config/siteConfig';
 
 type IconProps = {
