@@ -2091,8 +2091,8 @@ export const Dashboard: React.FC = () => {
                     <img src={project.img} alt={project.title} className="h-40 w-full object-cover" />
                   </div>
 
-                  <label className="flex flex-col gap-1.5"
-                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+                  <label className="flex flex-col gap-1.5">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                       Upload project image
                     </span>
                     <input
@@ -2138,7 +2138,7 @@ export const Dashboard: React.FC = () => {
                     value={project.live}
                     onChange={(next) => updateProject(project.id, (item) => ({ ...item, live: next }))}
                   />
-                  <label className="flex flex-col gap-2"
+                  <label className="flex flex-col gap-2">
                     <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#111217]/70"Button Type</span>
                     <select
                       value={project.buttonType}
@@ -2780,8 +2780,8 @@ export const Dashboard: React.FC = () => {
                     }}
                   />
 
-                  <label className="flex flex-col gap-1.5"
-                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+                  <label className="flex flex-col gap-1.5">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                       Section
                     </span>
                     <select

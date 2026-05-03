@@ -639,6 +639,11 @@ html, body {
   background-color: #f8f9fa !important;
 }
 
+body.dashboard-page {
+  background-color: #f8f9fa !important;
+  color: #1a1a1a !important;
+}
+
 @keyframes drift {
   from {
     background-position: 0% 0%;

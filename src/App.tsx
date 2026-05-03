@@ -58,6 +58,14 @@ function App() {
     };
   }, []);
 
+  useEffect(() => {
+    if (route.page === 'dashboard') {
+      document.body.classList.add('dashboard-page');
+    } else {
+      document.body.classList.remove('dashboard-page');
+    }
+  }, [route.page]);
+
   return (
     <SiteConfigProvider>
       {route.page === 'dashboard' ? (
