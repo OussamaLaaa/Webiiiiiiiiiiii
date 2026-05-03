@@ -481,10 +481,10 @@ const Input: React.FC<{
     };
 
     return (
-      <label className="flex flex-col gap-1.5"
-        <div className="flex items-center justify-between gap-2"
-          <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6b7280]">label<</span>
-          <div className="inline-flex items-center gap-1 rounded-[8px] border border-[#e5e7eb] bg-[#f8f9fa] p-0.5"
+      <label className="flex flex-col gap-1.5">
+        <div className="flex items-center justify-between gap-2">
+          <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6b7280]">{label}</span>
+          <div className="inline-flex items-center gap-1 rounded-[8px] border border-[#e5e7eb] bg-[#f8f9fa] p-0.5">
             <button
               type="button"
               onClick={() => nudgeValue(-1)}
@@ -530,8 +530,8 @@ const Input: React.FC<{
   }
 
   return (
-    <label className="flex flex-col gap-1"
-      <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6b7280]">label<</span>
+    <label className="flex flex-col gap-1">
+      <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6b7280]">{label}</span>
       <input
         type={type}
         min={min}
@@ -553,9 +553,9 @@ const ColorInput: React.FC<{
   const pickerValue = toPickerColorValue(value);
 
   return (
-    <label className="flex flex-col gap-1"
-      <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6b7280]">label<</span>
-      <div className="flex items-stretch gap-2"
+    <label className="flex flex-col gap-1">
+      <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6b7280]">{label}</span>
+      <div className="flex items-stretch gap-2">
         <input
           type="color"
           value={pickerValue}
@@ -570,7 +570,7 @@ const ColorInput: React.FC<{
           className="min-w-0 flex-1 rounded-[8px] border border-[#e5e7eb] bg-white px-2.5 py-1.5 text-[12px] text-[#1a1a1a] outline-none transition-all focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6]"
         />
       </div>
-      <p className="text-[9px] text-[#9ca3af]"Use the swatch or paste any CSS color.</p>
+      <p className="text-[9px] text-[#9ca3af]">Use the swatch or paste any CSS color.</p>
     </label>
   );
 };
@@ -582,8 +582,8 @@ const Textarea: React.FC<{
   rows?: number;
 }> = ({ label, value, onChange, rows = 3 }) => {
   return (
-    <label className="flex flex-col gap-1"
-      <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6b7280]">label<</span>
+    <label className="flex flex-col gap-1">
+      <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6b7280]">{label}</span>
       <textarea
         rows={rows}
         value={value}
@@ -601,8 +601,8 @@ const SelectInput: React.FC<{
   onChange: (value: string) => void;
 }> = ({ label, value, options, onChange }) => {
   return (
-    <label className="flex flex-col gap-1"
-      <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6b7280]">label<</span>
+    <label className="flex flex-col gap-1">
+      <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6b7280]">{label}</span>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -640,7 +640,7 @@ const ButtonVariantPicker: React.FC<{
   const wrapperToneClass = tone === 'dark' ? 'bg-[#f3f4f6] border-[#e5e7eb]' : 'bg-[#ffffff] border-[#e5e7eb]';
 
   return (
-    <div className="space-y-2"
+    <div className="space-y-2">
       <VariantPickerTitle label={label} tone={tone} />
       <div className={`grid gap-2 rounded-[12px] border p-2 ${wrapperToneClass} sm:grid-cols-3`}>
         {SITE_BUTTON_VARIANTS.map((variant) => {
@@ -689,7 +689,7 @@ const CardVariantPicker: React.FC<{
   const textToneClass = tone === 'dark' ? 'text-[#6b7280]' : 'text-[#1a1a1a]';
 
   return (
-    <div className="space-y-2"
+    <div className="space-y-2">
       <VariantPickerTitle label={label} tone={tone} />
       <div className={`grid gap-2 rounded-[12px] border p-2 ${wrapperToneClass} sm:grid-cols-2`}>
         {SITE_CARD_VARIANTS.map((variant) => {
@@ -744,7 +744,7 @@ const GlassVariantPicker: React.FC<{
   const wrapperToneClass = tone === 'dark' ? 'bg-[#ffffff] border-[#e5e7eb]' : 'bg-[#f8f9fa] border-[#e5e7eb]'
 
   return (
-    <div className="space-y-2"
+    <div className="space-y-2">
       <VariantPickerTitle label={label} tone={tone} />
       <div className={`grid gap-2 rounded-[12px] border p-2 ${wrapperToneClass} sm:grid-cols-3`}>
         {SITE_GLASS_VARIANTS.map((variant) => {
@@ -790,7 +790,7 @@ const Toggle: React.FC<{ label: string; checked: boolean; onChange: (checked: bo
   onChange,
 }) => {
   return (
-    <label className="flex items-center justify-between gap-3 rounded-[8px] border border-[#e5e7eb] bg-[#f8f9fa] px-2.5 py-1.5"
+    <label className="flex items-center justify-between gap-3 rounded-[8px] border border-[#e5e7eb] bg-[#f8f9fa] px-2.5 py-1.5">
       <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6b7280]">label<</span>
       <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="h-4 w-4 accent-[#3b82f6]" />
     </label>
@@ -1535,9 +1535,9 @@ export const Dashboard: React.FC = () => {
     switch (activeSection) {
       case 'sequence':
         return (
-          <div className="grid gap-5 2xl:grid-cols-2"
+          <div className="grid gap-5 2xl:grid-cols-2">
             <Card title="Cinematic Sequence" subtitle="Control scene handoff from About to Projects"
-              <div className="grid gap-4 xl:grid-cols-2"
+              <div className="grid gap-4 xl:grid-cols-2">
                 <Input
                   label="Wheel intensity"
                   type="number"
@@ -1733,13 +1733,13 @@ export const Dashboard: React.FC = () => {
                 }
               />
 
-              <p className="rounded-[10px] border border-[#e5e7eb] p-3 text-sm text-[#1a1a1a]"
+              <p className="rounded-[10px] border border-[#e5e7eb] p-3 text-sm text-[#1a1a1a]">
                 Tune hero scroll sensitivity, touch feel, easing, and input cooldown when moving between cinematic frames. Pause timing still controls how long the About closet holds before the Projects reveal.
               </p>
             </Card>
 
             <Card title="Portal Frame Window" subtitle="Edit the first-scene window size, offsets, and matte tone"
-              <div className="grid gap-4 xl:grid-cols-2"
+              <div className="grid gap-4 xl:grid-cols-2">
                 <Input
                   label="Top offset mobile (px)"
                   type="number"
@@ -1913,7 +1913,7 @@ export const Dashboard: React.FC = () => {
 
       case 'intro':
         return (
-          <div className="grid gap-4"
+          <div className="grid gap-4">
             <Card title="Intro Text" subtitle="Glowing headline and scroll prompt"
               <Textarea
                 label="Primary headline"
@@ -1955,7 +1955,7 @@ export const Dashboard: React.FC = () => {
 
       case 'featured':
         return (
-          <div className="grid gap-4"
+          <div className="grid gap-4">
             <Card title="Featured Section" subtitle="Headline, labels, CTA text"
               <Input
                 label="Title line 1"
@@ -2035,11 +2035,11 @@ export const Dashboard: React.FC = () => {
                 }
               />
 
-              <div className="space-y-3 rounded-[12px] border border-[#e5e7eb] p-3"
-                <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+              <div className="space-y-3 rounded-[12px] border border-[#e5e7eb] p-3">
+                <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                   Style mapping for this section
                 </p>
-                <div className="grid gap-3 md:grid-cols-2"
+                <div className="grid gap-3 md:grid-cols-2">
                   <CardVariantPicker
                     label="Project card type"
                     value={siteConfig.designSystem.components.featuredProjectCardVariant}
@@ -2078,16 +2078,16 @@ export const Dashboard: React.FC = () => {
 
       case 'projects':
         return (
-          <div className="grid gap-4"
+          <div className="grid gap-4">
             <Card title="Projects" subtitle="Edit, add, remove cards + upload images"
-              <p className="text-xs text-[#6b7280]"
+              <p className="text-xs text-[#6b7280]">
                 You can upload image files directly. For local storage reliability keep each image under{' '}
                 {formatMegabytes(MAX_IMAGE_UPLOAD_BYTES)}.
               </p>
 
               {siteConfig.projects.map((project) => (
                 <div key={project.id} className={listItemClass}>
-                  <div className="overflow-hidden rounded-[10px] border border-[#e5e7eb]"
+                  <div className="overflow-hidden rounded-[10px] border border-[#e5e7eb]">
                     <img src={project.img} alt={project.title} className="h-40 w-full object-cover" />
                   </div>
 
@@ -2193,7 +2193,7 @@ export const Dashboard: React.FC = () => {
 
       case 'timeline':
         return (
-          <div className="grid gap-4"
+          <div className="grid gap-4">
             <Card title="Timeline Section Labels" subtitle="Headings shown above the timeline"
               <Input
                 label="Section eyebrow"
@@ -2352,7 +2352,7 @@ export const Dashboard: React.FC = () => {
 
       case 'testimonials':
         return (
-          <div className="grid gap-4"
+          <div className="grid gap-4">
             <Card title="Testimonials" subtitle="Edit slider content"
               {siteConfig.testimonials.map((testimonial) => (
                 <div key={testimonial.id} className={listItemClass}>
@@ -2433,7 +2433,7 @@ export const Dashboard: React.FC = () => {
 
       case 'articlesPage':
         return (
-          <div className="grid gap-4"
+          <div className="grid gap-4">
             <Card title="Articles Page Copy" subtitle="Control the global copy seen on /articles"
               <Input
                 label="Page title"
@@ -2602,7 +2602,7 @@ export const Dashboard: React.FC = () => {
         return (
           <div className="grid gap-4 xl:grid-cols-2"
             <Card title="Music + CTA Button" subtitle="Audio upload and persistent controls"
-              <p className="text-xs text-[#6b7280]"
+              <p className="text-xs text-[#6b7280]">
                 Upload an audio file for site music. Keep the file under {formatMegabytes(MAX_AUDIO_UPLOAD_BYTES)} so
                 it can be saved reliably in browser storage.
               </p>
@@ -2713,8 +2713,8 @@ export const Dashboard: React.FC = () => {
                 }
               />
 
-              <div className="space-y-3 rounded-[12px] border border-[#e5e7eb] p-3"
-                <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+              <div className="space-y-3 rounded-[12px] border border-[#e5e7eb] p-3">
+                <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                   Style mapping for navigation
                 </p>
                 <CardVariantPicker
@@ -2854,7 +2854,7 @@ export const Dashboard: React.FC = () => {
 
       case 'footer':
         return (
-          <div className="grid gap-4"
+          <div className="grid gap-4">
             <Card title="Footer + Social + Legal" subtitle="Email, address, links, socials"
               <Input
                 label="Footer email"
@@ -2864,7 +2864,7 @@ export const Dashboard: React.FC = () => {
 
               <div className="space-y-2 rounded-[10px] border border-[#e5e7eb] p-3"
                 <div className="flex items-center justify-between gap-3"
-                  <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+                  <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                     Social Links
                   </p>
                   <button
@@ -3031,7 +3031,7 @@ export const Dashboard: React.FC = () => {
               />
 
               <div className="space-y-2 rounded-[10px] border border-[#e5e7eb] p-3"
-                <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+                <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                   Legal Links
                 </p>
                 {siteConfig.footer.legalLinks.map((link) => (
@@ -3086,10 +3086,10 @@ export const Dashboard: React.FC = () => {
               </div>
 
               <div className="space-y-3 rounded-[10px] border border-[#e5e7eb] p-3"
-                <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+                <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                   Footer Navigation
                 </p>
-                <p className="text-xs text-[#6b7280]"
+                <p className="text-xs text-[#6b7280]">
                   Footer navigation is synced automatically from the Navigation labels and sections, so links always match the top menu.
                 </p>
                 <button
@@ -3238,7 +3238,7 @@ export const Dashboard: React.FC = () => {
 
       case 'scene05':
         return (
-          <div className="grid gap-4"
+          <div className="grid gap-4">
             <Card title="Storytelling Animations" subtitle="Control narrative animation style (WebGL-like) for About Me section"
                 <div className="space-y-4"
                   <label className="flex items-center justify-between cursor-pointer"
@@ -3457,8 +3457,8 @@ export const Dashboard: React.FC = () => {
                 }
               />
 
-              <div className="space-y-3 rounded-[12px] border border-[#e5e7eb] p-3"
-                <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+              <div className="space-y-3 rounded-[12px] border border-[#e5e7eb] p-3">
+                <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                   Certification cards
                 </p>
 
@@ -3472,7 +3472,7 @@ export const Dashboard: React.FC = () => {
                       }
                     />
 
-                    <div className="grid gap-3 md:grid-cols-2"
+                    <div className="grid gap-3 md:grid-cols-2">
                       <Input
                         label="Issuer"
                         value={item.issuer}
@@ -3573,7 +3573,7 @@ export const Dashboard: React.FC = () => {
               />
 
               <div className="space-y-3 rounded-[12px] border border-[#e5e7eb] bg-white p-3"
-                <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"Learning Logos</p>
+                <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">Learning Logos</p>
 
                 {siteConfig.scene05.learningLogos.map((item) => (
                   <div key={item.id} className={listItemClass}>
@@ -3794,7 +3794,7 @@ export const Dashboard: React.FC = () => {
 
       case 'designSystem':
         return (
-          <div className="grid gap-4"
+          <div className="grid gap-4">
           <div className="grid gap-4 xl:grid-cols-2 2xl:grid-cols-3"
             <Card title="Color Tokens" subtitle="Brand and surface colors used by all shared components"
               <div className="grid gap-3 md:grid-cols-2"
@@ -3885,7 +3885,7 @@ export const Dashboard: React.FC = () => {
               </Card>"
 "
               <Card title="Typography Tokens" subtitle="Display/title/body sizing, rhythm and personality"
-                <div className="grid gap-3 md:grid-cols-2"
+                <div className="grid gap-3 md:grid-cols-2">
                   <Input
                     label="Heading scale"
                     type="number"
@@ -4139,7 +4139,7 @@ export const Dashboard: React.FC = () => {
 "
             <div className="grid gap-4 xl:grid-cols-2"
               <Card title="Component Physics" subtitle="Radius, borders, blur and shadows for buttons/cards"
-                <div className="grid gap-3 md:grid-cols-2"
+                <div className="grid gap-3 md:grid-cols-2">
                   <Input
                     label="Button radius (px)"
                     type="number"
@@ -4263,7 +4263,7 @@ export const Dashboard: React.FC = () => {
                   })}
                 </div>
 
-                <div className="grid gap-3 md:grid-cols-2"
+                <div className="grid gap-3 md:grid-cols-2">
                   <Input
                     label="Radius (px)"
                     type="number"
@@ -4369,7 +4369,7 @@ export const Dashboard: React.FC = () => {
                   })}
                 </div>
 
-                <div className="grid gap-3 md:grid-cols-2"
+                <div className="grid gap-3 md:grid-cols-2">
                   <Input
                     label="Radius (px)"
                     type="number"
@@ -4468,7 +4468,7 @@ export const Dashboard: React.FC = () => {
             </div>"
 "
             <Card title="Live Design Lab" subtitle="Instant preview on dark and light surfaces inside dashboard"
-              <div className="grid gap-4 xl:grid-cols-2"
+              <div className="grid gap-4 xl:grid-cols-2">
                 <div className="rounded-[14px] border border-[#e5e7eb]"
                   <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]
 "
@@ -5364,7 +5364,7 @@ export const Dashboard: React.FC = () => {
                   </div>
 
                   <div className="mt-3 flex items-center justify-between gap-3 rounded-[10px] border border-[#e5e7eb]"
-                    <p className="text-xs text-[#6b7280]"
+                    <p className="text-xs text-[#6b7280]">
                     <Toggle"
                       label="Parallax"
                       checked={siteConfig.animation.sections.projects.hoverParallax}
@@ -5599,7 +5599,7 @@ export const Dashboard: React.FC = () => {
             {DASHBOARD_SECTION_GROUPS.map((group) => (
               <div key={group.id} className="space-y-2"
                 <p className="px-1 font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
-                <div className="space-y-2"
+                <div className="space-y-2">
                   {group.sectionIds.map((sectionId) => {
                     const section = DASHBOARD_SECTIONS.find((entry) => entry.id === sectionId);
                     if (!section) return null;
@@ -5655,7 +5655,7 @@ export const Dashboard: React.FC = () => {
             {DASHBOARD_SECTION_GROUPS.map((group) => (
               <div key={group.id} className="space-y-2"
                 <p className="px-1 font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">group.label<</p>
-                <div className="space-y-2"
+                <div className="space-y-2">
                   {group.sectionIds.map((sectionId) => {
                     const section = DASHBOARD_SECTIONS.find((entry) => entry.id === sectionId);
                     if (!section) return null;
@@ -6421,11 +6421,11 @@ export const Dashboard: React.FC = () => {
 
               <Card title="Preview" subtitle="Current browser identity settings"
                 <div className="rounded-[12px] border border-[#e5e7eb]"
-                  <p className="text-xs text-[#6b7280]"
+                  <p className="text-xs text-[#6b7280]">
                   <p className="mt-1 font-medium text-white">siteConfig.dashboard.browser.browserTabTitle || 'Untitled site'<</p>
                 </div>
                 <div className="mt-3 rounded-[12px] border border-[#e5e7eb]"
-                  <p className="text-xs text-[#6b7280]"
+                  <p className="text-xs text-[#6b7280]">
                   <div className="mt-2 flex items-center gap-2"
                     <span className="inline-flex h-10 w-10 items-center justify-center overflow-hidden rounded-[10px] border border-[#e5e7eb]"
                       {siteConfig.dashboard.browser.faviconUrl ? (
@@ -6576,12 +6576,12 @@ export const Dashboard: React.FC = () => {
               </Card>
 
               <Card title="Security Status" subtitle="Current security configuration"
-                <div className="space-y-2"
+                <div className="space-y-2">
                   <div className="rounded-[12px] border border-[#22c55e]/30 bg-[#22c55e]/12 px-3 py-2"
                     <p className="text-xs text-[#86efac]"✓ HTTPS Enabled</p>
                   </div>
                   <div className="rounded-[12px] border border-[#e5e7eb]"
-                    <p className="text-xs text-[#6b7280]"
+                    <p className="text-xs text-[#6b7280]">
                   </div>"
                   <div className="rounded-[12px] border border-[#22c55e]/30 bg-[#22c55e]/12 px-3 py-2"
                     <p className="text-xs text-[#86efac]"✓ Rate Limiting Active</p>
@@ -6749,7 +6749,7 @@ export const Dashboard: React.FC = () => {
 
                 <div className="grid gap-2 sm:grid-cols-3"
                   <div className="rounded-[12px] border border-[#e5e7eb]"
-                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                     <p className="mt-1 text-lg font-semibold text-white">siteConfig.articles.length<</p>
                   </div>
                   <div className="rounded-[12px] border border-[#22c55e]/30 bg-[#22c55e]/12 px-3 py-2.5"
@@ -6926,7 +6926,7 @@ export const Dashboard: React.FC = () => {
               </Card>
 
               <Card title="Upcoming Publications" subtitle="Articles scheduled for publication"
-                <div className="space-y-2"
+                <div className="space-y-2">
                   {siteConfig.articles
                     .filter((article) => article.status === 'scheduled')
                     .sort((a, b) => new Date(a.publishedAt).getTime() - new Date(b.publishedAt).getTime())
@@ -6987,7 +6987,7 @@ export const Dashboard: React.FC = () => {
               <Card title="Overall Statistics" subtitle="Publishing performance overview"
                 <div className="grid gap-3 md:grid-cols-3"
                   <div className="rounded-[12px] border border-[#e5e7eb]"
-                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                     <p className="mt-1 text-2xl font-semibold text-white"
                       {siteConfig.articles
                         .filter((article) => article.status === 'published')
@@ -6996,7 +6996,7 @@ export const Dashboard: React.FC = () => {
                     </p>
                   </div>
                   <div className="rounded-[12px] border border-[#e5e7eb]"
-                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                     <p className="mt-1 text-2xl font-semibold text-white"
                       {(
                         siteConfig.articles
@@ -7008,7 +7008,7 @@ export const Dashboard: React.FC = () => {
                     </p>
                   </div>
                   <div className="rounded-[12px] border border-[#e5e7eb]"
-                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                     <p className="mt-1 text-2xl font-semibold text-white"
                       {siteConfig.articles
                         .filter((article) => article.status === 'published')
@@ -7055,7 +7055,7 @@ export const Dashboard: React.FC = () => {
               </Card>
 
               <Card title="Content Guidelines" subtitle="Publishing standards and requirements"
-                <div className="space-y-2"
+                <div className="space-y-2">
                   <div className="rounded-[12px] border border-[#e5e7eb]"
                     <p className="text-sm text-white"• Minimum word count: 300 words</p>
                   </div>
@@ -7156,7 +7156,7 @@ export const Dashboard: React.FC = () => {
 
                 <div className="grid gap-2 sm:grid-cols-4"
                   <div className="rounded-[12px] border border-[#e5e7eb]"
-                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                     <p className="mt-1 text-lg font-semibold text-white">siteConfig.partners.length<</p>
                   </div>
                   <div className="rounded-[12px] border border-[#22c55e]/30 bg-[#22c55e]/12 px-3 py-2.5"
@@ -7168,7 +7168,7 @@ export const Dashboard: React.FC = () => {
                     <p className="mt-1 text-lg font-semibold text-white">siteConfig.partners.filter((p) => p.status === 'prospect').length<</p>
                   </div>
                   <div className="rounded-[12px] border border-[#e5e7eb]"
-                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                     <p className="mt-1 text-lg font-semibold text-white">siteConfig.partners.filter((p) => p.nextFollowUp && new Date(p.nextFollowUp) <= new Date()).length<</p>
                   </div>
                 </div>
@@ -7264,7 +7264,7 @@ export const Dashboard: React.FC = () => {
 
                 <div className="grid gap-2 sm:grid-cols-4"
                   <div className="rounded-[12px] border border-[#e5e7eb]"
-                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                     <p className="mt-1 text-lg font-semibold text-white">siteConfig.personalProjects.length<</p>
                   </div>
                   <div className="rounded-[12px] border border-[#22c55e]/30 bg-[#22c55e]/12 px-3 py-2.5"
@@ -7276,7 +7276,7 @@ export const Dashboard: React.FC = () => {
                     <p className="mt-1 text-lg font-semibold text-white">siteConfig.personalProjects.filter((p) => p.status === 'completed').length<</p>
                   </div>
                   <div className="rounded-[12px] border border-[#e5e7eb]"
-                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                     <p className="mt-1 text-lg font-semibold text-white"
                       ${siteConfig.personalProjects.reduce((sum, p) => sum + p.estimatedBudget, 0).toLocaleString()}
                     </p>
@@ -7381,21 +7381,21 @@ export const Dashboard: React.FC = () => {
 
                 <div className="grid gap-2 sm:grid-cols-4"
                   <div className="rounded-[12px] border border-[#e5e7eb]"
-                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                     <p className="mt-1 text-lg font-semibold text-white">siteConfig.socialAccounts.filter((a) => a.connected).length<</p>
                   </div>
                   <div className="rounded-[12px] border border-[#e5e7eb]"
-                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                     <p className="mt-1 text-lg font-semibold text-white"
                       {siteConfig.socialAccounts.reduce((sum, a) => sum + a.followerCount, 0).toLocaleString()}
                     </p>
                   </div>
                   <div className="rounded-[12px] border border-[#e5e7eb]"
-                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                     <p className="mt-1 text-lg font-semibold text-white">siteConfig.socialPosts.filter((p) => p.status === 'scheduled').length<</p>
                   </div>
                   <div className="rounded-[12px] border border-[#e5e7eb]"
-                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                     <p className="mt-1 text-lg font-semibold text-white">siteConfig.socialPosts.filter((p) => p.status === 'published').length<</p>
                   </div>
                 </div>
@@ -7403,7 +7403,7 @@ export const Dashboard: React.FC = () => {
 
               <div className="rounded-[20px] border border-[#e5e7eb]"
                 <h3 className="mb-3 text-sm font-semibold text-white"Connected Accounts</h3>
-                <div className="space-y-2"
+                <div className="space-y-2">
                   {siteConfig.socialAccounts.length === 0 ? (
                     <p className="text-sm text-[#6b7280]
                   ) : ("
@@ -7517,22 +7517,22 @@ export const Dashboard: React.FC = () => {
                     </p>
                   </div>
                   <div className="rounded-[12px] border border-[#e5e7eb]"
-                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                     <p className="mt-1 text-lg font-semibold text-white"
                       ${siteConfig.investments.reduce((sum, i) => sum + i.currentValue, 0).toLocaleString()}
                     </p>
                   </div>
                   <div className="rounded-[12px] border border-[#e5e7eb]"
-                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                     <p className="mt-1 text-lg font-semibold text-white">siteConfig.invoices.filter((i) => i.status === 'sent').length<</p>
                   </div>
                 </div>
               </Card>
 
-              <div className="grid gap-4 xl:grid-cols-2"
+              <div className="grid gap-4 xl:grid-cols-2">
                 <div className="rounded-[20px] border border-[#e5e7eb]"
                   <h3 className="mb-3 text-sm font-semibold text-white"Recent Transactions</h3>
-                  <div className="space-y-2"
+                  <div className="space-y-2">
                     {siteConfig.financialTransactions.slice(0, 5).map((transaction) => (
                       <div key={transaction.id} className="rounded-[12px] border border-[#e5e7eb]"
                         <div className="flex items-center justify-between"
@@ -7556,7 +7556,7 @@ export const Dashboard: React.FC = () => {
 "
                 <div className="rounded-[20px] border border-[#e5e7eb]"
                   <h3 className="mb-3 text-sm font-semibold text-white"Recent Invoices</h3>
-                  <div className="space-y-2"
+                  <div className="space-y-2">
                     {siteConfig.invoices.slice(0, 5).map((invoice) => (
                       <div key={invoice.id} className="rounded-[12px] border border-[#e5e7eb]"
                         <div className="flex items-center justify-between"
@@ -7779,7 +7779,7 @@ export const Dashboard: React.FC = () => {
                   className="w-full rounded-[10px] border border-[#e5e7eb]"
                 />
               </div>
-              <div className="space-y-2"
+              <div className="space-y-2">
                 {filteredTracking.map((tracking) => (
                   <button
                     key={tracking.id}
@@ -7896,16 +7896,16 @@ export const Dashboard: React.FC = () => {
                     />
 
                     <div className="rounded-[12px] border border-[#e5e7eb]"
-                      <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+                      <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                       <div className="grid grid-cols-2 gap-3"
                         <div>
-                          <p className="text-xs text-[#6b7280]"
+                          <p className="text-xs text-[#6b7280]">
                           <p className="text-sm text-[#6b7280]
                             {activeTracking.lastReport ? new Date(activeTracking.lastReport).toLocaleString() : 'Never'}
                           </p>
                         </div>"
                         <div>"
-                          <p className="text-xs text-[#6b7280]"
+                          <p className="text-xs text-[#6b7280]">
                           <p className="text-sm text-[#6b7280]
                             {activeTracking.nextReport ? new Date(activeTracking.nextReport).toLocaleString() : 'Not scheduled'}
                           </p>
@@ -7914,7 +7914,7 @@ export const Dashboard: React.FC = () => {
                     </div>
 "
                     {trackingReports.length > 0 && ("
-                      <div className="space-y-2"
+                      <div className="space-y-2">
                         <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]
                         {trackingReports.slice(0, 3).map((report) => (
                           <div"
@@ -8129,7 +8129,7 @@ export const Dashboard: React.FC = () => {
                   className="w-full rounded-[10px] border border-[#e5e7eb]"
                 />
               </div>
-              <div className="space-y-2"
+              <div className="space-y-2">
                 {folderOptions.map((folder) => {
                   const Icon = folder.icon;
                   const count = siteConfig.emails.filter((email) => email.visible && email.folder === folder.value).length;
@@ -8178,7 +8178,7 @@ export const Dashboard: React.FC = () => {
                   <span className="text-xs text-[#6b7280]
                 </div>"
 "
-                <div className="space-y-2"
+                <div className="space-y-2">
                   {filteredEmails.length === 0 ? (
                     <p className="text-center text-sm text-[#6b7280]
                   ) : (
@@ -8260,29 +8260,29 @@ export const Dashboard: React.FC = () => {
 
                   <div className="space-y-4"
                     <div>
-                      <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+                      <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                       <p className="text-sm text-[#6b7280]
                     </div>
 "
                     <div>"
-                      <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+                      <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                       <p className="text-sm text-[#6b7280])}</p>
                     </div>
 
                     {activeEmail.cc && activeEmail.cc.length > 0 && ("
                       <div>"
-                        <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+                        <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                         <p className="text-sm text-[#6b7280])}</p>
                       </div>
                     )}
 "
                     <div>"
-                      <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+                      <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                       <p className="text-sm font-semibold text-[#6b7280]
                     </div>
 "
                     <div>"
-                      <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+                      <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                       <p className="text-sm text-[#6b7280]).toLocaleString()}</p>
                     </div>
 "
@@ -8298,7 +8298,7 @@ export const Dashboard: React.FC = () => {
                     </div>
 "
                     <div>"
-                      <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+                      <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                       <div className="rounded-[10px] border border-[#e5e7eb]"
                         <p className="whitespace-pre-wrap text-sm text-[#6b7280]
                       </div>
@@ -8306,8 +8306,8 @@ export const Dashboard: React.FC = () => {
 
                     {activeEmail.attachments.length > 0 && ("
                       <div>"
-                        <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
-                        <div className="space-y-2"
+                        <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
+                        <div className="space-y-2">
                           {activeEmail.attachments.map((attachment, idx) => (
                             <div
                               key={idx}
@@ -8323,7 +8323,7 @@ export const Dashboard: React.FC = () => {
 
                     {activeEmail.labels.length > 0 && ("
                       <div>"
-                        <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+                        <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                         <div className="flex flex-wrap gap-2"
                           {activeEmail.labels.map((label, idx) => (
                             <span
@@ -8464,7 +8464,7 @@ export const Dashboard: React.FC = () => {
                 ))}
               </select>
             </div>
-            <div className="space-y-2"
+            <div className="space-y-2">
               {pinnedNotes.length > 0 && (
                 <>
                   <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]
@@ -8599,7 +8599,7 @@ export const Dashboard: React.FC = () => {
                   />
 
                   <div>
-                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                     <div className="flex flex-wrap gap-2"
                       {colorOptions.map((option) => (
                         <button
@@ -8645,14 +8645,14 @@ export const Dashboard: React.FC = () => {
                   </div>
 
                   <div className="rounded-[12px] border border-[#e5e7eb]"
-                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]"
+                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7280]">
                     <div className="grid grid-cols-2 gap-3"
                       <div>
-                        <p className="text-xs text-[#6b7280]"
+                        <p className="text-xs text-[#6b7280]">
                         <p className="text-sm text-[#6b7280]).toLocaleString()}</p>
                       </div>"
                       <div>"
-                        <p className="text-xs text-[#6b7280]"
+                        <p className="text-xs text-[#6b7280]">
                         <p className="text-sm text-[#6b7280]).toLocaleString()}</p>
                       </div>
                     </div>
@@ -9014,11 +9014,11 @@ export const Dashboard: React.FC = () => {
               <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-[#6b7280]"
               <div className="mt-3 space-y-3"
                 <div className="rounded-[12px] border border-[#e5e7eb]"
-                  <p className="text-xs text-[#6b7280]"
+                  <p className="text-xs text-[#6b7280]">
                   <p className="mt-1 font-medium text-white">siteConfig.dashboard.browser.browserTabTitle || 'Untitled site'<</p>
                 </div>
                 <div className="rounded-[12px] border border-[#e5e7eb]"
-                  <p className="text-xs text-[#6b7280]"
+                  <p className="text-xs text-[#6b7280]">
                   <div className="mt-2 flex items-center gap-2"
                     <span className="inline-flex h-10 w-10 items-center justify-center overflow-hidden rounded-[10px] border border-[#e5e7eb]"
                       {siteConfig.dashboard.browser.faviconUrl ? (
@@ -9097,15 +9097,15 @@ export const Dashboard: React.FC = () => {
               <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-[#6b7280]"
               <div className="mt-3 space-y-2"
                 <div className="rounded-[12px] border border-[#e5e7eb]"
-                  <p className="text-xs text-[#6b7280]"
+                  <p className="text-xs text-[#6b7280]">
                   <p className="mt-1 text-lg font-semibold text-white">stats.inboxTotal<</p>
                 </div>
                 <div className="rounded-[12px] border border-[#e5e7eb]"
-                  <p className="text-xs text-[#6b7280]"
+                  <p className="text-xs text-[#6b7280]">
                   <p className="mt-1 text-lg font-semibold text-white">stats.inboxUnread<</p>
                 </div>
                 <div className="rounded-[12px] border border-[#e5e7eb]"
-                  <p className="text-xs text-[#6b7280]"
+                  <p className="text-xs text-[#6b7280]">
                   <p className="mt-1 text-lg font-semibold text-white">stats.inboxArchived<</p>
                 </div>
               </div>
@@ -9255,7 +9255,7 @@ export const Dashboard: React.FC = () => {
     return (
       <div className="grid gap-4 xl:grid-cols-[380px_minmax(0,1fr)]"
         <aside className="rounded-[18px] border border-[#e5e7eb]"
-          <div className="space-y-2"
+          <div className="space-y-2">
             <input
               type="text"
               value={messageSearch}
