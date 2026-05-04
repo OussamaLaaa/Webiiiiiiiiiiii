@@ -2200,6 +2200,7 @@ export const hydrateSiteConfig = (value: unknown): SiteConfig => {
   const cinematicSequence = isRecord(value.cinematicSequence) ? value.cinematicSequence : {};
   const cinematicScroll = isRecord(cinematicSequence.scroll) ? cinematicSequence.scroll : {};
   const globalFrame = isRecord(value.globalFrame) ? value.globalFrame : {};
+  const crt = isRecord(value.crt) ? value.crt : {};
   const visibility = isRecord(value.visibility) ? value.visibility : {};
   const dashboard = isRecord(value.dashboard) ? value.dashboard : {};
   const dashboardBrowser = isRecord(dashboard.browser) ? dashboard.browser : {};
