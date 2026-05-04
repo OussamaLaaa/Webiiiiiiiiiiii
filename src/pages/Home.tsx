@@ -28,7 +28,7 @@ let hasHomeBootCompleted = false;
 
 export const Home: React.FC = () => {
   const { siteConfig } = useSiteConfig();
-  const { visibility, globalFrame } = siteConfig;
+  const { visibility, globalFrame, crt } = siteConfig;
   const { progress, images, isComplete } = usePreloadFrames(SCENES);
   
   const [hasStarted, setHasStarted] = useState(() => hasHomeBootCompleted);
@@ -68,7 +68,7 @@ export const Home: React.FC = () => {
   return (
     <div className="bg-[#111113] min-h-screen text-white selection:bg-white/20" data-surface="base">
       {/* CRT Edge Overlay - Full Screen Retro TV Effect */}
-      <CRTEdgeOverlay intensity="low" />
+      {crt.enabled ? <CRTEdgeOverlay intensity={crt.intensity} /> : null}
 
       {visibility.globalFrameOverlay ? (
         <GlobalFrameOverlay innerShadowIntensity={hasStarted ? 0.3 : 0} frameConfig={globalFrame} />

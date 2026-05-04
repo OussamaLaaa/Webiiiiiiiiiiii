@@ -39,7 +39,8 @@ export const IntroTextOverlay: React.FC<IntroTextOverlayProps> = ({ hasStarted, 
   const scrollPrompt = siteConfig.introScrollPrompt.trim();
   const backdropColor = siteConfig.introOverlayBackdropColor;
   const backdropOpacity = mounted && !isScrolling ? siteConfig.introOverlayBackdropOpacity : 0;
-  const headlineScale = Math.min(1.25, Math.max(0.9, headingScale * 1.05));
+  const headlineBoost = 1.4;
+  const headlineScale = Math.min(1.8, Math.max(1.05, headingScale * headlineBoost));
   const headlineWeight = Math.min(720, Math.max(420, headingWeight + 60));
   const headlineLetterSpacing = Math.max(-0.06, headingLetterSpacingEm - 0.015);
   const headlineLineHeight = Math.max(1.1, bodyLineHeight - 0.35);
@@ -60,6 +61,7 @@ export const IntroTextOverlay: React.FC<IntroTextOverlayProps> = ({ hasStarted, 
     headlineScale,
   )})`;
   const backdropFill = backdropColor;
+  const textScrimOpacity = mounted && !isScrolling ? 1 : 0;
 
   return (
     <div
@@ -77,6 +79,15 @@ export const IntroTextOverlay: React.FC<IntroTextOverlayProps> = ({ hasStarted, 
         className={`relative z-10 flex flex-col items-center gap-3 text-center sm:gap-4 transition-all duration-[1200ms] ease-[cubic-bezier(0.25,1,0.5,1)] ${containerState}`}
         data-surface="text"
       >
+        <div
+          className="pointer-events-none absolute -inset-x-6 -inset-y-8 rounded-[30px] backdrop-blur-[6px] transition-opacity duration-[900ms] ease-[cubic-bezier(0.25,1,0.5,1)]"
+          style={{
+            opacity: textScrimOpacity,
+            zIndex: -1,
+            backgroundImage:
+              'radial-gradient(120% 120% at 50% 20%, rgba(5, 8, 12, 0.72), rgba(5, 8, 12, 0.42) 55%, rgba(5, 8, 12, 0) 100%)',
+          }}
+        />
         {primaryText ? (
           <h1
             className="intro-glow-text max-w-[92vw] text-balance font-sans text-white/95 sm:max-w-[28ch]"

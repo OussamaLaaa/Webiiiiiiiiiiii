@@ -337,10 +337,10 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({ isActive }) => {
             <h1
               className="fw-header-text opacity-0 text-[#0f1219]"
               style={{
-                fontSize: `clamp(${getScaledRem(siteConfig.designSystem.theme.displayTitleSizeRem * 0.85, siteConfig.designSystem.theme.headingScale)}, 14vw, ${getScaledRem(siteConfig.designSystem.theme.displayTitleSizeRem * 1.65, siteConfig.designSystem.theme.headingScale)})`,
-                lineHeight: 0.92,
-                letterSpacing: `${siteConfig.designSystem.theme.headingLetterSpacingEm}em`,
-                fontWeight: 400,
+                fontSize: `clamp(${getScaledRem(siteConfig.designSystem.theme.displayTitleSizeRem * 1.05, siteConfig.designSystem.theme.headingScale)}, 15vw, ${getScaledRem(siteConfig.designSystem.theme.displayTitleSizeRem * 1.9, siteConfig.designSystem.theme.headingScale)})`,
+                lineHeight: 0.9,
+                letterSpacing: `${siteConfig.designSystem.theme.headingLetterSpacingEm - 0.01}em`,
+                fontWeight: Math.min(720, Math.max(520, siteConfig.designSystem.theme.headingWeight + 120)),
               }}
             >
               {featured.titleLine1}

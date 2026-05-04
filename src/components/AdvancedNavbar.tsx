@@ -294,7 +294,7 @@ export const AdvancedNavbar: React.FC<AdvancedNavbarProps> = ({ isLightMode = fa
         }`}
       >
         <div className="max-w-[1800px] mx-auto px-4 md:px-8 lg:px-12">
-          <div className="h-[80px] md:h-[96px] flex items-center">
+          <div className="relative h-[80px] md:h-[96px] flex items-center">
             {/* Logo */}
             {visibility.navigationLogo ? (
               <a
@@ -312,33 +312,38 @@ export const AdvancedNavbar: React.FC<AdvancedNavbarProps> = ({ isLightMode = fa
               <div className="w-0" />
             )}
 
-            {/* Navigation Links - Centered */}
+            {/* Navigation Links - True Center */}
             {visibility.navigationMenu && visibleNavItems.length > 0 ? (
-              <div className="hidden md:flex items-center gap-1 flex-1 justify-center" ref={navLinksRef}>
-                {visibleNavItems.map((item) => (
-                  <a
-                    key={item.id}
-                    href={item.section === 'articles' ? '#/articles' : `#${item.section}`}
-                    onClick={(e) => handleNav(e, item.section)}
-                    data-section={item.section}
-                    className={`nav-link px-6 py-3 text-sm font-medium tracking-[0.01em] transition-all duration-400 rounded-lg ${
-                      activeSection === item.section
-                        ? isLightMode
-                          ? 'text-black bg-gray-100/80'
-                          : 'text-white bg-white/15'
-                        : isLightMode
-                          ? 'text-gray-800 hover:text-black hover:bg-gray-50/60'
-                          : 'text-gray-200 hover:text-white hover:bg-white/8'
-                    }`}
-                  >
-                    {item.label}
-                  </a>
-                ))}
+              <div className="pointer-events-none absolute inset-0 hidden items-center justify-center md:flex">
+                <div
+                  className="pointer-events-auto flex max-w-[70vw] items-center gap-1"
+                  ref={navLinksRef}
+                >
+                  {visibleNavItems.map((item) => (
+                    <a
+                      key={item.id}
+                      href={item.section === 'articles' ? '#/articles' : `#${item.section}`}
+                      onClick={(e) => handleNav(e, item.section)}
+                      data-section={item.section}
+                      className={`nav-link px-6 py-3 text-sm font-medium tracking-[0.01em] transition-all duration-400 rounded-lg ${
+                        activeSection === item.section
+                          ? isLightMode
+                            ? 'text-black bg-gray-100/80'
+                            : 'text-white bg-white/15'
+                          : isLightMode
+                            ? 'text-gray-800 hover:text-black hover:bg-gray-50/60'
+                            : 'text-gray-200 hover:text-white hover:bg-white/8'
+                      }`}
+                    >
+                      {item.label}
+                    </a>
+                  ))}
+                </div>
               </div>
             ) : null}
 
             {/* Right Actions */}
-            <div className="flex items-center gap-4 flex-shrink-0">
+            <div className="ml-auto flex items-center gap-4 flex-shrink-0">
               {visibility.musicToggle ? <audio ref={audioRef} src={persistentUI.musicSrc} loop /> : null}
 
               {visibility.musicToggle ? (

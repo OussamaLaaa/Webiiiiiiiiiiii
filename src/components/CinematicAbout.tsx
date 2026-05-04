@@ -464,35 +464,44 @@ export const CinematicAbout: React.FC<CinematicAboutProps> = ({ progress }) => {
                   return (
                     <article
                       key={item.id}
-                      className="grid gap-4 rounded-[22px] border border-gray-200 bg-white p-4 shadow-[0_20px_42px_-34px_rgba(0,0,0,0.08)] transition-[transform,opacity] duration-700 ease-out md:grid-cols-[minmax(0,1fr)_auto] md:items-center hover:border-black hover:shadow-[0_24px_48px_-30px_rgba(0,0,0,0.12)]"
+                      className="group relative grid gap-4 overflow-hidden rounded-[24px] border border-[#0f1219]/12 bg-white p-5 shadow-[0_24px_56px_-40px_rgba(10,15,25,0.18)] transition-[transform,opacity] duration-700 ease-out md:grid-cols-[minmax(0,1fr)_auto] md:items-center hover:border-[#0f1219]/35 hover:shadow-[0_30px_70px_-38px_rgba(10,15,25,0.28)]"
                       style={{
                         opacity: 0.24 + entryReveal * 0.76,
                         transform: `translateX(${(1 - entryReveal) * direction * 56}px)`,
                       }}
                     >
-                      <div>
-                        <div className="mb-2 flex items-center gap-3">
-                          <span className="rounded-full border border-gray-300 bg-gray-200 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-gray-900">
+                      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(15,18,25,0.06),rgba(15,18,25,0))] opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
+
+                      <div className="relative">
+                        <div className="mb-3 flex flex-wrap items-center gap-2.5">
+                          <span className="rounded-full border border-[#0f1219] bg-[#0f1219] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-white">
                             {issuer}
                           </span>
                           {item.year ? (
-                            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-gray-500">{item.year}</span>
+                            <span className="rounded-full border border-[#0f1219]/10 bg-white px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-[#0f1219]/70">
+                              {item.year}
+                            </span>
                           ) : null}
                         </div>
 
-                        <h3 className="text-sm leading-snug text-black md:text-[1rem]">{item.title}</h3>
+                        <h3 className="text-[1.02rem] font-semibold leading-snug text-[#0f1219] md:text-[1.2rem]">
+                          {item.title}
+                        </h3>
                       </div>
 
-                      <div className="flex items-center justify-between gap-3 md:justify-end">
-                        <div className="flex items-center gap-2">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-[10px] border border-gray-300 bg-white">
+                      <div className="relative flex items-center justify-between gap-4 md:justify-end">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-[14px] border border-[#0f1219]/15 bg-white shadow-[0_12px_24px_-18px_rgba(15,18,25,0.5)]">
                             {item.logoSrc ? (
-                              <img src={item.logoSrc} alt={issuer} className="h-5 w-5 object-contain" />
+                              <img src={item.logoSrc} alt={issuer} className="h-7 w-7 object-contain" />
                             ) : (
-                              <span className="text-xs text-gray-500">{issuerInitial}</span>
+                              <span className="text-sm font-semibold text-[#0f1219]/60">{issuerInitial}</span>
                             )}
                           </div>
-                          <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-gray-800">{issuer}</span>
+                          <div>
+                            <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#0f1219]/55">Issuer</p>
+                            <p className="text-sm font-semibold text-[#0f1219]">{issuer}</p>
+                          </div>
                         </div>
 
                         {item.credentialUrl && !isPlaceholderHref(item.credentialUrl) ? (
@@ -500,12 +509,12 @@ export const CinematicAbout: React.FC<CinematicAboutProps> = ({ progress }) => {
                             href={item.credentialUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className="rounded-full border border-gray-400 px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.16em] text-gray-900 transition-colors hover:bg-black hover:border-black hover:text-white"
+                            className="rounded-full border border-[#0f1219]/30 px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-[#0f1219] transition-colors hover:bg-[#0f1219] hover:border-[#0f1219] hover:text-white"
                           >
                             {scene05.credentialButtonLabel}
                           </a>
                         ) : (
-                          <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-gray-400">
+                          <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#0f1219]/35">
                             {scene05.credentialButtonLabel}
                           </span>
                         )}
