@@ -264,7 +264,7 @@ export const CinematicAbout: React.FC<CinematicAboutProps> = ({ progress }) => {
             <div className="grid gap-6 md:gap-8 lg:grid-cols-[minmax(220px,250px)_minmax(0,1fr)] lg:items-start lg:gap-10 xl:gap-12">
               <article className="relative max-w-[250px]">
                 <div
-                  className="relative aspect-[4/5] w-full overflow-hidden rounded-[22px] border-2 border-gray-200 bg-white shadow-[0_20px_44px_-28px_rgba(0,0,0,0.15)]"
+                  className="relative aspect-square w-full overflow-hidden rounded-full border-2 border-gray-200 bg-white shadow-[0_20px_44px_-28px_rgba(0,0,0,0.15)]"
                   style={{ transform: `translateY(${portraitDrift * 0.32}px)` }}
                 >
                   {scene05.portraitImage ? (

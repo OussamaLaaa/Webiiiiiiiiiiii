@@ -2103,6 +2103,7 @@ export const hydrateSiteConfig = (value: unknown): SiteConfig => {
             img: asString(item.img, ''),
             behance: asString(item.behance, '#'),
             live: asString(item.live, '#'),
+            buttonType: (item.buttonType === 'caseStudy' ? 'caseStudy' : 'live') as 'live' | 'caseStudy',
             visible: asBoolean(item.visible, true),
           };
         })

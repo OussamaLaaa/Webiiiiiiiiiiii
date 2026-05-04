@@ -2076,6 +2076,16 @@ export const Dashboard: React.FC = () => {
                     onChange={(next) => updateProject(project.id, (item) => ({ ...item, live: next }))}
                   />
 
+                  <SelectInput
+                    label="Button Type"
+                    value={project.buttonType}
+                    options={[
+                      { value: 'live', label: 'Live App' },
+                      { value: 'caseStudy', label: 'Case Study' },
+                    ]}
+                    onChange={(next) => updateProject(project.id, (item) => ({ ...item, buttonType: next as 'live' | 'caseStudy' }))}
+                  />
+
                   <button
                     type="button"
                     onClick={() => {
