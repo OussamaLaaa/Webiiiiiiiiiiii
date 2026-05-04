@@ -37,8 +37,9 @@ export const MasterSequence: React.FC<MasterSequenceProps> = ({
   const parallaxWrapperRef = useRef<HTMLDivElement>(null);
   const lastDrawableImageRef = useRef<HTMLImageElement | null>(null);
   const { siteConfig } = useSiteConfig();
-  const scrollSettings = siteConfig.cinematicSequence.scroll;
   const isInputLockedRef = useRef(isInputLocked);
+  const scrollSettingsRef = useRef(siteConfig.cinematicSequence.scroll);
+  const lastProgressRef = useRef(0);
   
   const onGlobalProgressRef = useRef(onGlobalProgress);
 
@@ -49,6 +50,10 @@ export const MasterSequence: React.FC<MasterSequenceProps> = ({
   useEffect(() => {
     isInputLockedRef.current = isInputLocked;
   }, [isInputLocked]);
+
+  useEffect(() => {
+    scrollSettingsRef.current = siteConfig.cinematicSequence.scroll;
+  }, [siteConfig.cinematicSequence.scroll]);
 
   const l1 = scene02Images ? scene02Images.length : 0;
   const l2 = scene03Images ? scene03Images.length : 0;
@@ -88,6 +93,14 @@ export const MasterSequence: React.FC<MasterSequenceProps> = ({
       if (value < 0.0005) return 0;
       if (value > 0.9995) return 1;
       return clamp(value, 0, 1);
+    };
+
+    const getTweenDuration = () => {
+      return Math.max(0.0001, scrollSettingsRef.current.smoothDurationMs / 1000);
+    };
+
+    const getInputCooldownMs = () => {
+      return Math.max(80, scrollSettingsRef.current.inputCooldownMs);
     };
 
     const getImageAtGlobalIndex = (index: number): HTMLImageElement | undefined => {
@@ -144,11 +157,11 @@ export const MasterSequence: React.FC<MasterSequenceProps> = ({
       resizeCallback = requestAnimationFrame(() => drawFrame(lastDrawnIndex));
     };
 
-    drawFrame(0);
-
-    const playhead = { p: 0 };
+    let virtualProgress = clampProgress(lastProgressRef.current);
+    const playhead = { p: virtualProgress };
     const updatePlayhead = (p: number) => {
       const clampP = clampProgress(p);
+      lastProgressRef.current = clampP;
       let targetIndex = 0;
 
       if (clampP < PHASE_PLAY_SCENE_02_03_END) {
@@ -198,14 +211,13 @@ export const MasterSequence: React.FC<MasterSequenceProps> = ({
       }
     };
 
-    let virtualProgress = 0;
+    updatePlayhead(playhead.p);
+
     let momentum = 0;
     let momentumFrame: number | null = null;
     let playheadTween: gsap.core.Tween | null = null;
     const MOMENTUM_CAP = 0.08;
     const MIN_MOMENTUM = 0.000002;
-    const tweenDuration = Math.max(0.0001, scrollSettings.smoothDurationMs / 1000);
-    const inputCooldownMs = Math.max(80, scrollSettings.inputCooldownMs);
     let navLockUntil = 0;
 
     const stopMomentum = () => {
@@ -222,7 +234,7 @@ export const MasterSequence: React.FC<MasterSequenceProps> = ({
       playheadTween?.kill();
       playheadTween = gsap.to(playhead, {
         p: clampedP,
-        duration: options?.immediate ? 0.001 : tweenDuration,
+        duration: options?.immediate ? 0.001 : getTweenDuration(),
         ease: 'power2.out',
         overwrite: 'auto',
         onUpdate: () => updatePlayhead(playhead.p),
@@ -232,7 +244,7 @@ export const MasterSequence: React.FC<MasterSequenceProps> = ({
     const stepMomentum = () => {
       const target = clampProgress(virtualProgress + momentum);
       tweenToProgress(target);
-      momentum *= scrollSettings.momentumDamping;
+      momentum *= scrollSettingsRef.current.momentumDamping;
 
       if (Math.abs(momentum) > MIN_MOMENTUM) {
         momentumFrame = requestAnimationFrame(stepMomentum);
@@ -249,9 +261,11 @@ export const MasterSequence: React.FC<MasterSequenceProps> = ({
     const queueMomentum = (delta: number, multiplier = 1) => {
       if (Date.now() < navLockUntil) return;
       if (delta === 0) return;
+      const scrollSettings = scrollSettingsRef.current;
       const limitedDelta = clamp(delta, -scrollSettings.maxWheelDelta, scrollSettings.maxWheelDelta);
       const now = Date.now();
       const direction = Math.sign(limitedDelta);
+      const inputCooldownMs = getInputCooldownMs();
 
       if (
         direction !== 0 &&
@@ -310,7 +324,7 @@ export const MasterSequence: React.FC<MasterSequenceProps> = ({
       e.preventDefault();
       const touchEndY = e.touches[0].clientY;
       const diff = touchStartY - touchEndY;
-      queueMomentum(diff, scrollSettings.touchMultiplier);
+      queueMomentum(diff, scrollSettingsRef.current.touchMultiplier);
       touchStartY = touchEndY;
     };
 
@@ -321,17 +335,17 @@ export const MasterSequence: React.FC<MasterSequenceProps> = ({
       }
       if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
         e.preventDefault();
-        tweenToProgress(virtualProgress + scrollSettings.keyboardStep);
+        tweenToProgress(virtualProgress + scrollSettingsRef.current.keyboardStep);
       } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
         e.preventDefault();
-        tweenToProgress(virtualProgress - scrollSettings.keyboardStep);
+        tweenToProgress(virtualProgress - scrollSettingsRef.current.keyboardStep);
       }
     };
 
     const handleNavToSection = (e: Event) => {
       const { section } = (e as CustomEvent).detail;
       let target = 0;
-      navLockUntil = Date.now() + inputCooldownMs;
+      navLockUntil = Date.now() + getInputCooldownMs();
       if (section === 'home') target = 0;
       else if (section === 'home-sequence') {
         target = Math.max(0, PHASE_PLAY_SCENE_02_03_END - HOME_REVERSE_ENTRY_EPSILON);
@@ -382,7 +396,6 @@ export const MasterSequence: React.FC<MasterSequenceProps> = ({
     scene03Images,
     scene07Images,
     scene07Start,
-    scrollSettings,
   ]); 
 
   return (
