@@ -2,7 +2,6 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from '
 import {
   DEFAULT_SITE_CONFIG,
   hydrateSiteConfig,
-  SITE_CONFIG_STORAGE_KEY,
   type SiteConfig,
   type SitePartner,
   type SitePersonalProject,
@@ -16,11 +15,15 @@ import {
   type SiteAITracking,
   type SiteAIReport,
 } from '../config/siteConfig';
+import { loadSiteConfig, saveSiteConfig, resetAllStorage, getStorageInfo } from '../utils/storageSystem';
 
 interface SiteConfigContextValue {
   siteConfig: SiteConfig;
   setSiteConfig: React.Dispatch<React.SetStateAction<SiteConfig>>;
   resetSiteConfig: () => void;
+  storageInfo: ReturnType<typeof getStorageInfo>;
+  exportStorage: () => string | null;
+  importStorage: (data: string) => boolean;
 }
 
 const SiteConfigContext = createContext<SiteConfigContextValue | null>(null);
@@ -28,15 +31,12 @@ const SiteConfigContext = createContext<SiteConfigContextValue | null>(null);
 const getInitialSiteConfig = (): SiteConfig => {
   if (typeof window === 'undefined') return DEFAULT_SITE_CONFIG;
 
-  // Try to load saved config from localStorage
-  try {
-    const savedConfig = window.localStorage.getItem(SITE_CONFIG_STORAGE_KEY);
-    if (savedConfig) {
-      const parsed = JSON.parse(savedConfig);
-      return hydrateSiteConfig(parsed);
-    }
-  } catch (error) {
-    console.warn('Failed to load saved config:', error);
+  // Use advanced storage system
+  const result = loadSiteConfig();
+
+  if (result.success && result.data) {
+    // Hydrate the loaded config to ensure all properties are valid
+    return hydrateSiteConfig(result.data);
   }
 
   return DEFAULT_SITE_CONFIG;
@@ -241,6 +241,7 @@ const applyBrowserMetadata = (siteConfig: SiteConfig) => {
 
 export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [siteConfig, setSiteConfig] = useState<SiteConfig>(() => getInitialSiteConfig());
+  const [storageInfo, setStorageInfo] = useState(() => getStorageInfo());
 
   useEffect(() => {
     applyDesignSystemVariables(siteConfig);
@@ -250,22 +251,39 @@ export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     applyBrowserMetadata(siteConfig);
   }, [siteConfig]);
 
+  // Save to storage with advanced system
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    // Debounce saves to avoid excessive writes
+    const timeoutId = setTimeout(() => {
+      const result = saveSiteConfig(siteConfig);
+
+      if (!result.success) {
+        console.error('Failed to save site config:', result.error);
+      } else {
+        // Update storage info after successful save
+        setStorageInfo(getStorageInfo());
+      }
+    }, 500); // 500ms debounce
+
+    return () => clearTimeout(timeoutId);
+  }, [siteConfig]);
+
+  // Listen for storage events from other tabs
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
     const handleStorage = (event: StorageEvent) => {
-      if (event.key !== SITE_CONFIG_STORAGE_KEY) return;
+      // Only reload if it's a config-related key
+      const configKeys = ['portfolio.site-config', 'portfolio.site-config.backup', 'portfolio.site-config.session'];
+      if (!configKeys.some(key => event.key?.includes(key))) return;
 
-      if (!event.newValue) {
-        setSiteConfig(DEFAULT_SITE_CONFIG);
-        return;
-      }
-
-      try {
-        const parsed = JSON.parse(event.newValue);
-        setSiteConfig(hydrateSiteConfig(parsed));
-      } catch {
-        setSiteConfig(DEFAULT_SITE_CONFIG);
+      // Reload config from storage
+      const result = loadSiteConfig();
+      if (result.success && result.data) {
+        setSiteConfig(hydrateSiteConfig(result.data));
+        setStorageInfo(getStorageInfo());
       }
     };
 
@@ -275,28 +293,43 @@ export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     };
   }, []);
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    try {
-      window.localStorage.setItem(SITE_CONFIG_STORAGE_KEY, JSON.stringify(siteConfig));
-    } catch (error) {
-      // Uploaded media can exceed browser storage quota; keep runtime state without crashing.
-      console.warn('Unable to persist site config to localStorage.', error);
-    }
-  }, [siteConfig]);
-
   const value = useMemo<SiteConfigContextValue>(() => {
     return {
       siteConfig,
       setSiteConfig,
       resetSiteConfig: () => {
         setSiteConfig(DEFAULT_SITE_CONFIG);
-        if (typeof window !== 'undefined') {
-          window.localStorage.removeItem(SITE_CONFIG_STORAGE_KEY);
+        resetAllStorage();
+        setStorageInfo(getStorageInfo());
+      },
+      storageInfo,
+      exportStorage: () => {
+        if (typeof window === 'undefined') return null;
+        const data = JSON.stringify(siteConfig, null, 2);
+        const blob = new Blob([data], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `site-config-backup-${Date.now()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        return data;
+      },
+      importStorage: (jsonData: string) => {
+        try {
+          const parsed = JSON.parse(jsonData);
+          const hydrated = hydrateSiteConfig(parsed);
+          setSiteConfig(hydrated);
+          return true;
+        } catch (error) {
+          console.error('Failed to import storage data:', error);
+          return false;
         }
       },
     };
-  }, [siteConfig]);
+  }, [siteConfig, storageInfo]);
 
   return <SiteConfigContext.Provider value={value}>{children}</SiteConfigContext.Provider>;
 };

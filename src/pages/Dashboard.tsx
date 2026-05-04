@@ -43,6 +43,8 @@ import {
   RotateCcw,
   Save,
   Settings,
+  Download,
+  Upload,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -70,7 +72,7 @@ type DashboardSectionId =
   | 'crt';
 
 type DashboardWorkspace = 'site' | 'articles' | 'settings' | 'analytics' | 'messages';
-type DashboardSettingsPanel = 'browser' | 'integrations' | 'inbox';
+type DashboardSettingsPanel = 'browser' | 'integrations' | 'inbox' | 'storage';
 
 const DASHBOARD_WORKSPACES: Array<{
   id: DashboardWorkspace;
@@ -129,6 +131,11 @@ const DASHBOARD_SETTINGS_PANELS: Array<{
     id: 'inbox',
     label: 'Inbox Routing',
     description: 'Forwarding and auto-reply behavior for new messages.',
+  },
+  {
+    id: 'storage',
+    label: 'Storage & Backup',
+    description: 'Manage data storage, backups, and exports.',
   },
 ];
 
@@ -638,7 +645,7 @@ const dashboardStatusFailureClass =
   'border-[#ef4444]/40 bg-[#ef4444]/14 text-[#fecaca]';
 
 export const Dashboard: React.FC = () => {
-  const { siteConfig, setSiteConfig, resetSiteConfig } = useSiteConfig();
+  const { siteConfig, setSiteConfig, resetSiteConfig, storageInfo, exportStorage, importStorage } = useSiteConfig();
 
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState('');
@@ -6234,6 +6241,173 @@ export const Dashboard: React.FC = () => {
                 <div className="rounded-[12px] border border-white/12 bg-black/22 px-3 py-2">
                   <p className="text-xs text-white/58">Archived</p>
                   <p className="mt-1 text-lg font-semibold text-white">{stats.inboxArchived}</p>
+                </div>
+              </div>
+            </aside>
+          </section>
+        ) : null}
+
+        {activeSettingsPanel === 'storage' ? (
+          <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
+            <Card title="Storage & Backup" subtitle="Manage data storage, backups, and exports">
+              <div className="space-y-4">
+                <div className="rounded-[12px] border border-white/12 bg-black/22 px-3 py-3">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/56">Storage Status</p>
+                  <div className="mt-2 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-white/72">Primary Storage</span>
+                      <span className={`text-xs font-semibold ${storageInfo.sizes.primary > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        {storageInfo.sizes.primary > 0 ? 'Active' : 'Empty'}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-white/72">Backup Storage</span>
+                      <span className={`text-xs font-semibold ${storageInfo.sizes.backup > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        {storageInfo.sizes.backup > 0 ? 'Active' : 'Empty'}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-white/72">Session Storage</span>
+                      <span className={`text-xs font-semibold ${storageInfo.sizes.session > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        {storageInfo.sizes.session > 0 ? 'Active' : 'Empty'}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-white/72">Recovery Point</span>
+                      <span className={`text-xs font-semibold ${storageInfo.sizes.recovery > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        {storageInfo.sizes.recovery > 0 ? 'Available' : 'None'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-[12px] border border-white/12 bg-black/22 px-3 py-3">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/56">Storage Size</p>
+                  <div className="mt-2 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-white/72">Primary</span>
+                      <span className="text-xs font-semibold text-white">{(storageInfo.sizes.primary / 1024).toFixed(2)} KB</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-white/72">Backup</span>
+                      <span className="text-xs font-semibold text-white">{(storageInfo.sizes.backup / 1024).toFixed(2)} KB</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-white/72">Session</span>
+                      <span className="text-xs font-semibold text-white">{(storageInfo.sizes.session / 1024).toFixed(2)} KB</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-white/72">Recovery</span>
+                      <span className="text-xs font-semibold text-white">{(storageInfo.sizes.recovery / 1024).toFixed(2)} KB</span>
+                    </div>
+                    <div className="mt-2 pt-2 border-t border-white/10">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-semibold text-white/72">Total</span>
+                        <span className="text-sm font-bold text-white">{(storageInfo.total / 1024).toFixed(2)} KB</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-[12px] border border-white/12 bg-black/22 px-3 py-3">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/56">Save History</p>
+                  <div className="mt-2 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-white/72">Last Saved</span>
+                      <span className="text-xs font-semibold text-white">
+                        {storageInfo.metadata.lastSaved > 0 ? new Date(storageInfo.metadata.lastSaved).toLocaleString() : 'Never'}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-white/72">Last Backup</span>
+                      <span className="text-xs font-semibold text-white">
+                        {storageInfo.metadata.lastBackup > 0 ? new Date(storageInfo.metadata.lastBackup).toLocaleString() : 'Never'}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-white/72">Save Count</span>
+                      <span className="text-xs font-semibold text-white">{storageInfo.metadata.saveCount}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-white/72">Version</span>
+                      <span className="text-xs font-semibold text-white">{storageInfo.metadata.version}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid gap-2">
+                  <button
+                    type="button"
+                    onClick={() => exportStorage()}
+                    className="flex items-center justify-center gap-2 rounded-[10px] border border-white/14 bg-white/[0.06] px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-white/[0.12]"
+                  >
+                    <Download size={16} />
+                    Export Backup
+                  </button>
+                  <label className="flex items-center justify-center gap-2 rounded-[10px] border border-white/14 bg-white/[0.06] px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-white/[0.12] cursor-pointer">
+                    <Upload size={16} />
+                    Import Backup
+                    <input
+                      type="file"
+                      accept=".json"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (event) => {
+                            const data = event.target?.result as string;
+                            if (importStorage(data)) {
+                              alert('Backup imported successfully!');
+                            } else {
+                              alert('Failed to import backup. Please check the file format.');
+                            }
+                          };
+                          reader.readAsText(file);
+                        }
+                        e.currentTarget.value = '';
+                      }}
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (confirm('Are you sure you want to reset all data? This cannot be undone.')) {
+                        resetSiteConfig();
+                        alert('All data has been reset to default.');
+                      }
+                    }}
+                    className="flex items-center justify-center gap-2 rounded-[10px] border border-red-500/30 bg-red-500/10 px-4 py-2.5 text-sm font-medium text-red-400 transition-all hover:bg-red-500/20"
+                  >
+                    <RotateCcw size={16} />
+                    Reset All Data
+                  </button>
+                </div>
+              </div>
+            </Card>
+
+            <aside className="rounded-[18px] border border-white/12 bg-white/[0.04] p-4">
+              <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-white/56">Storage Tips</p>
+              <div className="mt-3 space-y-3">
+                <div className="rounded-[12px] border border-white/12 bg-black/22 px-3 py-2">
+                  <p className="text-xs text-white/72 leading-relaxed">
+                    <strong className="text-white">Auto-Backup:</strong> Your data is automatically backed up every 10 saves.
+                  </p>
+                </div>
+                <div className="rounded-[12px] border border-white/12 bg-black/22 px-3 py-2">
+                  <p className="text-xs text-white/72 leading-relaxed">
+                    <strong className="text-white">Export Regularly:</strong> Download backups before major changes.
+                  </p>
+                </div>
+                <div className="rounded-[12px] border border-white/12 bg-black/22 px-3 py-2">
+                  <p className="text-xs text-white/72 leading-relaxed">
+                    <strong className="text-white">Multi-Layer:</strong> Data is stored in primary, backup, and session layers.
+                  </p>
+                </div>
+                <div className="rounded-[12px] border border-white/12 bg-black/22 px-3 py-2">
+                  <p className="text-xs text-white/72 leading-relaxed">
+                    <strong className="text-white">Recovery:</strong> Automatic recovery points created periodically.
+                  </p>
                 </div>
               </div>
             </aside>
