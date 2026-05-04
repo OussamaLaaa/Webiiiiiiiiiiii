@@ -295,6 +295,61 @@ export interface SiteGlobalFrameConfig {
   matteColor: string;
 }
 
+export interface SiteCRTConfig {
+  enabled: boolean;
+  intensity: 'low' | 'medium' | 'high';
+  screenGeometry: {
+    enabled: boolean;
+    curvature: number;
+  };
+  barrelCurvature: {
+    enabled: boolean;
+    intensity: number;
+  };
+  vignette: {
+    enabled: boolean;
+    opacity: number;
+    size: number;
+  };
+  analogSignal: {
+    enabled: boolean;
+    interference: number;
+    sync: number;
+  };
+  colorBleed: {
+    enabled: boolean;
+    intensity: number;
+    chromaticAberration: number;
+  };
+  staticNoise: {
+    enabled: boolean;
+    intensity: number;
+    speed: number;
+  };
+  phosphorDisplay: {
+    enabled: boolean;
+    persistence: number;
+    decay: number;
+  };
+  scanlines: {
+    enabled: boolean;
+    intensity: number;
+    thickness: number;
+    gap: number;
+  };
+  phosphorMask: {
+    enabled: boolean;
+    pattern: 'none' | 'rgb' | 'aperture' | 'slot';
+    intensity: number;
+  };
+  phosphorGlow: {
+    enabled: boolean;
+    intensity: number;
+    spread: number;
+    color: string;
+  };
+}
+
 export interface SiteButtonStylePreset {
   radiusPx: number;
   borderWidthPx: number;
@@ -842,6 +897,7 @@ export interface SiteConfig {
   };
   cinematicSequence: SiteCinematicSequenceConfig;
   globalFrame: SiteGlobalFrameConfig;
+  crt: SiteCRTConfig;
   visibility: SiteVisibilityConfig;
   // Personal Hub sections
   partners: SitePartner[];
@@ -1861,6 +1917,60 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
     topRadiusDesktopPx: 160,
     bottomRadiusPx: 16,
     matteColor: '#0c0a08',
+  },
+  crt: {
+    enabled: true,
+    intensity: 'medium',
+    screenGeometry: {
+      enabled: true,
+      curvature: 0.5,
+    },
+    barrelCurvature: {
+      enabled: true,
+      intensity: 0.3,
+    },
+    vignette: {
+      enabled: true,
+      opacity: 0.6,
+      size: 0.8,
+    },
+    analogSignal: {
+      enabled: true,
+      interference: 0.2,
+      sync: 0.1,
+    },
+    colorBleed: {
+      enabled: true,
+      intensity: 0.15,
+      chromaticAberration: 0.1,
+    },
+    staticNoise: {
+      enabled: true,
+      intensity: 0.15,
+      speed: 0.5,
+    },
+    phosphorDisplay: {
+      enabled: true,
+      persistence: 0.3,
+      decay: 0.2,
+    },
+    scanlines: {
+      enabled: true,
+      intensity: 0.4,
+      thickness: 1,
+      gap: 2,
+    },
+    phosphorMask: {
+      enabled: true,
+      pattern: 'rgb',
+      intensity: 0.3,
+    },
+    phosphorGlow: {
+      enabled: true,
+      intensity: 0.25,
+      spread: 0.5,
+      color: '#00ff00',
+    },
   },
   visibility: {
     globalFrameOverlay: true,
@@ -3798,6 +3908,92 @@ export const hydrateSiteConfig = (value: unknown): SiteConfig => {
         120,
       ),
       matteColor: asString(globalFrame.matteColor, DEFAULT_SITE_CONFIG.globalFrame.matteColor),
+    },
+    crt: {
+      enabled: asBoolean(crt?.enabled, DEFAULT_SITE_CONFIG.crt.enabled),
+      intensity: (crt?.intensity === 'low' || crt?.intensity === 'medium' || crt?.intensity === 'high'
+        ? crt.intensity
+        : DEFAULT_SITE_CONFIG.crt.intensity) as 'low' | 'medium' | 'high',
+      screenGeometry: {
+        enabled: asBoolean(crt?.screenGeometry?.enabled, DEFAULT_SITE_CONFIG.crt.screenGeometry.enabled),
+        curvature: asBoundedNumber(
+          crt?.screenGeometry?.curvature,
+          DEFAULT_SITE_CONFIG.crt.screenGeometry.curvature,
+          0,
+          1,
+        ),
+      },
+      barrelCurvature: {
+        enabled: asBoolean(crt?.barrelCurvature?.enabled, DEFAULT_SITE_CONFIG.crt.barrelCurvature.enabled),
+        intensity: asBoundedNumber(
+          crt?.barrelCurvature?.intensity,
+          DEFAULT_SITE_CONFIG.crt.barrelCurvature.intensity,
+          0,
+          1,
+        ),
+      },
+      vignette: {
+        enabled: asBoolean(crt?.vignette?.enabled, DEFAULT_SITE_CONFIG.crt.vignette.enabled),
+        opacity: asBoundedNumber(crt?.vignette?.opacity, DEFAULT_SITE_CONFIG.crt.vignette.opacity, 0, 1),
+        size: asBoundedNumber(crt?.vignette?.size, DEFAULT_SITE_CONFIG.crt.vignette.size, 0, 1),
+      },
+      analogSignal: {
+        enabled: asBoolean(crt?.analogSignal?.enabled, DEFAULT_SITE_CONFIG.crt.analogSignal.enabled),
+        interference: asBoundedNumber(
+          crt?.analogSignal?.interference,
+          DEFAULT_SITE_CONFIG.crt.analogSignal.interference,
+          0,
+          1,
+        ),
+        sync: asBoundedNumber(crt?.analogSignal?.sync, DEFAULT_SITE_CONFIG.crt.analogSignal.sync, 0, 1),
+      },
+      colorBleed: {
+        enabled: asBoolean(crt?.colorBleed?.enabled, DEFAULT_SITE_CONFIG.crt.colorBleed.enabled),
+        intensity: asBoundedNumber(crt?.colorBleed?.intensity, DEFAULT_SITE_CONFIG.crt.colorBleed.intensity, 0, 1),
+        chromaticAberration: asBoundedNumber(
+          crt?.colorBleed?.chromaticAberration,
+          DEFAULT_SITE_CONFIG.crt.colorBleed.chromaticAberration,
+          0,
+          1,
+        ),
+      },
+      staticNoise: {
+        enabled: asBoolean(crt?.staticNoise?.enabled, DEFAULT_SITE_CONFIG.crt.staticNoise.enabled),
+        intensity: asBoundedNumber(crt?.staticNoise?.intensity, DEFAULT_SITE_CONFIG.crt.staticNoise.intensity, 0, 1),
+        speed: asBoundedNumber(crt?.staticNoise?.speed, DEFAULT_SITE_CONFIG.crt.staticNoise.speed, 0, 1),
+      },
+      phosphorDisplay: {
+        enabled: asBoolean(crt?.phosphorDisplay?.enabled, DEFAULT_SITE_CONFIG.crt.phosphorDisplay.enabled),
+        persistence: asBoundedNumber(
+          crt?.phosphorDisplay?.persistence,
+          DEFAULT_SITE_CONFIG.crt.phosphorDisplay.persistence,
+          0,
+          1,
+        ),
+        decay: asBoundedNumber(crt?.phosphorDisplay?.decay, DEFAULT_SITE_CONFIG.crt.phosphorDisplay.decay, 0, 1),
+      },
+      scanlines: {
+        enabled: asBoolean(crt?.scanlines?.enabled, DEFAULT_SITE_CONFIG.crt.scanlines.enabled),
+        intensity: asBoundedNumber(crt?.scanlines?.intensity, DEFAULT_SITE_CONFIG.crt.scanlines.intensity, 0, 1),
+        thickness: asBoundedNumber(crt?.scanlines?.thickness, DEFAULT_SITE_CONFIG.crt.scanlines.thickness, 0, 5),
+        gap: asBoundedNumber(crt?.scanlines?.gap, DEFAULT_SITE_CONFIG.crt.scanlines.gap, 0, 10),
+      },
+      phosphorMask: {
+        enabled: asBoolean(crt?.phosphorMask?.enabled, DEFAULT_SITE_CONFIG.crt.phosphorMask.enabled),
+        pattern: (crt?.phosphorMask?.pattern === 'none' ||
+          crt?.phosphorMask?.pattern === 'rgb' ||
+          crt?.phosphorMask?.pattern === 'aperture' ||
+          crt?.phosphorMask?.pattern === 'slot'
+          ? crt.phosphorMask.pattern
+          : DEFAULT_SITE_CONFIG.crt.phosphorMask.pattern) as 'none' | 'rgb' | 'aperture' | 'slot',
+        intensity: asBoundedNumber(crt?.phosphorMask?.intensity, DEFAULT_SITE_CONFIG.crt.phosphorMask.intensity, 0, 1),
+      },
+      phosphorGlow: {
+        enabled: asBoolean(crt?.phosphorGlow?.enabled, DEFAULT_SITE_CONFIG.crt.phosphorGlow.enabled),
+        intensity: asBoundedNumber(crt?.phosphorGlow?.intensity, DEFAULT_SITE_CONFIG.crt.phosphorGlow.intensity, 0, 1),
+        spread: asBoundedNumber(crt?.phosphorGlow?.spread, DEFAULT_SITE_CONFIG.crt.phosphorGlow.spread, 0, 1),
+        color: asString(crt?.phosphorGlow?.color, DEFAULT_SITE_CONFIG.crt.phosphorGlow.color),
+      },
     },
     visibility: {
       globalFrameOverlay: asBoolean(

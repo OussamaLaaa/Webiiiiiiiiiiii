@@ -66,7 +66,8 @@ type DashboardSectionId =
   | 'scene05'
   | 'designSystem'
   | 'animation'
-  | 'articlesPage';
+  | 'articlesPage'
+  | 'crt';
 
 type DashboardWorkspace = 'site' | 'articles' | 'settings' | 'analytics' | 'messages';
 type DashboardSettingsPanel = 'browser' | 'integrations' | 'inbox';
@@ -145,6 +146,7 @@ const DASHBOARD_SECTIONS: Array<{ id: DashboardSectionId; label: string; hint: s
   { id: 'sequence', label: 'Cinematic Flow', hint: 'Scene order, auto handoff, and portal frame' },
   { id: 'designSystem', label: 'Design System', hint: 'Tokens, foundations, and style mapping' },
   { id: 'animation', label: 'Animation Lab', hint: 'Cursor presets and motion timings' },
+  { id: 'crt', label: 'CRT Effect', hint: 'Retro screen effects and advanced CRT settings' },
 ];
 
 const DASHBOARD_SECTION_GROUPS: Array<{ id: string; label: string; sectionIds: DashboardSectionId[] }> = [
@@ -156,7 +158,7 @@ const DASHBOARD_SECTION_GROUPS: Array<{ id: string; label: string; sectionIds: D
   {
     id: 'system-motion',
     label: 'System Layer',
-    sectionIds: ['visibility', 'sequence', 'designSystem', 'animation'],
+    sectionIds: ['visibility', 'sequence', 'designSystem', 'animation', 'crt'],
   },
 ];
 
@@ -5439,6 +5441,287 @@ export const Dashboard: React.FC = () => {
               <p className="text-xs text-white/60">
                 Buttons, cards, and glass surfaces now read these motion tokens so hover lift, easing, and rhythm stay aligned across every page.
               </p>
+            </Card>
+          </div>
+        );
+
+      case 'crt':
+        return (
+          <div className="grid gap-4 lg:grid-cols-2">
+            <Card title="CRT Effect Controls" subtitle="Master controls for retro screen effects">
+              <Toggle
+                label="Enable CRT Effect"
+                checked={siteConfig.crt.enabled}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, enabled: next } }))}
+              />
+              <SelectInput
+                label="Intensity"
+                value={siteConfig.crt.intensity}
+                options={[
+                  { value: 'low', label: 'Low' },
+                  { value: 'medium', label: 'Medium' },
+                  { value: 'high', label: 'High' },
+                ]}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, intensity: next as 'low' | 'medium' | 'high' } }))}
+              />
+            </Card>
+
+            <Card title="Screen Geometry" subtitle="Curvature and barrel distortion effects">
+              <Toggle
+                label="Enable Screen Geometry"
+                checked={siteConfig.crt.screenGeometry.enabled}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, screenGeometry: { ...prev.crt.screenGeometry, enabled: next } } }))}
+              />
+              <Input
+                label="Curvature"
+                type="number"
+                min={0}
+                max={1}
+                step={0.05}
+                value={siteConfig.crt.screenGeometry.curvature}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, screenGeometry: { ...prev.crt.screenGeometry, curvature: toSafeNumberInRange(next, 0.5, 0, 1) } } }))}
+              />
+            </Card>
+
+            <Card title="Barrel Curvature" subtitle="Screen edge distortion">
+              <Toggle
+                label="Enable Barrel Curvature"
+                checked={siteConfig.crt.barrelCurvature.enabled}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, barrelCurvature: { ...prev.crt.barrelCurvature, enabled: next } } }))}
+              />
+              <Input
+                label="Intensity"
+                type="number"
+                min={0}
+                max={1}
+                step={0.05}
+                value={siteConfig.crt.barrelCurvature.intensity}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, barrelCurvature: { ...prev.crt.barrelCurvature, intensity: toSafeNumberInRange(next, 0.3, 0, 1) } } }))}
+              />
+            </Card>
+
+            <Card title="Vignette" subtitle="Dark edges effect">
+              <Toggle
+                label="Enable Vignette"
+                checked={siteConfig.crt.vignette.enabled}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, vignette: { ...prev.crt.vignette, enabled: next } } }))}
+              />
+              <Input
+                label="Opacity"
+                type="number"
+                min={0}
+                max={1}
+                step={0.05}
+                value={siteConfig.crt.vignette.opacity}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, vignette: { ...prev.crt.vignette, opacity: toSafeNumberInRange(next, 0.6, 0, 1) } } }))}
+              />
+              <Input
+                label="Size"
+                type="number"
+                min={0}
+                max={1}
+                step={0.05}
+                value={siteConfig.crt.vignette.size}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, vignette: { ...prev.crt.vignette, size: toSafeNumberInRange(next, 0.8, 0, 1) } } }))}
+              />
+            </Card>
+
+            <Card title="Analog Signal" subtitle="Interference and sync effects">
+              <Toggle
+                label="Enable Analog Signal"
+                checked={siteConfig.crt.analogSignal.enabled}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, analogSignal: { ...prev.crt.analogSignal, enabled: next } } }))}
+              />
+              <Input
+                label="Interference"
+                type="number"
+                min={0}
+                max={1}
+                step={0.05}
+                value={siteConfig.crt.analogSignal.interference}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, analogSignal: { ...prev.crt.analogSignal, interference: toSafeNumberInRange(next, 0.2, 0, 1) } } }))}
+              />
+              <Input
+                label="Sync"
+                type="number"
+                min={0}
+                max={1}
+                step={0.05}
+                value={siteConfig.crt.analogSignal.sync}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, analogSignal: { ...prev.crt.analogSignal, sync: toSafeNumberInRange(next, 0.1, 0, 1) } } }))}
+              />
+            </Card>
+
+            <Card title="Color Bleed" subtitle="Chromatic aberration and color bleeding">
+              <Toggle
+                label="Enable Color Bleed"
+                checked={siteConfig.crt.colorBleed.enabled}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, colorBleed: { ...prev.crt.colorBleed, enabled: next } } }))}
+              />
+              <Input
+                label="Intensity"
+                type="number"
+                min={0}
+                max={1}
+                step={0.05}
+                value={siteConfig.crt.colorBleed.intensity}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, colorBleed: { ...prev.crt.colorBleed, intensity: toSafeNumberInRange(next, 0.15, 0, 1) } } }))}
+              />
+              <Input
+                label="Chromatic Aberration"
+                type="number"
+                min={0}
+                max={1}
+                step={0.05}
+                value={siteConfig.crt.colorBleed.chromaticAberration}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, colorBleed: { ...prev.crt.colorBleed, chromaticAberration: toSafeNumberInRange(next, 0.1, 0, 1) } } }))}
+              />
+            </Card>
+
+            <Card title="Static Noise" subtitle="Random noise overlay">
+              <Toggle
+                label="Enable Static Noise"
+                checked={siteConfig.crt.staticNoise.enabled}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, staticNoise: { ...prev.crt.staticNoise, enabled: next } } }))}
+              />
+              <Input
+                label="Intensity"
+                type="number"
+                min={0}
+                max={1}
+                step={0.05}
+                value={siteConfig.crt.staticNoise.intensity}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, staticNoise: { ...prev.crt.staticNoise, intensity: toSafeNumberInRange(next, 0.15, 0, 1) } } }))}
+              />
+              <Input
+                label="Speed"
+                type="number"
+                min={0}
+                max={1}
+                step={0.05}
+                value={siteConfig.crt.staticNoise.speed}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, staticNoise: { ...prev.crt.staticNoise, speed: toSafeNumberInRange(next, 0.5, 0, 1) } } }))}
+              />
+            </Card>
+
+            <Card title="Phosphor Display" subtitle="Phosphor persistence and decay">
+              <Toggle
+                label="Enable Phosphor Display"
+                checked={siteConfig.crt.phosphorDisplay.enabled}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, phosphorDisplay: { ...prev.crt.phosphorDisplay, enabled: next } } }))}
+              />
+              <Input
+                label="Persistence"
+                type="number"
+                min={0}
+                max={1}
+                step={0.05}
+                value={siteConfig.crt.phosphorDisplay.persistence}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, phosphorDisplay: { ...prev.crt.phosphorDisplay, persistence: toSafeNumberInRange(next, 0.3, 0, 1) } } }))}
+              />
+              <Input
+                label="Decay"
+                type="number"
+                min={0}
+                max={1}
+                step={0.05}
+                value={siteConfig.crt.phosphorDisplay.decay}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, phosphorDisplay: { ...prev.crt.phosphorDisplay, decay: toSafeNumberInRange(next, 0.2, 0, 1) } } }))}
+              />
+            </Card>
+
+            <Card title="Scanlines" subtitle="Horizontal line pattern">
+              <Toggle
+                label="Enable Scanlines"
+                checked={siteConfig.crt.scanlines.enabled}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, scanlines: { ...prev.crt.scanlines, enabled: next } } }))}
+              />
+              <Input
+                label="Intensity"
+                type="number"
+                min={0}
+                max={1}
+                step={0.05}
+                value={siteConfig.crt.scanlines.intensity}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, scanlines: { ...prev.crt.scanlines, intensity: toSafeNumberInRange(next, 0.4, 0, 1) } } }))}
+              />
+              <Input
+                label="Thickness (px)"
+                type="number"
+                min={0}
+                max={5}
+                step={0.5}
+                value={siteConfig.crt.scanlines.thickness}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, scanlines: { ...prev.crt.scanlines, thickness: toSafeNumberInRange(next, 1, 0, 5) } } }))}
+              />
+              <Input
+                label="Gap (px)"
+                type="number"
+                min={0}
+                max={10}
+                step={0.5}
+                value={siteConfig.crt.scanlines.gap}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, scanlines: { ...prev.crt.scanlines, gap: toSafeNumberInRange(next, 2, 0, 10) } } }))}
+              />
+            </Card>
+
+            <Card title="Phosphor Mask" subtitle="RGB pixel mask pattern">
+              <Toggle
+                label="Enable Phosphor Mask"
+                checked={siteConfig.crt.phosphorMask.enabled}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, phosphorMask: { ...prev.crt.phosphorMask, enabled: next } } }))}
+              />
+              <SelectInput
+                label="Pattern"
+                value={siteConfig.crt.phosphorMask.pattern}
+                options={[
+                  { value: 'none', label: 'None' },
+                  { value: 'rgb', label: 'RGB' },
+                  { value: 'aperture', label: 'Aperture' },
+                  { value: 'slot', label: 'Slot' },
+                ]}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, phosphorMask: { ...prev.crt.phosphorMask, pattern: next as 'none' | 'rgb' | 'aperture' | 'slot' } } }))}
+              />
+              <Input
+                label="Intensity"
+                type="number"
+                min={0}
+                max={1}
+                step={0.05}
+                value={siteConfig.crt.phosphorMask.intensity}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, phosphorMask: { ...prev.crt.phosphorMask, intensity: toSafeNumberInRange(next, 0.3, 0, 1) } } }))}
+              />
+            </Card>
+
+            <Card title="Phosphor Glow" subtitle="Screen glow effect">
+              <Toggle
+                label="Enable Phosphor Glow"
+                checked={siteConfig.crt.phosphorGlow.enabled}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, phosphorGlow: { ...prev.crt.phosphorGlow, enabled: next } } }))}
+              />
+              <Input
+                label="Intensity"
+                type="number"
+                min={0}
+                max={1}
+                step={0.05}
+                value={siteConfig.crt.phosphorGlow.intensity}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, phosphorGlow: { ...prev.crt.phosphorGlow, intensity: toSafeNumberInRange(next, 0.25, 0, 1) } } }))}
+              />
+              <Input
+                label="Spread"
+                type="number"
+                min={0}
+                max={1}
+                step={0.05}
+                value={siteConfig.crt.phosphorGlow.spread}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, phosphorGlow: { ...prev.crt.phosphorGlow, spread: toSafeNumberInRange(next, 0.5, 0, 1) } } }))}
+              />
+              <Input
+                label="Color"
+                value={siteConfig.crt.phosphorGlow.color}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, crt: { ...prev.crt, phosphorGlow: { ...prev.crt.phosphorGlow, color: next } } }))}
+              />
             </Card>
           </div>
         );

@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { useSiteConfig } from '../context/SiteConfigContext';
 
 interface CRTFrameProps {
   children: React.ReactNode;
@@ -21,6 +22,9 @@ export const CRTFrame: React.FC<CRTFrameProps> = ({
   vignette = true,
   glow = true,
 }) => {
+  const { siteConfig } = useSiteConfig();
+  const { crt } = siteConfig;
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [time, setTime] = useState(0);
 
@@ -34,9 +38,8 @@ export const CRTFrame: React.FC<CRTFrameProps> = ({
     let isVisible = true;
     let isRendering = false;
     let lastUpdateTime = 0;
-    const UPDATE_INTERVAL = 100; // Update noise every 100ms instead of every frame
+    const UPDATE_INTERVAL = 100;
 
-    // Visibility-based optimization: pause rendering when not visible
     const observer = new IntersectionObserver((entries) => {
       isVisible = entries[0].isIntersecting;
       if (isVisible && !isRendering) {
@@ -55,7 +58,6 @@ export const CRTFrame: React.FC<CRTFrameProps> = ({
       }
       isRendering = true;
 
-      // Throttle updates to reduce CPU usage
       if (now - lastUpdateTime < UPDATE_INTERVAL) {
         requestAnimationFrame(animate);
         return;
@@ -83,7 +85,6 @@ export const CRTFrame: React.FC<CRTFrameProps> = ({
       observer.observe(canvas.parentElement);
     }
 
-    // Explicitly kickstart the render
     isRendering = true;
     lastUpdateTime = 0;
     animate(performance.now());
@@ -99,8 +100,26 @@ export const CRTFrame: React.FC<CRTFrameProps> = ({
     high: 'crt-high',
   }[intensity];
 
+  const crtStyle = {
+    '--crt-vignette-opacity': crt.vignette.enabled ? crt.vignette.opacity : 0,
+    '--crt-vignette-size': crt.vignette.enabled ? crt.vignette.size : 0.8,
+    '--crt-scanline-opacity': crt.scanlines.enabled ? crt.scanlines.intensity : 0,
+    '--crt-scanline-thickness': crt.scanlines.enabled ? `${crt.scanlines.thickness}px` : '1px',
+    '--crt-scanline-gap': crt.scanlines.enabled ? `${crt.scanlines.gap}px` : '2px',
+    '--crt-glow-intensity': crt.phosphorGlow.enabled ? crt.phosphorGlow.intensity : 0,
+    '--crt-glow-spread': crt.phosphorGlow.enabled ? crt.phosphorGlow.spread : 0.5,
+    '--crt-glow-color': crt.phosphorGlow.enabled ? crt.phosphorGlow.color : '#00ff00',
+    '--crt-curve-intensity': crt.barrelCurvature.enabled ? crt.barrelCurvature.intensity : 0,
+    '--crt-color-bleed': crt.colorBleed.enabled ? crt.colorBleed.intensity : 0,
+    '--crt-chromatic-aberration': crt.colorBleed.enabled ? crt.colorBleed.chromaticAberration : 0,
+    '--crt-phosphor-persistence': crt.phosphorDisplay.enabled ? crt.phosphorDisplay.persistence : 0,
+    '--crt-phosphor-decay': crt.phosphorDisplay.enabled ? crt.phosphorDisplay.decay : 0,
+    '--crt-mask-intensity': crt.phosphorMask.enabled ? crt.phosphorMask.intensity : 0,
+    '--crt-mask-pattern': crt.phosphorMask.enabled ? crt.phosphorMask.pattern : 'rgb',
+  } as React.CSSProperties;
+
   return (
-    <div className={`crt-frame-wrapper ${intensityClass} ${className}`}>
+    <div className={`crt-frame-wrapper ${intensityClass} ${className}`} style={crtStyle}>
       {vignette && <div className="crt-vignette" />}
       {scanlines && <div className="crt-scanlines" />}
       {noise && (
