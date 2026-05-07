@@ -77,12 +77,10 @@ export const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="w-full bg-white text-[#0a0a0b] pt-24 pb-12 border-t border-[#0a0a0b]/10 relative z-10 selection:bg-[#0a0a0b]/10 font-mono uppercase text-[10px] sm:text-[11px] tracking-[0.15em] leading-relaxed">
-      <div className="max-w-[1600px] mx-auto px-6 md:px-12 lg:px-20 flex flex-col md:flex-row justify-between gap-16 md:gap-8">
-        
-        {/* Left Section */}
-        <div className="flex flex-col justify-between flex-1">
-          <div>
+    <footer className="w-full bg-white text-[#0a0a0b] border-t border-[#0a0a0b]/10 relative z-10 selection:bg-[#0a0a0b]/10 font-mono uppercase text-[10px] sm:text-[11px] tracking-[0.15em] leading-relaxed">
+      <div className="site-shell pt-16 pb-12 md:pt-20">
+        <div className="grid gap-12 lg:grid-cols-[1.1fr_0.7fr_0.7fr]">
+          <div className="flex flex-col gap-10">
             {visibility.footerEmail ? (
               <a
                 href={`mailto:${footer.email}`}
@@ -96,7 +94,7 @@ export const Footer: React.FC = () => {
             ) : null}
 
             {visibility.footerSocialLinks && visibleSocialLinks.length > 0 ? (
-              <div className="flex flex-wrap items-center justify-start gap-5 mt-10 text-[#0a0a0b]">
+              <div className="flex flex-wrap items-center gap-5 text-[#0a0a0b]">
                 {visibleSocialLinks.map((social, index) => {
                   const SocialIcon = getSocialIconComponent(social.icon);
                   return (
@@ -121,33 +119,7 @@ export const Footer: React.FC = () => {
               </div>
             ) : null}
           </div>
-          
-          <div className="mt-24 md:mt-32">
-            <p className="text-[#0a0a0b]/60">© {new Date().getFullYear()} {footer.copyrightText}</p>
-            {visibility.footerLegalLinks && visibleLegalLinks.length > 0 ? (
-              <div className="text-[#0a0a0b]/40 mt-3 hover:text-[#0a0a0b]/60 transition-colors flex flex-wrap gap-2">
-                {visibleLegalLinks.map((link, index) => (
-                  <React.Fragment key={link.id}>
-                    <a
-                      href={link.href}
-                      onClick={(e) => handlePlaceholderLinkClick(e, link.href)}
-                      className="hover:text-[#0a0a0b] transition-colors relative group/link"
-                    >
-                      {link.label}
-                      <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-[#0a0a0b] transition-all duration-300 group-hover/link:w-full"></span>
-                    </a>
-                    {index < visibleLegalLinks.length - 1 ? <span>|</span> : null}
-                  </React.Fragment>
-                ))}
-              </div>
-            ) : null}
-          </div>
-        </div>
 
-        {/* Right Sections Container */}
-        <div className="flex flex-col sm:flex-row gap-16 md:gap-32 lg:gap-48 mt-2 md:mt-0">
-          
-          {/* Middle Nav */}
           {visibility.footerNavLinks && syncedNavLinks.length > 0 ? (
             <ul className="flex flex-col gap-5">
               {syncedNavLinks.map((item) => (
@@ -165,7 +137,6 @@ export const Footer: React.FC = () => {
             </ul>
           ) : null}
 
-          {/* Right Address */}
           {visibility.footerOffice ? (
             <div className="flex flex-col gap-3">
               <p className="text-[#0a0a0b] font-bold mb-1 tracking-[0.2em]">{footer.officeTitle}</p>
@@ -179,9 +150,28 @@ export const Footer: React.FC = () => {
               </p>
             </div>
           ) : null}
-
         </div>
 
+        <div className="mt-12 flex flex-col gap-4 border-t border-[#0a0a0b]/10 pt-6 md:flex-row md:items-center md:justify-between">
+          <p className="text-[#0a0a0b]/60">© {new Date().getFullYear()} {footer.copyrightText}</p>
+          {visibility.footerLegalLinks && visibleLegalLinks.length > 0 ? (
+            <div className="flex flex-wrap items-center gap-2 text-[#0a0a0b]/45">
+              {visibleLegalLinks.map((link, index) => (
+                <React.Fragment key={link.id}>
+                  <a
+                    href={link.href}
+                    onClick={(e) => handlePlaceholderLinkClick(e, link.href)}
+                    className="hover:text-[#0a0a0b] transition-colors relative group/link"
+                  >
+                    {link.label}
+                    <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-[#0a0a0b] transition-all duration-300 group-hover/link:w-full"></span>
+                  </a>
+                  {index < visibleLegalLinks.length - 1 ? <span className="text-[#0a0a0b]/30">|</span> : null}
+                </React.Fragment>
+              ))}
+            </div>
+          ) : null}
+        </div>
       </div>
     </footer>
   );

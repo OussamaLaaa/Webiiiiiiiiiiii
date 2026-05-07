@@ -37,6 +37,7 @@ export const MasterSequence: React.FC<MasterSequenceProps> = ({
   const parallaxWrapperRef = useRef<HTMLDivElement>(null);
   const lastDrawableImageRef = useRef<HTMLImageElement | null>(null);
   const { siteConfig } = useSiteConfig();
+  const frameConfig = siteConfig.globalFrame;
   const isInputLockedRef = useRef(isInputLocked);
   const scrollSettingsRef = useRef(siteConfig.cinematicSequence.scroll);
   const lastProgressRef = useRef(0);
@@ -416,6 +417,21 @@ export const MasterSequence: React.FC<MasterSequenceProps> = ({
           />
         </div>
         <WebGLFog />
+        {frameConfig.watermarkMaskMobilePx > 0 || frameConfig.watermarkMaskDesktopPx > 0 ? (
+          <div
+            className="cinematic-watermark-mask pointer-events-none absolute z-[5]"
+            style={{
+              '--watermark-mask-mobile': `${frameConfig.watermarkMaskMobilePx}px`,
+              '--watermark-mask-desktop': `${frameConfig.watermarkMaskDesktopPx}px`,
+              '--watermark-mask-width-mobile': `${frameConfig.watermarkMaskWidthMobilePx}px`,
+              '--watermark-mask-width-desktop': `${frameConfig.watermarkMaskWidthDesktopPx}px`,
+              '--watermark-mask-right-mobile': `${frameConfig.watermarkMaskRightMobilePx}px`,
+              '--watermark-mask-right-desktop': `${frameConfig.watermarkMaskRightDesktopPx}px`,
+              '--watermark-mask-bottom-mobile': `${frameConfig.watermarkMaskBottomMobilePx}px`,
+              '--watermark-mask-bottom-desktop': `${frameConfig.watermarkMaskBottomDesktopPx}px`,
+            } as React.CSSProperties}
+          />
+        ) : null}
       </div>
     </section>
   );

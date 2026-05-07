@@ -1742,6 +1742,172 @@ export const Dashboard: React.FC = () => {
                   }
                 />
                 <Input
+                  label="Watermark mask mobile (px)"
+                  type="number"
+                  min={0}
+                  max={240}
+                  step={1}
+                  value={siteConfig.globalFrame.watermarkMaskMobilePx}
+                  onChange={(next) =>
+                    updateConfig((prev) => ({
+                      ...prev,
+                      globalFrame: {
+                        ...prev.globalFrame,
+                        watermarkMaskMobilePx: toSafeNumberInRange(next, prev.globalFrame.watermarkMaskMobilePx, 0, 240),
+                      },
+                    }))
+                  }
+                />
+                <Input
+                  label="Watermark mask desktop (px)"
+                  type="number"
+                  min={0}
+                  max={320}
+                  step={1}
+                  value={siteConfig.globalFrame.watermarkMaskDesktopPx}
+                  onChange={(next) =>
+                    updateConfig((prev) => ({
+                      ...prev,
+                      globalFrame: {
+                        ...prev.globalFrame,
+                        watermarkMaskDesktopPx: toSafeNumberInRange(next, prev.globalFrame.watermarkMaskDesktopPx, 0, 320),
+                      },
+                    }))
+                  }
+                />
+                <Input
+                  label="Watermark mask width mobile (px)"
+                  type="number"
+                  min={0}
+                  max={420}
+                  step={1}
+                  value={siteConfig.globalFrame.watermarkMaskWidthMobilePx}
+                  onChange={(next) =>
+                    updateConfig((prev) => ({
+                      ...prev,
+                      globalFrame: {
+                        ...prev.globalFrame,
+                        watermarkMaskWidthMobilePx: toSafeNumberInRange(
+                          next,
+                          prev.globalFrame.watermarkMaskWidthMobilePx,
+                          0,
+                          420,
+                        ),
+                      },
+                    }))
+                  }
+                />
+                <Input
+                  label="Watermark mask width desktop (px)"
+                  type="number"
+                  min={0}
+                  max={520}
+                  step={1}
+                  value={siteConfig.globalFrame.watermarkMaskWidthDesktopPx}
+                  onChange={(next) =>
+                    updateConfig((prev) => ({
+                      ...prev,
+                      globalFrame: {
+                        ...prev.globalFrame,
+                        watermarkMaskWidthDesktopPx: toSafeNumberInRange(
+                          next,
+                          prev.globalFrame.watermarkMaskWidthDesktopPx,
+                          0,
+                          520,
+                        ),
+                      },
+                    }))
+                  }
+                />
+                <Input
+                  label="Watermark mask right mobile (px)"
+                  type="number"
+                  min={0}
+                  max={160}
+                  step={1}
+                  value={siteConfig.globalFrame.watermarkMaskRightMobilePx}
+                  onChange={(next) =>
+                    updateConfig((prev) => ({
+                      ...prev,
+                      globalFrame: {
+                        ...prev.globalFrame,
+                        watermarkMaskRightMobilePx: toSafeNumberInRange(
+                          next,
+                          prev.globalFrame.watermarkMaskRightMobilePx,
+                          0,
+                          160,
+                        ),
+                      },
+                    }))
+                  }
+                />
+                <Input
+                  label="Watermark mask right desktop (px)"
+                  type="number"
+                  min={0}
+                  max={240}
+                  step={1}
+                  value={siteConfig.globalFrame.watermarkMaskRightDesktopPx}
+                  onChange={(next) =>
+                    updateConfig((prev) => ({
+                      ...prev,
+                      globalFrame: {
+                        ...prev.globalFrame,
+                        watermarkMaskRightDesktopPx: toSafeNumberInRange(
+                          next,
+                          prev.globalFrame.watermarkMaskRightDesktopPx,
+                          0,
+                          240,
+                        ),
+                      },
+                    }))
+                  }
+                />
+                <Input
+                  label="Watermark mask bottom mobile (px)"
+                  type="number"
+                  min={0}
+                  max={160}
+                  step={1}
+                  value={siteConfig.globalFrame.watermarkMaskBottomMobilePx}
+                  onChange={(next) =>
+                    updateConfig((prev) => ({
+                      ...prev,
+                      globalFrame: {
+                        ...prev.globalFrame,
+                        watermarkMaskBottomMobilePx: toSafeNumberInRange(
+                          next,
+                          prev.globalFrame.watermarkMaskBottomMobilePx,
+                          0,
+                          160,
+                        ),
+                      },
+                    }))
+                  }
+                />
+                <Input
+                  label="Watermark mask bottom desktop (px)"
+                  type="number"
+                  min={0}
+                  max={240}
+                  step={1}
+                  value={siteConfig.globalFrame.watermarkMaskBottomDesktopPx}
+                  onChange={(next) =>
+                    updateConfig((prev) => ({
+                      ...prev,
+                      globalFrame: {
+                        ...prev.globalFrame,
+                        watermarkMaskBottomDesktopPx: toSafeNumberInRange(
+                          next,
+                          prev.globalFrame.watermarkMaskBottomDesktopPx,
+                          0,
+                          240,
+                        ),
+                      },
+                    }))
+                  }
+                />
+                <Input
                   label="Side offset mobile (px)"
                   type="number"
                   min={0}

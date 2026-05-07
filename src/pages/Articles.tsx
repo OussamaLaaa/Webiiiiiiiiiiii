@@ -184,8 +184,8 @@ export const Articles: React.FC<ArticlesPageProps> = ({ slug }) => {
   const dsComponents = designSystem.components;
   const layoutStyle = useMemo(() => {
     return {
-      maxWidth: `${foundation.layout.contentMaxWidthPx}px`,
-      paddingInline: 'clamp(1.25rem, 3vw, 2.75rem)',
+      maxWidth: 'var(--ds-layout-max-width)',
+      paddingInline: 'var(--site-shell-padding)',
       paddingTop: `calc(${foundation.spacing.sectionPaddingRem}rem + 2.5rem)`,
       paddingBottom: `${foundation.spacing.sectionPaddingRem}rem`,
       rowGap: `${foundation.spacing.gridGapRem}rem`,

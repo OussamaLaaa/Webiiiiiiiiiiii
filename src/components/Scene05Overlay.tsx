@@ -309,7 +309,7 @@ export const Scene05Overlay: React.FC<Scene05OverlayProps> = ({ progress }) => {
         className="h-full overflow-y-auto overflow-x-hidden bg-[radial-gradient(1200px_680px_at_8%_0%,rgba(66,109,176,0.12),transparent_64%),radial-gradient(900px_560px_at_96%_16%,rgba(96,132,185,0.1),transparent_68%),linear-gradient(180deg,#edf2fa_0%,#f9fbff_42%,#eef2f9_100%)] text-[#0f1219]"
       >
         <div className="min-h-full pb-24 pt-[90px] md:pb-32 md:pt-[134px]">
-          <div className="mx-auto w-full max-w-[1180px] px-5 md:px-10 lg:px-14">
+          <div className="site-shell max-w-[1180px]">
             <header className="s5-section border-b border-[#0f1219]/12 pb-12 md:pb-14">
               <div className="mb-6">
                 <span className="inline-flex items-center gap-2 rounded-full border border-[#0f1219]/14 bg-white/82 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-[#0f1219]/68">

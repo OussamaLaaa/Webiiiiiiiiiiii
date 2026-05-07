@@ -220,6 +220,14 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({ isActive }) => {
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const currentScrollY = e.currentTarget.scrollTop;
 
+    const scroller = containerRef.current;
+    const slide = scroller?.querySelector('.next-page-slide') as HTMLElement | null;
+    if (scroller && slide) {
+      const triggerLine = scroller.scrollTop + scroller.clientHeight * 0.35;
+      const nextSection = triggerLine >= slide.offsetTop ? 'testimonials' : 'projects';
+      dispatchNavSection(nextSection);
+    }
+
     if (currentScrollY > 100) {
       if (currentScrollY > lastScrollY.current + 10) {
         window.dispatchEvent(new CustomEvent('toggle-navbar', { detail: { show: false } }));
@@ -233,16 +241,6 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({ isActive }) => {
 
     window.dispatchEvent(new CustomEvent('toggle-navbar', { detail: { show: true } }));
     lastScrollY.current = currentScrollY;
-
-    const scroller = containerRef.current;
-    const slide = scroller?.querySelector('.next-page-slide') as HTMLElement | null;
-    if (scroller && slide) {
-      const containerRect = scroller.getBoundingClientRect();
-      const slideRect = slide.getBoundingClientRect();
-      const threshold = containerRect.top + scroller.clientHeight * 0.35;
-      const nextSection = slideRect.top <= threshold ? 'testimonials' : 'projects';
-      dispatchNavSection(nextSection);
-    }
   };
 
   const runPortfolioNavigation = useCallback(
@@ -252,6 +250,7 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({ isActive }) => {
       if (section === 'projects') {
         containerRef.current.scrollTo({ top: 0, behavior });
         window.dispatchEvent(new CustomEvent('toggle-navbar', { detail: { show: true } }));
+        dispatchNavSection('projects');
         return;
       }
 
@@ -264,6 +263,7 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({ isActive }) => {
 
       containerRef.current.scrollTo({ top: Math.max(0, targetTop), behavior });
       window.dispatchEvent(new CustomEvent('toggle-navbar', { detail: { show: false } }));
+      dispatchNavSection('testimonials');
     },
     [],
   );
@@ -348,7 +348,7 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({ isActive }) => {
         isActive ? 'opacity-100 pointer-events-auto translate-y-0' : 'opacity-0 pointer-events-none translate-y-12'
       }`}
     >
-      <div className="projects-wrapper mx-auto w-full max-w-[1600px] origin-right px-6 py-24 md:px-12 md:py-32 lg:px-20">
+      <div className="projects-wrapper site-shell origin-right py-24 md:py-32">
         {visibility.featuredHeader ? (
           <div className="mb-16 flex flex-col gap-9 md:mb-24 md:flex-row md:items-end md:justify-between">
             <h1
@@ -449,7 +449,7 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({ isActive }) => {
       </div>
 
       <div className="next-page-slide relative z-[250] w-full rounded-t-[8px] bg-white pt-28 pb-0 shadow-[0_-16px_42px_rgba(0,0,0,0.045)] md:pt-32">
-        <div className="mx-auto w-full max-w-[1600px] px-6 md:px-12 lg:px-20">
+        <div className="site-shell">
           {visibility.experienceMarqueeSection ? <ExperienceMarquee isActive={isActive} /> : null}
 
           {visibility.testimonialsSection ? <Testimonials isActive={isActive} /> : null}

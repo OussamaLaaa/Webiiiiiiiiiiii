@@ -286,6 +286,14 @@ export interface SiteGlobalFrameConfig {
   topOffsetDesktopPx: number;
   bottomOffsetMobilePx: number;
   bottomOffsetDesktopPx: number;
+  watermarkMaskMobilePx: number;
+  watermarkMaskDesktopPx: number;
+  watermarkMaskWidthMobilePx: number;
+  watermarkMaskWidthDesktopPx: number;
+  watermarkMaskRightMobilePx: number;
+  watermarkMaskRightDesktopPx: number;
+  watermarkMaskBottomMobilePx: number;
+  watermarkMaskBottomDesktopPx: number;
   sideOffsetMobilePx: number;
   sideOffsetDesktopPx: number;
   topRadiusMobilePx: number;
@@ -1833,6 +1841,14 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
     topOffsetDesktopPx: 120,
     bottomOffsetMobilePx: 40,
     bottomOffsetDesktopPx: 80,
+    watermarkMaskMobilePx: 70,
+    watermarkMaskDesktopPx: 90,
+    watermarkMaskWidthMobilePx: 160,
+    watermarkMaskWidthDesktopPx: 220,
+    watermarkMaskRightMobilePx: 12,
+    watermarkMaskRightDesktopPx: 24,
+    watermarkMaskBottomMobilePx: 12,
+    watermarkMaskBottomDesktopPx: 16,
     sideOffsetMobilePx: 12,
     sideOffsetDesktopPx: 60,
     topRadiusMobilePx: 80,
@@ -3754,6 +3770,54 @@ export const hydrateSiteConfig = (value: unknown): SiteConfig => {
         DEFAULT_SITE_CONFIG.globalFrame.bottomOffsetDesktopPx,
         0,
         360,
+      ),
+      watermarkMaskMobilePx: asBoundedNumber(
+        globalFrame.watermarkMaskMobilePx,
+        DEFAULT_SITE_CONFIG.globalFrame.watermarkMaskMobilePx,
+        0,
+        240,
+      ),
+      watermarkMaskDesktopPx: asBoundedNumber(
+        globalFrame.watermarkMaskDesktopPx,
+        DEFAULT_SITE_CONFIG.globalFrame.watermarkMaskDesktopPx,
+        0,
+        320,
+      ),
+      watermarkMaskWidthMobilePx: asBoundedNumber(
+        globalFrame.watermarkMaskWidthMobilePx,
+        DEFAULT_SITE_CONFIG.globalFrame.watermarkMaskWidthMobilePx,
+        0,
+        420,
+      ),
+      watermarkMaskWidthDesktopPx: asBoundedNumber(
+        globalFrame.watermarkMaskWidthDesktopPx,
+        DEFAULT_SITE_CONFIG.globalFrame.watermarkMaskWidthDesktopPx,
+        0,
+        520,
+      ),
+      watermarkMaskRightMobilePx: asBoundedNumber(
+        globalFrame.watermarkMaskRightMobilePx,
+        DEFAULT_SITE_CONFIG.globalFrame.watermarkMaskRightMobilePx,
+        0,
+        160,
+      ),
+      watermarkMaskRightDesktopPx: asBoundedNumber(
+        globalFrame.watermarkMaskRightDesktopPx,
+        DEFAULT_SITE_CONFIG.globalFrame.watermarkMaskRightDesktopPx,
+        0,
+        240,
+      ),
+      watermarkMaskBottomMobilePx: asBoundedNumber(
+        globalFrame.watermarkMaskBottomMobilePx,
+        DEFAULT_SITE_CONFIG.globalFrame.watermarkMaskBottomMobilePx,
+        0,
+        160,
+      ),
+      watermarkMaskBottomDesktopPx: asBoundedNumber(
+        globalFrame.watermarkMaskBottomDesktopPx,
+        DEFAULT_SITE_CONFIG.globalFrame.watermarkMaskBottomDesktopPx,
+        0,
+        240,
       ),
       sideOffsetMobilePx: asBoundedNumber(
         globalFrame.sideOffsetMobilePx,

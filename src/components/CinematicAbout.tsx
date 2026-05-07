@@ -265,7 +265,7 @@ export const CinematicAbout: React.FC<CinematicAboutProps> = ({ progress }) => {
         onScroll={handleScroll}
         className="relative z-[4] h-full overflow-y-auto overflow-x-hidden overscroll-y-contain"
       >
-        <div className="mx-auto w-full max-w-[1440px] px-5 pb-20 pt-24 sm:px-8 sm:pt-28 md:px-12 md:pb-28 md:pt-32 lg:px-16 lg:pb-32 lg:pt-36 xl:px-20 xl:pt-40">
+        <div className="site-shell pb-20 pt-24 sm:pt-28 md:pb-28 md:pt-32 lg:pb-32 lg:pt-36 xl:pt-40">
           <header className="mb-14 md:mb-16 lg:mb-20">
             <div className="grid gap-6 md:gap-8 lg:grid-cols-[minmax(220px,250px)_minmax(0,1fr)] lg:items-start lg:gap-10 xl:gap-12">
               <article className="relative max-w-[250px]">
