@@ -834,6 +834,88 @@ select:focus-visible {
 }
 
 /* ========================================
+   CUSTOM SCROLLBAR - Modern Animated Style
+   ======================================== */
+
+/* Hide default scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+/* Custom scrollbar track */
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 10px;
+}
+
+/* Custom scrollbar thumb - Dark mode (white/gray) */
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #ffffff 0%, #888888 100%);
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+/* Scrollbar thumb on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #ffffff 0%, #999999 100%);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+/* Scrollbar thumb on active */
+::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(180deg, #cccccc 0%, #666666 100%);
+  transform: scale(0.95);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #ffffff rgba(255, 255, 255, 0.02);
+}
+
+/* Light mode scrollbar */
+[data-surface="base"].light-mode ::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+[data-surface="base"].light-mode ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #1a1a1a 0%, #444444 100%);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+[data-surface="base"].light-mode ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #2a2a2a 0%, #555555 100%);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+[data-surface="base"].light-mode ::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(180deg, #0a0a0a 0%, #333333 100%);
+}
+
+[data-surface="base"].light-mode {
+  scrollbar-color: #1a1a1a rgba(0, 0, 0, 0.05);
+}
+
+/* Scrollbar animation on scroll */
+@keyframes scrollbar-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+::-webkit-scrollbar-thumb {
+  animation: scrollbar-pulse 2s ease-in-out infinite;
+}
+
+/* ========================================
    CRT SCREEN EFFECTS - Retro TV Style
    ======================================== */
 

@@ -168,7 +168,7 @@ export const AdvancedNavbar: React.FC<AdvancedNavbarProps> = ({ isLightMode = fa
   }, [activeSection]);
 
   const isStandaloneRoute = () => {
-    return activeSection === 'articles' || activeSection === 'dashboard';
+    return activeSection === 'articles' || activeSection === 'contact' || activeSection === 'dashboard';
   };
 
   const handleNav = (e: React.MouseEvent<HTMLAnchorElement>, section: string) => {
@@ -177,8 +177,8 @@ export const AdvancedNavbar: React.FC<AdvancedNavbarProps> = ({ isLightMode = fa
     // Update active section immediately for visual feedback
     setActiveSection(section);
 
-    if (section === 'articles') {
-      window.location.hash = '/articles';
+    if (section === 'articles' || section === 'contact') {
+      window.location.hash = `/${section}`;
       return;
     }
 
@@ -331,7 +331,7 @@ export const AdvancedNavbar: React.FC<AdvancedNavbarProps> = ({ isLightMode = fa
                   {visibleNavItems.map((item) => (
                     <a
                       key={item.id}
-                      href={item.section === 'articles' ? '#/articles' : `#${item.section}`}
+                      href={item.section === 'articles' || item.section === 'contact' ? `#/${item.section}` : `#${item.section}`}
                       onClick={(e) => handleNav(e, item.section)}
                       data-section={item.section}
                       className={`nav-link px-6 py-3 text-sm font-medium tracking-[0.01em] transition-all duration-400 rounded-lg ${
@@ -466,7 +466,7 @@ export const AdvancedNavbar: React.FC<AdvancedNavbarProps> = ({ isLightMode = fa
                 {visibleNavItems.map((item) => (
                   <a
                     key={item.id}
-                    href={item.section === 'articles' ? '#/articles' : `#${item.section}`}
+                    href={item.section === 'articles' || item.section === 'contact' ? `#/${item.section}` : `#${item.section}`}
                     onClick={(e) => {
                       handleNav(e, item.section);
                       setIsMobileMenuOpen(false);

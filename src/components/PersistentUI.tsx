@@ -254,14 +254,14 @@ export const PersistentUI: React.FC<PersistentUIProps> = ({ isLightMode = false 
 
   const isStandaloneRoute = () => {
     const section = getCurrentRouteSection();
-    return section === 'articles' || section === 'dashboard';
+    return section === 'articles' || section === 'contact' || section === 'dashboard';
   };
 
   const handleNav = (e: React.MouseEvent<HTMLAnchorElement>, section: string) => {
     e.preventDefault();
 
-    if (section === 'articles') {
-      window.location.hash = '/articles';
+    if (section === 'articles' || section === 'contact') {
+      window.location.hash = `/${section}`;
       return;
     }
 

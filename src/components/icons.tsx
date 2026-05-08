@@ -1,61 +1,71 @@
-import React from 'react';
-import {
-  Globe,
-  Mail,
-} from 'lucide-react';
-import {
-  AiOutlineDribbble as Dribbble,
-  AiOutlineFacebook as Facebook,
-  AiOutlineGithub as Github,
-  AiOutlineInstagram as Instagram,
-  AiOutlineLinkedin as Linkedin,
-  AiOutlineTwitter as Twitter,
-  AiOutlineYoutube as Youtube,
-} from 'react-icons/ai';
-import { SiFigma as Figma } from 'react-icons/si';
-import type { SiteSocialIconKey } from '../config/siteConfig';
+  import React from 'react';
+  import {
+    FacebookIcon,
+    TwitterIcon,
+    InstagramIcon,
+    LinkedinIcon,
+    GithubIcon,
+    YoutubeIcon,
+    DribbbleIcon,
+    FigmaIcon,
+    GlobeIcon,
+    MailIcon,
+    BehanceIcon,
+    HomeIcon,
+    UserIcon,
+    BriefcaseIcon,
+    MessageSquareIcon,
+    FileTextIcon,
+    SlidersHorizontalIcon,
+    RotateCcwIcon,
+    XIcon,
+    BarChart3Icon,
+    ExternalLinkIcon,
+    InboxIcon,
+    LogOutIcon,
+    SaveIcon,
+    SettingsIcon,
+    DownloadIcon,
+    UploadIcon,
+  } from './custom-icons';
+  import type { SiteSocialIconKey } from '../config/siteConfig';
 
-type IconProps = {
-  size?: number;
-  strokeWidth?: number;
-  className?: string;
-};
+  type IconProps = {
+    size?: number;
+    strokeWidth?: number;
+    className?: string;
+  };
 
-// Behance icon redrawn in a Lucide-compatible 24x24 outline style.
-export const BehanceIcon: React.FC<IconProps> = ({
-  size = 24,
-  strokeWidth = 1.5,
-  className = ''
-}) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={strokeWidth}
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={`lucide ${className}`.trim()}
-  >
-    <path d="M3 18v-12h4.5a3 3 0 0 1 0 6a3 3 0 0 1 0 6h-4.5" />
-    <path d="M3 12h4.5" />
-    <path d="M14 13h7a3.5 3.5 0 0 0 -7 0v2a3.5 3.5 0 0 0 6.64 1" />
-    <path d="M16 6h3" />
-  </svg>
-);
-
-export const InstagramIcon = Instagram;
-export const LinkedinIcon = Linkedin;
-export const GithubIcon = Github;
-export const TwitterIcon = Twitter;
-export const FacebookIcon = Facebook;
-export const YoutubeIcon = Youtube;
-export const DribbbleIcon = Dribbble;
-export const FigmaIcon = Figma;
-export const GlobeIcon = Globe;
-export const MailIcon = Mail;
+  // Re-export all icons from custom library
+  export { 
+    FacebookIcon, 
+    TwitterIcon, 
+    InstagramIcon, 
+    LinkedinIcon, 
+    GithubIcon, 
+    YoutubeIcon, 
+    DribbbleIcon, 
+    FigmaIcon, 
+    GlobeIcon, 
+    MailIcon, 
+    BehanceIcon,
+    HomeIcon,
+    UserIcon,
+    BriefcaseIcon,
+    MessageSquareIcon,
+    FileTextIcon,
+    SlidersHorizontalIcon,
+    RotateCcwIcon,
+    XIcon,
+    BarChart3Icon,
+    ExternalLinkIcon,
+    InboxIcon,
+    LogOutIcon,
+    SaveIcon,
+    SettingsIcon,
+    DownloadIcon,
+    UploadIcon,
+  };
 
 type SocialIconComponent = React.ComponentType<IconProps>;
 

@@ -33,19 +33,18 @@ import {
   type SiteMessageStatus,
 } from '../config/siteConfig';
 import {
-  BarChart3,
-  ExternalLink,
-  FileText,
-  Globe,
-  Inbox,
-  LogOut,
-  RotateCcw,
-  Save,
-  Settings,
-  Download,
-  Upload,
-  type LucideIcon,
-} from 'lucide-react';
+  BarChart3Icon,
+  ExternalLinkIcon,
+  FileTextIcon,
+  GlobeIcon,
+  InboxIcon,
+  LogOutIcon,
+  RotateCcwIcon,
+  SaveIcon,
+  SettingsIcon,
+  DownloadIcon,
+  UploadIcon,
+} from '../components/icons';
 
 const DASHBOARD_PASSWORD = '00000008';
 const DASHBOARD_AUTH_KEY = 'portfolio.dashboard.auth.v1';
@@ -76,37 +75,37 @@ const DASHBOARD_WORKSPACES: Array<{
   id: DashboardWorkspace;
   label: string;
   description: string;
-  icon: LucideIcon;
+  icon: React.ComponentType<{ size?: number; strokeWidth?: number; className?: string }>;
 }> = [
   {
     id: 'site',
     label: 'Site Editor',
     description: 'Edit all website sections, text, images, and visual modules.',
-    icon: Globe,
+    icon: GlobeIcon,
   },
   {
     id: 'articles',
     label: 'Articles Studio',
     description: 'Create, schedule, and publish articles.',
-    icon: FileText,
+    icon: FileTextIcon,
   },
   {
     id: 'settings',
     label: 'Settings',
     description: 'Manage browser metadata, domain, API, and integrations.',
-    icon: Settings,
+    icon: SettingsIcon,
   },
   {
     id: 'analytics',
     label: 'Analytics',
     description: 'Track channel performance, sessions, and conversion health.',
-    icon: BarChart3,
+    icon: BarChart3Icon,
   },
   {
     id: 'messages',
     label: 'Messages',
     description: 'Review inbound messages submitted from website visitors.',
-    icon: Inbox,
+    icon: InboxIcon,
   },
 ];
 
@@ -6302,11 +6301,11 @@ export const Dashboard: React.FC = () => {
                     onClick={() => exportStorage()}
                     className="flex items-center justify-center gap-2 rounded-[10px] border border-white/14 bg-white/[0.06] px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-white/[0.12]"
                   >
-                    <Download size={16} />
+                    <DownloadIcon size={16} />
                     Export Backup
                   </button>
                   <label className="flex items-center justify-center gap-2 rounded-[10px] border border-white/14 bg-white/[0.06] px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-white/[0.12] cursor-pointer">
-                    <Upload size={16} />
+                    <UploadIcon size={16} />
                     Import Backup
                     <input
                       type="file"
@@ -6755,10 +6754,10 @@ export const Dashboard: React.FC = () => {
 
             <div className="mt-auto flex flex-col gap-2 pt-3">
               <button type="button" onClick={handleSaveChanges} title="Save changes" className="inline-flex h-11 w-11 items-center justify-center rounded-[12px] border border-[#b6f45b]/46 bg-[#b6f45b] text-[#0a0d11]">
-                <Save size={16} strokeWidth={1.9} />
+                <SaveIcon size={16} strokeWidth={1.9} />
               </button>
               <button type="button" onClick={handleOpenSite} title="Open site" className="inline-flex h-11 w-11 items-center justify-center rounded-[12px] border border-white/14 bg-white/[0.06] text-white/78 hover:bg-white/[0.12]">
-                <ExternalLink size={16} strokeWidth={1.9} />
+                <ExternalLinkIcon size={16} strokeWidth={1.9} />
               </button>
               <button
                 type="button"
@@ -6770,10 +6769,10 @@ export const Dashboard: React.FC = () => {
                 title="Reset defaults"
                 className="inline-flex h-11 w-11 items-center justify-center rounded-[12px] border border-white/14 bg-white/[0.06] text-white/78 hover:bg-white/[0.12]"
               >
-                <RotateCcw size={16} strokeWidth={1.9} />
+                <RotateCcwIcon size={16} strokeWidth={1.9} />
               </button>
               <button type="button" onClick={handleLogout} title="Logout" className="inline-flex h-11 w-11 items-center justify-center rounded-[12px] border border-[#ef4444]/38 bg-[#ef4444]/18 text-[#fecaca] hover:bg-[#ef4444]/28">
-                <LogOut size={16} strokeWidth={1.9} />
+                <LogOutIcon size={16} strokeWidth={1.9} />
               </button>
             </div>
           </aside>

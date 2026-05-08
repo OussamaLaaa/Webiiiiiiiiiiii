@@ -1,4 +1,4 @@
-export type SiteSection = 'home' | 'about' | 'projects' | 'testimonials' | 'articles';
+export type SiteSection = 'home' | 'about' | 'projects' | 'testimonials' | 'articles' | 'contact';
 
 export type SiteButtonVariant = 'button-1' | 'button-2' | 'button-3';
 export type SiteCardVariant = 'card-1' | 'card-2' | 'card-3';
@@ -1120,6 +1120,7 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
       { id: 'nav-about', label: 'About Me', section: 'about', visible: true },
       { id: 'nav-projects', label: 'Projects', section: 'projects', visible: true },
       { id: 'nav-testimonials', label: 'Testimonials', section: 'testimonials', visible: true },
+      { id: 'nav-contact', label: 'Contact', section: 'contact', visible: true },
       { id: 'nav-articles', label: 'Articles', section: 'articles', visible: false },
     ],
     letsTalkLabel: "Let's Talk",

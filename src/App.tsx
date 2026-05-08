@@ -4,10 +4,12 @@ import { SiteConfigProvider } from './context/SiteConfigContext';
 
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Articles = lazy(() => import('./pages/Articles'));
+const Contact = lazy(() => import('./pages/Contact'));
 
 type AppRoute =
   | { page: 'home' }
   | { page: 'dashboard' }
+  | { page: 'contact' }
   | {
       page: 'articles';
       slug?: string;
@@ -28,6 +30,10 @@ const getRoute = (): AppRoute => {
 
   if (section === 'dashboard') {
     return { page: 'dashboard' };
+  }
+
+  if (section === 'contact') {
+    return { page: 'contact' };
   }
 
   if (section === 'articles') {
@@ -77,6 +83,16 @@ function App() {
           }
         >
           <Dashboard />
+        </Suspense>
+      ) : route.page === 'contact' ? (
+        <Suspense
+          fallback={
+            <main className="flex min-h-screen items-center justify-center bg-[#09090b] text-white">
+              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/70">Loading contact...</p>
+            </main>
+          }
+        >
+          <Contact />
         </Suspense>
       ) : (
         <Home />
