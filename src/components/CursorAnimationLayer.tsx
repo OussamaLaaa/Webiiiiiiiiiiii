@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, memo } from 'react';
 import type { CSSProperties, RefObject } from 'react';
 import type { SiteConfig } from '../config/siteConfig';
 import SplashCursor from './SplashCursor';
@@ -864,7 +864,7 @@ const PlasmaCursorLayer: React.FC<PlasmaCursorLayerProps> = ({
   );
 };
 
-export const CursorAnimationLayer: React.FC<CursorAnimationLayerProps> = ({
+export const CursorAnimationLayer: React.FC<CursorAnimationLayerProps> = memo(({
   animation,
   positionMode = 'fixed',
   className,
@@ -963,6 +963,6 @@ export const CursorAnimationLayer: React.FC<CursorAnimationLayerProps> = ({
       containerStyle={containerStyle}
     />
   );
-};
+});
 
 export default CursorAnimationLayer;

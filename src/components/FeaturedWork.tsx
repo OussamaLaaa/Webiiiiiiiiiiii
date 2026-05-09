@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, memo } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Testimonials } from './Testimonials';
@@ -15,7 +15,7 @@ interface FeaturedWorkProps {
 
 const isPlaceholderHref = (href: string) => href.trim() === '#';
 
-export const FeaturedWork: React.FC<FeaturedWorkProps> = ({ isActive }) => {
+export const FeaturedWork: React.FC<FeaturedWorkProps> = memo(({ isActive }) => {
   const { siteConfig } = useSiteConfig();
   const { featured, visibility, designSystem } = siteConfig;
   const projectAnimations = siteConfig.animation.sections.projects;
@@ -27,6 +27,8 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({ isActive }) => {
   const pendingSectionRef = useRef<'projects' | 'testimonials' | null>(null);
   const touchStartYRef = useRef<number | null>(null);
   const navSectionRef = useRef<'projects' | 'testimonials'>('projects');
+  const scrollThrottleRef = useRef(0); // Throttle for scroll events
+  const SCROLL_THROTTLE_MS = 100; // Throttle scroll events to 100ms
 
   const dispatchNavSection = (next: 'projects' | 'testimonials') => {
     if (navSectionRef.current === next) return;
@@ -40,6 +42,10 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({ isActive }) => {
     }
   };
 
+  // Ref to track if GSAP context has been initialized
+  const gsapContextRef = useRef<gsap.Context | null>(null);
+  const scrollTriggersCreatedRef = useRef(false);
+
   useEffect(() => {
     if (!isActive || !containerRef.current) return;
 
@@ -51,7 +57,11 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({ isActive }) => {
 
     let refreshTimer = 0;
 
-    const ctx = gsap.context(() => {
+    // Only create ScrollTriggers once, then just refresh them
+    if (!scrollTriggersCreatedRef.current) {
+      scrollTriggersCreatedRef.current = true;
+      
+      const ctx = gsap.context(() => {
       const stagger =
         projectAnimations.gridDepth === 'tight'
           ? 0.08
@@ -78,41 +88,50 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({ isActive }) => {
         gsap.set('.fw-header-text', { opacity: 1, y: 0, rotationX: 0 });
       }
 
+      // OPTIMIZED: Use a single ScrollTrigger for the entire grid instead of one per card
       const elements = gsap.utils.toArray<HTMLElement>('.fw-reveal', containerRef.current);
-      elements.forEach((el, index) => {
-        if (!projectAnimations.enabled) {
-          gsap.set(el, { opacity: 1, y: 0, scale: 1, rotationX: 0, rotateY: 0 });
-          return;
-        }
+      
+      if (projectAnimations.enabled && elements.length > 0) {
+        // Create a single timeline with stagger for all cards
+        const cardsTimeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: containerRef.current,
+            scroller: containerRef.current,
+            start: 'top 90%',
+            end: 'bottom 60%',
+            scrub: false,
+            toggleActions: 'play none none reverse',
+          }
+        });
 
-        const startConfig =
-          projectAnimations.cardEntranceStyle === 'tilt'
-            ? { y: distance, opacity: 0, scale: 0.96, rotationX: rotationX + 2, rotateY: index % 2 === 0 ? -8 : 8 }
-            : projectAnimations.cardEntranceStyle === 'drift'
-              ? { y: distance * 0.8, opacity: 0, scale: 0.94, rotationX: rotationX - 2, rotateY: 0 }
-              : { y: distance * 0.6, opacity: 0, scale: 0.97, rotationX: rotationX / 2, rotateY: 0 };
+        elements.forEach((el, index) => {
+          const startConfig =
+            projectAnimations.cardEntranceStyle === 'tilt'
+              ? { y: distance, opacity: 0, scale: 0.96, rotationX: rotationX + 2, rotateY: index % 2 === 0 ? -8 : 8 }
+              : projectAnimations.cardEntranceStyle === 'drift'
+                ? { y: distance * 0.8, opacity: 0, scale: 0.94, rotationX: rotationX - 2, rotateY: 0 }
+                : { y: distance * 0.6, opacity: 0, scale: 0.97, rotationX: rotationX / 2, rotateY: 0 };
 
-        gsap.fromTo(
-          el,
-          startConfig,
-          {
-            y: 0,
-            opacity: 1,
-            scale: 1,
-            rotationX: 0,
-            rotateY: 0,
-            duration: baseDuration,
-            ease: 'expo.out',
-            scrollTrigger: {
-              trigger: el,
-              scroller: containerRef.current,
-              start: 'top 86%',
-              toggleActions: 'play none none reverse',
+          cardsTimeline.fromTo(
+            el,
+            startConfig,
+            {
+              y: 0,
+              opacity: 1,
+              scale: 1,
+              rotationX: 0,
+              rotateY: 0,
+              duration: baseDuration,
+              ease: 'expo.out',
             },
-            stagger,
-          },
-        );
-      });
+            index * stagger // Manual stagger instead of GSAP's stagger
+          );
+        });
+      } else {
+        elements.forEach((el) => {
+          gsap.set(el, { opacity: 1, y: 0, scale: 1, rotationX: 0, rotateY: 0 });
+        });
+      }
 
       if (projectAnimations.enabled && (visibility.testimonialsSection || visibility.featuredCtaSection)) {
         gsap.to('.projects-wrapper', {
@@ -150,24 +169,26 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({ isActive }) => {
       }
 
       refreshTimer = window.setTimeout(() => ScrollTrigger.refresh(), 100);
-    }, containerRef);
+      }, containerRef);
+
+      gsapContextRef.current = ctx;
+    } else {
+      // If context already exists, just refresh ScrollTriggers
+      ScrollTrigger.refresh();
+    }
 
     return () => {
       window.clearTimeout(initTimer);
       window.clearTimeout(refreshTimer);
-      ctx.revert();
+      // Don't revert context on unmount if we want to preserve it
+      // Only revert if isActive is becoming false
+      if (!isActive && gsapContextRef.current) {
+        gsapContextRef.current.revert();
+        scrollTriggersCreatedRef.current = false;
+        gsapContextRef.current = null;
+      }
     };
-  }, [
-    isActive,
-    visibility.featuredCtaSection,
-    visibility.featuredHeader,
-    visibility.featuredProjectsGrid,
-    visibility.testimonialsSection,
-    projectAnimations.cardEntranceStyle,
-    projectAnimations.enabled,
-    projectAnimations.gridDepth,
-    projects.length,
-  ]);
+  }, [isActive]); // Simplified dependencies - only recreate when isActive changes
 
   const handleBack = () => {
     window.dispatchEvent(new CustomEvent('nav-to-section', { detail: { section: 'projects-sequence-end' } }));
@@ -218,6 +239,13 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({ isActive }) => {
   };
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    // Throttle scroll events to improve performance
+    const now = Date.now();
+    if (now - scrollThrottleRef.current < SCROLL_THROTTLE_MS) {
+      return;
+    }
+    scrollThrottleRef.current = now;
+
     const currentScrollY = e.currentTarget.scrollTop;
 
     const scroller = containerRef.current;
@@ -488,4 +516,4 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({ isActive }) => {
       <Footer />
     </div>
   );
-};
+});

@@ -323,20 +323,30 @@ body {
   font-style: normal !important;
 }
 
-/* Glass Design System */
+/* Glass Design System - Optimized for performance */
 .glass-panel {
-  backdrop-filter: blur(24px);
+  /* Use lighter blur for better performance */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   background-color: var(--color-glass-base);
   border: 1px solid var(--color-glass-border);
   box-shadow: 0 4px 18px rgba(0,0,0,0.24);
+  /* Performance optimization */
+  will-change: transform;
+  contain: layout style paint;
 }
 
 .glass-navbar {
-  backdrop-filter: blur(24px);
+  /* Use lighter blur for better performance */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   background-color: var(--color-glass-base);
   border: 1px solid var(--color-glass-border);
   box-shadow: 0 4px 18px rgba(0,0,0,0.24);
   @apply rounded-full px-2 py-2 flex items-center justify-between;
+  /* Performance optimization */
+  will-change: transform;
+  contain: layout style paint;
 }
 
 .glass-nav-link {
@@ -348,11 +358,15 @@ body {
 }
 
 .glass-tag {
-  backdrop-filter: blur(24px);
+  /* Use lighter blur for better performance */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   background-color: var(--color-glass-base);
   border: 1px solid var(--color-glass-border);
   box-shadow: 0 4px 18px rgba(0,0,0,0.24);
   @apply rounded-full px-4 py-1.5 text-[11px] uppercase tracking-[0.15em] font-medium text-white/80 inline-flex items-center gap-2;
+  /* Performance optimization */
+  contain: layout style;
 }
 
 /* Canonical Design System Buttons */
@@ -468,12 +482,16 @@ body {
   background: var(--ds-button3-light-hover-bg);
 }
 
-/* Canonical Design System Glass */
+/* Canonical Design System Glass - Optimized */
 .ds-glass {
   border: var(--ds-card-border-width) solid var(--ds-glass-border);
-  backdrop-filter: blur(var(--ds-card-blur-px)) saturate(128%);
-  -webkit-backdrop-filter: blur(var(--ds-card-blur-px)) saturate(128%);
+  /* Reduce blur for better performance */
+  backdrop-filter: blur(calc(var(--ds-card-blur-px) * 0.6)) saturate(128%);
+  -webkit-backdrop-filter: blur(calc(var(--ds-card-blur-px) * 0.6)) saturate(128%);
   position: relative;
+  /* Performance optimization */
+  will-change: transform;
+  contain: layout style paint;
 }
 
 .ds-glass::before {

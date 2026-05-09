@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, memo } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { drawCoverFrame } from '../utils/drawCoverFrame';
@@ -25,7 +25,7 @@ interface MasterSequenceProps {
   onGlobalProgress?: (progress: number) => void;
 }
 
-export const MasterSequence: React.FC<MasterSequenceProps> = ({ 
+export const MasterSequence: React.FC<MasterSequenceProps> = memo(({ 
   scene02Images, 
   scene03Images, 
   scene07Images,
@@ -139,9 +139,12 @@ export const MasterSequence: React.FC<MasterSequenceProps> = ({
       lastDrawableImageRef.current = drawableImage;
 
       const { innerWidth, innerHeight } = window;
-      if (canvas.width !== innerWidth || canvas.height !== innerHeight) {
-        canvas.width = innerWidth;
-        canvas.height = innerHeight;
+      // Optimize canvas resolution for better FPS
+      const optimizedWidth = Math.floor(innerWidth * 0.75);
+      const optimizedHeight = Math.floor(innerHeight * 0.75);
+      if (canvas.width !== optimizedWidth || canvas.height !== optimizedHeight) {
+        canvas.width = optimizedWidth;
+        canvas.height = optimizedHeight;
       }
 
       const isScene07 = drawableIndex >= scene07Start;
@@ -435,4 +438,4 @@ export const MasterSequence: React.FC<MasterSequenceProps> = ({
       </div>
     </section>
   );
-};
+});

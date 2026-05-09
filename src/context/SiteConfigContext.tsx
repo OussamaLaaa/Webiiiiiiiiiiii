@@ -1,46 +1,64 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import {
-  DEFAULT_SITE_CONFIG,
-  hydrateSiteConfig,
-  type SiteConfig,
-  type SitePartner,
-  type SitePersonalProject,
-  type SiteSocialAccount,
-  type SiteSocialPost,
-  type SiteFinancialTransaction,
-  type SiteInvestment,
-  type SiteInvoice,
-  type SiteEmail,
-  type SiteNote,
-  type SiteAITracking,
-  type SiteAIReport,
-} from '../config/siteConfig';
-import { loadSiteConfig, saveSiteConfig, resetAllStorage, getStorageInfo } from '../utils/storageSystem';
+  import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+  import {
+    DEFAULT_SITE_CONFIG,
+    hydrateSiteConfig,
+    type SiteConfig,
+    type SitePartner,
+    type SitePersonalProject,
+    type SiteSocialAccount,
+    type SiteSocialPost,
+    type SiteFinancialTransaction,
+    type SiteInvestment,
+    type SiteInvoice,
+    type SiteEmail,
+    type SiteNote,
+    type SiteAITracking,
+    type SiteAIReport,
+  } from '../config/siteConfig';
+  import { loadSiteConfig, saveSiteConfig, resetAllStorage, getStorageInfo } from '../utils/storageSystem';
+  import { fetchSiteConfig, updateSiteConfig, checkApiHealth } from '../utils/apiClient';
 
-interface SiteConfigContextValue {
+  interface SiteConfigContextValue {
   siteConfig: SiteConfig;
   setSiteConfig: React.Dispatch<React.SetStateAction<SiteConfig>>;
   resetSiteConfig: () => void;
   storageInfo: ReturnType<typeof getStorageInfo>;
   exportStorage: () => string | null;
   importStorage: (data: string) => boolean;
+  saveToAPI: () => Promise<{ success: boolean; error?: string }>;
 }
 
 const SiteConfigContext = createContext<SiteConfigContextValue | null>(null);
 
-const getInitialSiteConfig = (): SiteConfig => {
-  if (typeof window === 'undefined') return DEFAULT_SITE_CONFIG;
+  const getInitialSiteConfig = (): SiteConfig => {
+    if (typeof window === 'undefined') return DEFAULT_SITE_CONFIG;
 
-  // Use advanced storage system
-  const result = loadSiteConfig();
+    // Use advanced storage system
+    const result = loadSiteConfig();
 
-  if (result.success && result.data) {
-    // Hydrate the loaded config to ensure all properties are valid
-    return hydrateSiteConfig(result.data);
-  }
+    if (result.success && result.data) {
+      // Hydrate the loaded config to ensure all properties are valid
+      return hydrateSiteConfig(result.data);
+    }
 
-  return DEFAULT_SITE_CONFIG;
-};
+    return DEFAULT_SITE_CONFIG;
+  };
+
+  // Fetch config from API on mount (for public site)
+  const fetchConfigFromAPI = async () => {
+    if (typeof window === 'undefined') return;
+
+    try {
+      const response = await fetchSiteConfig();
+      if (response.success && response.data) {
+        const hydratedConfig = hydrateSiteConfig(response.data);
+        setSiteConfig(hydratedConfig);
+        console.log('Config loaded from API successfully');
+      }
+    } catch (error) {
+      console.error('Failed to fetch config from API:', error);
+    }
+  };
 
 const applyDesignSystemVariables = (siteConfig: SiteConfig) => {
   if (typeof document === 'undefined') return;
@@ -293,6 +311,16 @@ export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     };
   }, []);
 
+  // Fetch config from API on mount (for public site)
+  useEffect(() => {
+    // Only fetch from API if we're not in dashboard mode
+    // Check if current path is not dashboard
+    const isDashboard = window.location.pathname.includes('/dashboard');
+    if (!isDashboard) {
+      fetchConfigFromAPI();
+    }
+  }, []);
+
   const value = useMemo<SiteConfigContextValue>(() => {
     return {
       siteConfig,
@@ -326,6 +354,24 @@ export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         } catch (error) {
           console.error('Failed to import storage data:', error);
           return false;
+        }
+      },
+      saveToAPI: async () => {
+        try {
+          const response = await updateSiteConfig(siteConfig);
+          if (response.success) {
+            console.log('Config saved to API successfully');
+            return { success: true };
+          } else {
+            console.error('Failed to save config to API:', response.error);
+            return { success: false, error: response.error };
+          }
+        } catch (error) {
+          console.error('Error saving config to API:', error);
+          return { 
+            success: false, 
+            error: error instanceof Error ? error.message : 'Unknown error' 
+          };
         }
       },
     };
