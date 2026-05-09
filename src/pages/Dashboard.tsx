@@ -7177,6 +7177,23 @@ export const Dashboard: React.FC = () => {
               <button type="button" onClick={handleSaveChanges} title="Save changes" className="inline-flex h-11 w-11 items-center justify-center rounded-[12px] border border-[#b6f45b]/46 bg-[#b6f45b] text-[#0a0d11]">
                 <SaveIcon size={16} strokeWidth={1.9} />
               </button>
+              <button 
+                type="button" 
+                onClick={async () => {
+                  clearUploadFeedback();
+                  const result = await saveToAPI();
+                  if (result.success) {
+                    setUploadMessage('Changes saved to API successfully!');
+                    setHasUnsavedChanges(false);
+                  } else {
+                    setUploadError(result.error || 'Failed to save to API.');
+                  }
+                }}
+                title="Save to API"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-[12px] border border-[#b6f45b]/46 bg-[#b6f45b] text-[#0a0d11]"
+              >
+                <SaveIcon size={16} strokeWidth={1.9} />
+              </button>
               <button type="button" onClick={handleOpenSite} title="Open site" className="inline-flex h-11 w-11 items-center justify-center rounded-[12px] border border-white/14 bg-white/[0.06] text-white/78 hover:bg-white/[0.12]">
                 <ExternalLinkIcon size={16} strokeWidth={1.9} />
               </button>
@@ -7308,6 +7325,22 @@ export const Dashboard: React.FC = () => {
             <div className="mt-4 flex flex-wrap gap-2">
               <button type="button" onClick={handleSaveChanges} className={dashboardActionButtonPrimaryClass}>
                 Save Changes
+              </button>
+              <button 
+                type="button" 
+                onClick={async () => {
+                  clearUploadFeedback();
+                  const result = await saveToAPI();
+                  if (result.success) {
+                    setUploadMessage('Changes saved to API successfully! The live site will update automatically.');
+                    setHasUnsavedChanges(false);
+                  } else {
+                    setUploadError(result.error || 'Failed to save to API. Please try again.');
+                  }
+                }}
+                className={dashboardActionButtonPrimaryClass}
+              >
+                Save to API
               </button>
               <button type="button" onClick={handleOpenSite} className={dashboardActionButtonSecondaryClass}>
                 Open Site

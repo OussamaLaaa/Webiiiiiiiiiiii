@@ -2,22 +2,74 @@
  * API Endpoint for Site Configuration
  * Vercel Serverless Function
  * Handles GET (read) and PUT (update) operations for site config
+ * Uses Upstash Redis for persistent storage
  */
 
-// Simple in-memory storage (for development - replace with database in production)
-let siteConfigStorage = null;
-let lastUpdated = Date.now();
+const { Redis } = require('@upstash/redis');
 
 // Load default config
+let defaultConfig = null;
 try {
-  const defaultConfig = require('../src/config/siteConfig.js');
-  siteConfigStorage = defaultConfig.DEFAULT_SITE_CONFIG;
+  const defaultConfigModule = require('../src/config/siteConfig.js');
+  defaultConfig = defaultConfigModule.DEFAULT_SITE_CONFIG;
 } catch (error) {
   console.error('Failed to load default config:', error);
 }
 
 // Authentication password (should be in environment variables in production)
 const DASHBOARD_PASSWORD = process.env.DASHBOARD_PASSWORD || '00000008';
+
+// Initialize Redis client
+let redis = null;
+try {
+  if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
+    redis = new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    });
+  }
+} catch (error) {
+  console.error('Failed to initialize Redis client:', error);
+}
+
+/**
+ * Get site config from Redis or return default
+ */
+async function getSiteConfig() {
+  if (!redis) {
+    console.warn('Redis not initialized, returning default config');
+    return defaultConfig;
+  }
+
+  try {
+    const config = await redis.get('site-config');
+    if (config) {
+      return config;
+    }
+    return defaultConfig;
+  } catch (error) {
+    console.error('Failed to get config from Redis:', error);
+    return defaultConfig;
+  }
+}
+
+/**
+ * Save site config to Redis
+ */
+async function saveSiteConfig(config) {
+  if (!redis) {
+    console.warn('Redis not initialized, config not saved');
+    return false;
+  }
+
+  try {
+    await redis.set('site-config', config);
+    return true;
+  } catch (error) {
+    console.error('Failed to save config to Redis:', error);
+    return false;
+  }
+}
 
 /**
  * GET /api/config
@@ -40,10 +92,11 @@ module.exports = async function handler(req, res) {
 
   if (req.method === 'GET') {
     try {
+      const config = await getSiteConfig();
       return res.status(200).json({
         success: true,
-        data: siteConfigStorage,
-        lastUpdated,
+        data: config,
+        lastUpdated: Date.now(),
         version: '1.0.0',
       });
     } catch (error) {
@@ -85,15 +138,20 @@ module.exports = async function handler(req, res) {
         });
       }
 
-      // Update storage
-      siteConfigStorage = body;
-      lastUpdated = Date.now();
+      // Save to Redis
+      const saved = await saveSiteConfig(body);
+      if (!saved) {
+        return res.status(500).json({
+          success: false,
+          error: 'Failed to save configuration to database',
+        });
+      }
 
-      console.log('Site config updated at:', new Date(lastUpdated).toISOString());
+      console.log('Site config updated at:', new Date().toISOString());
 
       return res.status(200).json({
         success: true,
-        lastUpdated,
+        lastUpdated: Date.now(),
         version: '1.0.0',
       });
     } catch (error) {

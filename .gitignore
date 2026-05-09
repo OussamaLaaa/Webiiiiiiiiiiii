@@ -39,3 +39,4 @@ Thumbs.db
 # Test results
 testResults*.json
 .vercel
+.env*.local
