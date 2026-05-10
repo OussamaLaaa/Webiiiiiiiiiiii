@@ -68,13 +68,8 @@ function App() {
   useEffect(() => {
     if (route.page === 'dashboard') {
       document.body.classList.add('dashboard-page');
-      document.body.classList.remove('home-page');
-    } else if (route.page === 'home') {
-      document.body.classList.add('home-page');
-      document.body.classList.remove('dashboard-page');
     } else {
       document.body.classList.remove('dashboard-page');
-      document.body.classList.remove('home-page');
     }
   }, [route.page]);
 

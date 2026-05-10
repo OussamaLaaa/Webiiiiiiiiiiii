@@ -31,38 +31,26 @@
   padding-right: var(--site-shell-padding);
 }
 
-  /* Show watermark mask only on home page */
-  body.home-page .cinematic-watermark-mask {
-    height: var(--watermark-mask-mobile, 0px);
-    width: var(--watermark-mask-width-mobile, 0px);
-    right: var(--watermark-mask-right-mobile, 0px);
-    bottom: var(--watermark-mask-bottom-mobile, 0px);
-    left: auto;
-    background: linear-gradient(
-      180deg,
-      rgba(12, 12, 14, 0.35) 0%,
-      rgba(12, 12, 14, 0.45) 40%,
-      rgba(12, 12, 14, 0.55) 100%
-    );
-    backdrop-filter: blur(12px) saturate(1.2);
-    -webkit-backdrop-filter: blur(12px) saturate(1.2);
-    box-shadow: 
-      0 -8px 24px rgba(0, 0, 0, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.08);
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    position: fixed;
-    z-index: 1000;
-    pointer-events: none;
-  }
-
-  /* Hide watermark mask on other pages */
-  body:not(.home-page) .cinematic-watermark-mask {
-    display: none;
-  }
+.cinematic-watermark-mask {
+  height: var(--watermark-mask-mobile, 0px);
+  width: var(--watermark-mask-width-mobile, 0px);
+  right: var(--watermark-mask-right-mobile, 0px);
+  bottom: var(--watermark-mask-bottom-mobile, 0px);
+  left: auto;
+  background: linear-gradient(
+    180deg,
+    rgba(12, 12, 14, 0) 0%,
+    rgba(12, 12, 14, 0.18) 40%,
+    rgba(12, 12, 14, 0.28) 100%
+  );
+  backdrop-filter: blur(10px) saturate(1.12);
+  -webkit-backdrop-filter: blur(10px) saturate(1.12);
+  box-shadow: 0 -18px 38px rgba(0, 0, 0, 0.14);
+  border-radius: 16px;
+}
 
 @media (min-width: 768px) {
-  body.home-page .cinematic-watermark-mask {
+  .cinematic-watermark-mask {
     height: var(--watermark-mask-desktop, 0px);
     width: var(--watermark-mask-width-desktop, 0px);
     right: var(--watermark-mask-right-desktop, 0px);
