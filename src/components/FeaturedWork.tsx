@@ -385,12 +385,10 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = memo(({ isActive }) => 
                 fontSize: `clamp(${getScaledRem(siteConfig.designSystem.theme.displayTitleSizeRem * 1.05, siteConfig.designSystem.theme.headingScale)}, 15vw, ${getScaledRem(siteConfig.designSystem.theme.displayTitleSizeRem * 1.9, siteConfig.designSystem.theme.headingScale)})`,
                 lineHeight: 0.9,
                 letterSpacing: `${siteConfig.designSystem.theme.headingLetterSpacingEm - 0.01}em`,
-                fontWeight: Math.min(680, Math.max(500, siteConfig.designSystem.theme.headingWeight + 60)),
+                fontWeight: Math.min(400, Math.max(300, siteConfig.designSystem.theme.headingWeight - 40)),
               }}
             >
-              {featured.titleLine1}
-              <br />
-              {featured.titleLine2}
+              {featured.titleLine1} {featured.titleLine2}
             </h1>
             <p className="fw-header-text opacity-0 max-w-[360px] font-mono text-[11px] uppercase tracking-[0.16em] text-[#0f1219]/56 md:text-xs md:leading-[1.9]">
               {featured.description}

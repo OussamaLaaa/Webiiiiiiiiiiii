@@ -400,31 +400,31 @@ export const ContactOverlay: React.FC<ContactOverlayProps> = ({ progress }) => {
               </div>
             </div>
 
-            {/* X (Twitter) */}
+            {/* X */}
             <div
-              className="social-card bg-white border border-black/10 rounded-2xl p-6 cursor-pointer"
+              className="social-card bg-black border border-white/20 rounded-2xl p-6 cursor-pointer"
               onMouseEnter={handleSocialCardHover}
               onMouseLeave={handleSocialCardLeave}
             >
               <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-medium uppercase tracking-[14%] text-gray-600">
+                <span className="text-xs font-medium uppercase tracking-[14%] text-white/70">
                   Follow
                 </span>
-                <div className="w-8 h-8 bg-white border border-black/10 rounded-full flex items-center justify-center">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <div className="w-8 h-8 bg-white/10 border border-white/20 rounded-full flex items-center justify-center">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
                     <path d="M3 12h18M12 3l9 9-9 9" />
                   </svg>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#ECEEF2] rounded-xl flex items-center justify-center">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
                     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                   </svg>
                 </div>
                 <div>
-                  <p className="text-base font-semibold text-gray-900">X (Twitter)</p>
-                  <p className="text-xs text-gray-600">@studio</p>
+                  <p className="text-base font-semibold text-white">X</p>
+                  <p className="text-xs text-white/70">@studio</p>
                 </div>
               </div>
             </div>

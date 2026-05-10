@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إصلاح شريط إخفاء اللوغوهات</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .info-box {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .info-box h3 {
+            color: #495057;
+            margin-bottom: 10px;
+        }
+        .info-box p {
+            color: #6c757d;
+            line-height: 1.6;
+        }
+        .current-values {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .current-values h3 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+        .value-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #ffc107;
+        }
+        .value-item:last-child {
+            border-bottom: none;
+        }
+        .value-label {
+            color: #856404;
+            font-weight: 500;
+        }
+        .value-value {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .value-value.good {
+            color: #28a745;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        .success-message {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            color: #155724;
+            text-align: center;
+            display: none;
+        }
+        .success-message.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 إصلاح شريط إخفاء اللوغوهات</h1>
+        
+        <div class="info-box">
+            <h3>📋 ما المشكلة؟</h3>
+            <p>شريط إخفاء اللوغوهات في أسفل اليمين لا يظهر لأن القيم المخزنة في localStorage قد تكون صفر. هذا الملف سيفحص القيم الحالية ويعيدها إلى القيم الصحيحة.</p>
+        </div>
+
+        <div class="current-values">
+            <h3>📊 القيم الحالية:</h3>
+            <div id="currentValues"></div>
+        </div>
+
+        <button class="btn btn-primary" onclick="fixValues()">✅ إصلاح القيم</button>
+        <button class="btn btn-danger" onclick="resetAll()">🔄 إعادة تعيين الكل</button>
+
+        <div class="success-message" id="successMessage">
+            ✅ تم إصلاح القيم بنجاح! يمكنك الآن إغلاق هذه الصفحة والعودة إلى موقعك.
+        </div>
+    </div>
+
+    <script>
+        // القيم الافتراضية الصحيحة
+        const DEFAULT_VALUES = {
+            watermarkMaskMobilePx: 70,
+            watermarkMaskDesktopPx: 90,
+            watermarkMaskWidthMobilePx: 160,
+            watermarkMaskWidthDesktopPx: 220,
+            watermarkMaskRightMobilePx: 12,
+            watermarkMaskRightDesktopPx: 24,
+            watermarkMaskBottomMobilePx: 12,
+            watermarkMaskBottomDesktopPx: 16
+        };
+
+        // عرض القيم الحالية
+        function displayCurrentValues() {
+            const config = loadSiteConfig();
+            const container = document.getElementById('currentValues');
+            
+            if (!config) {
+                container.innerHTML = '<p style="color: #dc3545;">لم يتم العثور على إعدادات محفوظة</p>';
+                return;
+            }
+
+            const globalFrame = config.globalFrame || {};
+            
+            const values = [
+                { label: 'ارتفاع الجوال (px)', key: 'watermarkMaskMobilePx', value: globalFrame.watermarkMaskMobilePx },
+                { label: 'ارتفاع سطح المكتب (px)', key: 'watermarkMaskDesktopPx', value: globalFrame.watermarkMaskDesktopPx },
+                { label: 'عرض الجوال (px)', key: 'watermarkMaskWidthMobilePx', value: globalFrame.watermarkMaskWidthMobilePx },
+                { label: 'عرض سطح المكتب (px)', key: 'watermarkMaskWidthDesktopPx', value: globalFrame.watermarkMaskWidthDesktopPx },
+                { label: 'المسافة من اليمين - جوال (px)', key: 'watermarkMaskRightMobilePx', value: globalFrame.watermarkMaskRightMobilePx },
+                { label: 'المسافة من اليمين - سطح المكتب (px)', key: 'watermarkMaskRightDesktopPx', value: globalFrame.watermarkMaskRightDesktopPx },
+                { label: 'المسافة من الأسفل - جوال (px)', key: 'watermarkMaskBottomMobilePx', value: globalFrame.watermarkMaskBottomMobilePx },
+                { label: 'المسافة من الأسفل - سطح المكتب (px)', key: 'watermarkMaskBottomDesktopPx', value: globalFrame.watermarkMaskBottomDesktopPx }
+            ];
+
+            let html = '';
+            values.forEach(item => {
+                const isGood = item.value > 0;
+                const displayValue = item.value !== undefined ? item.value : 'غير محدد';
+                html += `
+                    <div class="value-item">
+                        <span class="value-label">${item.label}</span>
+                        <span class="value-value ${isGood ? 'good' : ''}">${displayValue}</span>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // تحميل الإعدادات من localStorage
+        function loadSiteConfig() {
+            try {
+                const data = localStorage.getItem('portfolio.site-config.v1');
+                if (!data) return null;
+                
+                const parsed = JSON.parse(data);
+                return parsed;
+            } catch (error) {
+                console.error('خطأ في تحميل الإعدادات:', error);
+                return null;
+            }
+        }
+
+        // حفظ الإعدادات
+        function saveSiteConfig(config) {
+            try {
+                localStorage.setItem('portfolio.site-config.v1', JSON.stringify(config));
+                return true;
+            } catch (error) {
+                console.error('خطأ في حفظ الإعدادات:', error);
+                return false;
+            }
+        }
+
+        // إصلاح القيم
+        function fixValues() {
+            const config = loadSiteConfig();
+            
+            if (!config) {
+                alert('لم يتم العثور على إعدادات محفوظة. سيتم إنشاء إعدادات جديدة.');
+                const newConfig = {
+                    globalFrame: { ...DEFAULT_VALUES }
+                };
+                saveSiteConfig(newConfig);
+                showSuccess();
+                return;
+            }
+
+            // تحديث القيم
+            if (!config.globalFrame) {
+                config.globalFrame = {};
+            }
+
+            Object.keys(DEFAULT_VALUES).forEach(key => {
+                // فقط تحديث القيم الصفرية أو غير الموجودة
+                if (config.globalFrame[key] === undefined || config.globalFrame[key] === 0) {
+                    config.globalFrame[key] = DEFAULT_VALUES[key];
+                }
+            });
+
+            saveSiteConfig(config);
+            displayCurrentValues();
+            showSuccess();
+        }
+
+        // إعادة تعيين الكل
+        function resetAll() {
+            if (!confirm('هل أنت متأكد من أنك تريد إعادة تعيين جميع الإعدادات؟')) {
+                return;
+            }
+
+            const config = loadSiteConfig();
+            
+            if (!config) {
+                const newConfig = {
+                    globalFrame: { ...DEFAULT_VALUES }
+                };
+                saveSiteConfig(newConfig);
+            } else {
+                if (!config.globalFrame) {
+                    config.globalFrame = {};
+                }
+                Object.keys(DEFAULT_VALUES).forEach(key => {
+                    config.globalFrame[key] = DEFAULT_VALUES[key];
+                });
+                saveSiteConfig(config);
+            }
+
+            displayCurrentValues();
+            showSuccess();
+        }
+
+        // عرض رسالة النجاح
+        function showSuccess() {
+            const message = document.getElementById('successMessage');
+            message.classList.add('show');
+            setTimeout(() => {
+                message.classList.remove('show');
+            }, 5000);
+        }
+
+        // تحميل القيم عند فتح الصفحة
+        window.onload = function() {
+            displayCurrentValues();
+        };
+    </script>
+</body>
+</html>
