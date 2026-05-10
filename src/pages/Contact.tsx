@@ -266,7 +266,7 @@ const Contact: React.FC = () => {
       if (content) {
         const title = content.querySelector('h3');
         const subtitle = content.querySelector('p');
-        if (title) gsap.to(title, { color: '#111827', duration: 0.3 });
+        if (title) gsap.to(title, { color: '#000000', duration: 0.3 });
         if (subtitle) gsap.to(subtitle, { color: '#6B7280', duration: 0.3 });
       }
 
@@ -312,8 +312,10 @@ const Contact: React.FC = () => {
           <div className="mb-16">
             <h1
               ref={titleRef}
-              className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tight text-gray-900"
+              className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tight"
+              style={{ color: '#000000' }}
             >
+  +++++++ REPLACE
               {contactPage.heroTitleLine1}
               <br />
               {contactPage.heroTitleLine2}
@@ -335,7 +337,7 @@ const Contact: React.FC = () => {
               {/* Direct Contact Card */}
               <div className={`p-6 rounded-2xl ${getCardClass('card-2', 'light')}`} style={{ borderColor: 'rgba(0,0,0,0.1)' }}>
                 <div className="flex items-center justify-between mb-6">
-                  <div className="w-10 h-10 rounded-xl bg-gray-900 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                     </svg>
@@ -414,9 +416,10 @@ const Contact: React.FC = () => {
               <div className={`p-8 rounded-2xl ${getCardClass('card-2', 'light')}`} style={{ borderColor: 'rgba(0,0,0,0.1)' }}>
                 <div className="flex items-start justify-between mb-8">
                   <div>
-                    <h2 className="text-2xl font-semibold mb-2 text-gray-900">{contactPage.formTitle}</h2>
+                    <h2 className="text-2xl font-semibold mb-2" style={{ color: '#000000' }}>{contactPage.formTitle}</h2>
                     <p className="text-sm text-gray-500">{contactPage.formSubtitle}</p>
                   </div>
+  +++++++ REPLACE
                   <span className="text-xs font-medium uppercase tracking-wider text-gray-400">01 / Form</span>
                 </div>
 
@@ -441,7 +444,7 @@ const Contact: React.FC = () => {
                   </div>
                   <div className="flex items-center justify-between pt-2">
                     <p className="text-xs text-gray-500">By sending, you agree to our <a href={contactPage.formPrivacyLink} className="underline text-gray-700">{contactPage.formPrivacyText}</a>.</p>
-                    <button type="submit" className="px-8 py-3.5 rounded-xl bg-gray-900 text-white font-medium text-sm flex items-center gap-2 hover:bg-gray-800 transition-colors duration-300">
+                    <button type="submit" className="px-8 py-3.5 rounded-xl bg-black text-white font-medium text-sm flex items-center gap-2 hover:bg-gray-800 transition-colors duration-300">
                       {contactPage.formSubmitButton}
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M5 12h14M12 5l7 7-7 7" />
@@ -458,7 +461,8 @@ const Contact: React.FC = () => {
             <div className="flex items-start justify-between">
               <div>
                 <span className="text-xs font-medium uppercase tracking-wider mb-2 block text-gray-400">{contactPage.socialSectionLabel}</span>
-                <h2 className="text-3xl md:text-4xl font-semibold text-gray-900">{contactPage.socialSectionTitle}</h2>
+                <h2 className="text-3xl md:text-4xl font-semibold" style={{ color: '#000000' }}>{contactPage.socialSectionTitle}</h2>
+  +++++++ REPLACE
               </div>
               <p className="text-sm max-w-[384px] text-gray-500">{contactPage.socialSectionDescription}</p>
             </div>
@@ -488,7 +492,8 @@ const Contact: React.FC = () => {
                       <div style={{ color: card.color }}>{card.icon}</div>
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-base font-semibold mb-0.5 text-gray-900 transition-colors duration-300">{card.title}</h3>
+                      <h3 className="text-base font-semibold mb-0.5 transition-colors duration-300" style={{ color: '#000000' }}>{card.title}</h3>
+  +++++++ REPLACE
                       <p className="text-xs text-gray-500 transition-colors duration-300">{card.subtitle}</p>
                     </div>
                   </div>
