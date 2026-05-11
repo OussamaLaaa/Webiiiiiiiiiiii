@@ -9,40 +9,18 @@ const getFrameCountForScene = (sceneName: string): number => {
   return count;
 };
 
-// Helper to check if AVIF/WebP is supported
+// Helper to check if AVIF is supported
 const supportsAvif = typeof document !== 'undefined' 
   ? (() => {
       const canvas = document.createElement('canvas');
       return canvas.toDataURL('image/avif').startsWith('data:image/avif');
     })()
   : false;
-
-const supportsWebp = typeof document !== 'undefined'
-  ? (() => {
-      const canvas = document.createElement('canvas');
-      return canvas.toDataURL('image/webp').startsWith('data:image/webp');
-    })()
-  : false;
-
-// Determine preferred format: AVIF > WebP > JPG
-const getPreferredExtension = () => {
-  if (supportsAvif) return '.avif';
-  if (supportsWebp) return '.webp';
-  return '.jpg';
-};
-
-const preferredExt = getPreferredExtension();
+const preferredExt = '.avif';
 
 export const getFramesForScene = (sceneName: string): string[] => {
   const manifestFrames = __FRAME_MANIFEST__?.[sceneName] ?? [];
   if (manifestFrames.length > 0) {
-    // If using AVIF/WebP, replace extension in manifest
-    if (preferredExt !== '.jpg') {
-      return manifestFrames.map((frame) => {
-        const baseFrame = frame.replace(/\.(jpg|jpeg|webp|avif)$/i, '');
-        return `/frames/${sceneName}/${baseFrame}${preferredExt}`;
-      });
-    }
     return manifestFrames.map((frame) => `/frames/${sceneName}/${frame}`);
   }
 
@@ -53,7 +31,7 @@ export const getFramesForScene = (sceneName: string): string[] => {
   });
 
   if (generatedFrames.length === 0) {
-    console.warn(`[Frames] No ${preferredExt.replace('.', '').toUpperCase()} frames detected for scene "${sceneName}".`);
+    console.warn(`[Frames] No AVIF frames detected for scene "${sceneName}".`);
   }
 
   return generatedFrames;
@@ -84,6 +62,10 @@ export function usePreloadFrames(scenes: string[]) {
     if (cachedState?.isComplete) {
       setState(cachedState);
       return;
+    }
+
+    if (!supportsAvif) {
+      console.warn('[Frames] AVIF is not supported by this browser. Frame images may not render.');
     }
 
     let mounted = true;
