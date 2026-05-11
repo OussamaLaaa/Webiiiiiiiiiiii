@@ -4,9 +4,9 @@
  * Supports multiple backends: Vercel KV, Upstash Redis, Local File
  */
 
-const fs = require('fs');
-const path = require('path');
-const https = require('https');
+import fs from 'fs';
+import path from 'path';
+import https from 'https';
 
 // ============================================================================
 // ENVIRONMENT & CONFIGURATION
@@ -39,6 +39,8 @@ console.log('[API:Config] Storage backends available:', {
   localFile: storageConfig.localFile.enabled,
   environment: isProduction ? 'production' : 'development',
   isVercel,
+  upstashUrl: storageConfig.upstashRedis.url ? 'SET' : 'MISSING',
+  upstashToken: storageConfig.upstashRedis.token ? 'SET' : 'MISSING',
 });
 
 // ============================================================================
@@ -230,12 +232,18 @@ const readFromUpstashRedis = async () => {
  * Write config to Upstash Redis
  */
 const writeToUpstashRedis = async (data) => {
-  if (!storageConfig.upstashRedis.enabled) return false;
+  if (!storageConfig.upstashRedis.enabled) {
+    console.log('[API:Config] Upstash disabled');
+    return false;
+  }
   try {
     console.log('[API:Config] Writing to Upstash Redis...');
     const configJson = JSON.stringify(data);
     
     const url = new URL(storageConfig.upstashRedis.url);
+    console.log('[API:Config] Upstash URL hostname:', url.hostname);
+    console.log('[API:Config] Upstash URL path:', url.pathname);
+    
     const postData = JSON.stringify({
       command: ['SET', CONFIG_KEY, configJson, 'EX', '31536000'],
     });
@@ -252,17 +260,20 @@ const writeToUpstashRedis = async (data) => {
         },
       };
 
+      console.log('[API:Config] Making HTTPS request to Upstash...');
+
       const request = https.request(options, (response) => {
         let data = '';
         response.on('data', (chunk) => {
           data += chunk;
         });
         response.on('end', () => {
+          console.log('[API:Config] Upstash response status:', response.statusCode);
           if (response.statusCode === 200) {
             console.log('[API:Config] Successfully wrote to Upstash Redis');
             return resolve(true);
           } else {
-            console.error('[API:Config] Upstash write failed:', response.statusCode, data.substring(0, 200));
+            console.error('[API:Config] Upstash write failed:', response.statusCode, data.substring(0, 500));
             return resolve(false);
           }
         });
@@ -345,7 +356,7 @@ const parseRequestBody = async (req) => {
 // MAIN HANDLER
 // ============================================================================
 
-module.exports = async (req, res) => {
+export default async (req, res) => {
   // Set CORS & content type headers
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Access-Control-Allow-Origin', '*');
