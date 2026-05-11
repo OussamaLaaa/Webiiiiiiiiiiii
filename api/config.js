@@ -33,6 +33,55 @@ const storageConfig = {
   },
 };
 
+const sendUpstashCommand = async (commandParts) => {
+  const url = new URL(storageConfig.upstashRedis.url);
+  const postData = JSON.stringify(commandParts);
+
+  return new Promise((resolve) => {
+    const options = {
+      hostname: url.hostname,
+      path: url.pathname,
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${storageConfig.upstashRedis.token}`,
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(postData),
+      },
+    };
+
+    const request = https.request(options, (response) => {
+      let data = '';
+
+      response.on('data', (chunk) => {
+        data += chunk;
+      });
+
+      response.on('end', () => {
+        try {
+          resolve({
+            status: response.statusCode,
+            data: data ? JSON.parse(data) : null,
+            raw: data,
+          });
+        } catch (error) {
+          resolve({
+            status: response.statusCode,
+            raw: data,
+            parseError: error?.message,
+          });
+        }
+      });
+    });
+
+    request.on('error', (error) => {
+      resolve({ error: error.message });
+    });
+
+    request.write(postData);
+    request.end();
+  });
+};
+
 console.log('[API:Config] Storage backends available:', {
   vercelKv: storageConfig.vercelKv.enabled,
   upstashRedis: storageConfig.upstashRedis.enabled,
@@ -170,58 +219,23 @@ const readFromUpstashRedis = async () => {
   if (!storageConfig.upstashRedis.enabled) return null;
   try {
     console.log('[API:Config] Reading from Upstash Redis...');
-    
-    const url = new URL(storageConfig.upstashRedis.url);
-    const postData = JSON.stringify({
-      command: ['GET', CONFIG_KEY],
-    });
+    const result = await sendUpstashCommand(['GET', CONFIG_KEY]);
 
-    return new Promise((resolve) => {
-      const options = {
-        hostname: url.hostname,
-        path: url.pathname,
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${storageConfig.upstashRedis.token}`,
-          'Content-Type': 'application/json',
-          'Content-Length': postData.length,
-        },
-      };
+    if (result?.status !== 200 || result?.error || result?.parseError) {
+      console.error('[API:Config] Upstash read failed:', result);
+      return null;
+    }
 
-      const request = https.request(options, (response) => {
-        let data = '';
-        response.on('data', (chunk) => {
-          data += chunk;
-        });
-        response.on('end', () => {
-          if (response.statusCode === 200) {
-            try {
-              const parsed = JSON.parse(data);
-              if (parsed.result) {
-                const resultValue = parsed.result;
-                const config = typeof resultValue === 'string' ? JSON.parse(resultValue) : resultValue;
-                return resolve(config);
-              }
-              return resolve(null);
-            } catch (e) {
-              console.error('[API:Config] Parse error:', e.message);
-              return resolve(null);
-            }
-          } else {
-            console.error('[API:Config] Upstash read failed:', response.statusCode);
-            return resolve(null);
-          }
-        });
-      });
+    if (!result.data || !Object.prototype.hasOwnProperty.call(result.data, 'result')) {
+      return null;
+    }
 
-      request.on('error', (error) => {
-        console.error('[API:Config] Upstash request error:', error.message);
-        resolve(null);
-      });
+    const resultValue = result.data.result;
+    if (resultValue == null) {
+      return null;
+    }
 
-      request.write(postData);
-      request.end();
-    });
+    return typeof resultValue === 'string' ? JSON.parse(resultValue) : resultValue;
   } catch (error) {
     console.error('[API:Config] Failed to read from Upstash:', error?.message);
     return null;
@@ -239,54 +253,19 @@ const writeToUpstashRedis = async (data) => {
   try {
     console.log('[API:Config] Writing to Upstash Redis...');
     const configJson = JSON.stringify(data);
-    
-    const url = new URL(storageConfig.upstashRedis.url);
-    console.log('[API:Config] Upstash URL hostname:', url.hostname);
-    console.log('[API:Config] Upstash URL path:', url.pathname);
-    
-    const postData = JSON.stringify({
-      command: ['SET', CONFIG_KEY, configJson, 'EX', '31536000'],
-    });
 
-    return new Promise((resolve) => {
-      const options = {
-        hostname: url.hostname,
-        path: url.pathname,
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${storageConfig.upstashRedis.token}`,
-          'Content-Type': 'application/json',
-          'Content-Length': postData.length,
-        },
-      };
+    console.log('[API:Config] Upstash URL hostname:', new URL(storageConfig.upstashRedis.url).hostname);
+    console.log('[API:Config] Upstash URL path:', new URL(storageConfig.upstashRedis.url).pathname);
 
-      console.log('[API:Config] Making HTTPS request to Upstash...');
+    const result = await sendUpstashCommand(['SET', CONFIG_KEY, configJson, 'EX', 31536000]);
 
-      const request = https.request(options, (response) => {
-        let data = '';
-        response.on('data', (chunk) => {
-          data += chunk;
-        });
-        response.on('end', () => {
-          console.log('[API:Config] Upstash response status:', response.statusCode);
-          if (response.statusCode === 200) {
-            console.log('[API:Config] Successfully wrote to Upstash Redis');
-            return resolve(true);
-          } else {
-            console.error('[API:Config] Upstash write failed:', response.statusCode, data.substring(0, 500));
-            return resolve(false);
-          }
-        });
-      });
+    if (result?.status === 200 && result?.data && result.data.result === 'OK') {
+      console.log('[API:Config] Successfully wrote to Upstash Redis');
+      return true;
+    }
 
-      request.on('error', (error) => {
-        console.error('[API:Config] Upstash write error:', error.message);
-        resolve(false);
-      });
-
-      request.write(postData);
-      request.end();
-    });
+    console.error('[API:Config] Upstash write failed:', result);
+    return false;
   } catch (error) {
     console.error('[API:Config] Failed to write to Upstash:', error?.message);
     return false;
