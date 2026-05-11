@@ -8,7 +8,7 @@ import {
   type SurfaceTone,
 } from '../components/designSystem';
 import { useSiteConfig } from '../context/SiteConfigContext';
-import { loginToDashboard, checkDashboardAuth, logoutFromDashboard } from '../utils/apiClient';
+import { loginToDashboard, checkDashboardAuth, logoutFromDashboard, getApiDiagnostics } from '../utils/apiClient';
 import {
   DEFAULT_SITE_CONFIG,
   SITE_BUTTON_VARIANTS,
@@ -664,6 +664,7 @@ export const Dashboard: React.FC = () => {
   const [messageFilter, setMessageFilter] = useState<'all' | SiteMessageStatus>('all');
   const [uploadMessage, setUploadMessage] = useState('');
   const [uploadError, setUploadError] = useState('');
+  const [apiDiagnostics, setApiDiagnostics] = useState<Awaited<ReturnType<typeof getApiDiagnostics>> | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [activeButtonStudio, setActiveButtonStudio] = useState<SiteButtonVariant>('button-1');
   const [activeCardStudio, setActiveCardStudio] = useState<SiteCardVariant>('card-1');
@@ -6650,6 +6651,73 @@ export const Dashboard: React.FC = () => {
           <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
             <Card title="Storage & Backup" subtitle="Manage data storage, backups, and exports">
               <div className="space-y-4">
+                {/* API Diagnostics Panel */}
+                <div className="rounded-[12px] border border-blue-500/22 bg-blue-500/10 px-3 py-3">
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-blue-300">API Health</p>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const diagnostics = await getApiDiagnostics();
+                        setApiDiagnostics(diagnostics);
+                      }}
+                      className="text-[10px] px-2 py-1 rounded bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 font-mono"
+                    >
+                      Check
+                    </button>
+                  </div>
+                  {apiDiagnostics ? (
+                    <div className="space-y-2 text-xs">
+                      <div className="flex items-center justify-between">
+                        <span className="text-white/72">Config Endpoint</span>
+                        <span className={`font-semibold ${apiDiagnostics.configEndpoint ? 'text-green-400' : 'text-red-400'}`}>
+                          {apiDiagnostics.configEndpoint ? '✓ OK' : '✗ Error'}
+                        </span>
+                      </div>
+                      {apiDiagnostics.healthEndpoint && (
+                        <>
+                          <div className="flex items-center justify-between">
+                            <span className="text-white/72">Status</span>
+                            <span className={`font-semibold uppercase ${
+                              apiDiagnostics.healthEndpoint.status === 'healthy' ? 'text-green-400' :
+                              apiDiagnostics.healthEndpoint.status === 'critical' ? 'text-red-400' :
+                              'text-yellow-400'
+                            }`}>
+                              {apiDiagnostics.healthEndpoint.status}
+                            </span>
+                          </div>
+                          {apiDiagnostics.healthEndpoint.storage && (
+                            <>
+                              <div className="flex items-center justify-between">
+                                <span className="text-white/72">Vercel KV</span>
+                                <span className={apiDiagnostics.healthEndpoint.storage.vercelKv?.configured ? 'text-green-400' : 'text-white/52'}>
+                                  {apiDiagnostics.healthEndpoint.storage.vercelKv?.configured ? '✓ Configured' : '○ Not configured'}
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-white/72">Upstash Redis</span>
+                                <span className={apiDiagnostics.healthEndpoint.storage.upstashRedis?.configured ? 'text-green-400' : 'text-white/52'}>
+                                  {apiDiagnostics.healthEndpoint.storage.upstashRedis?.configured ? '✓ Configured' : '○ Not configured'}
+                                </span>
+                              </div>
+                            </>
+                          )}
+                        </>
+                      )}
+                      {apiDiagnostics.errorMessages.length > 0 && (
+                        <div className="mt-2 pt-2 border-t border-blue-500/20">
+                          <p className="text-red-400 text-[9px] font-mono">Issues:</p>
+                          {apiDiagnostics.errorMessages.map((msg, idx) => (
+                            <p key={idx} className="text-red-300 text-[9px] mt-1">• {msg}</p>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-white/56">Click "Check" to diagnose API health</p>
+                  )}
+                </div>
+
                 <div className="rounded-[12px] border border-white/12 bg-black/22 px-3 py-3">
                   <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/56">Storage Status</p>
                   <div className="mt-2 space-y-2">
@@ -7435,8 +7503,31 @@ export const Dashboard: React.FC = () => {
 
             <section className="mt-4 space-y-4">
               {uploadError ? (
-                <div className={`rounded-[12px] border px-4 py-3 text-sm ${dashboardStatusFailureClass}`}>
-                  {uploadError}
+                <div className={`rounded-[12px] border px-4 py-3 text-sm space-y-2 ${dashboardStatusFailureClass}`}>
+                  <div className="font-semibold">{uploadError}</div>
+                  {uploadError.includes('not configured') && (
+                    <div className="text-xs opacity-90 space-y-1">
+                      <p>📍 How to fix:</p>
+                      <ol className="list-decimal list-inside space-y-1">
+                        <li>Set up <code className="bg-black/30 px-1 rounded text-[11px]">UPSTASH_REDIS_REST_URL</code> and <code className="bg-black/30 px-1 rounded text-[11px]">UPSTASH_REDIS_REST_TOKEN</code> environment variables</li>
+                        <li>OR set up <code className="bg-black/30 px-1 rounded text-[11px]">KV_REST_API_URL</code> and <code className="bg-black/30 px-1 rounded text-[11px]">KV_REST_API_TOKEN</code> for Vercel KV</li>
+                        <li>Redeploy your site</li>
+                      </ol>
+                      <p className="text-[10px] mt-2">See <code className="bg-black/30 px-1 rounded">QUICK_UPSTASH_SETUP.md</code> for detailed instructions.</p>
+                    </div>
+                  )}
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const diag = await getApiDiagnostics();
+                      setApiDiagnostics(diag);
+                      setActiveSettingsPanel('storage');
+                      setActiveWorkspace('settings');
+                    }}
+                    className="text-[10px] mt-2 px-2 py-1 rounded bg-white/10 hover:bg-white/20 font-mono"
+                  >
+                    View API Diagnostics →
+                  </button>
                 </div>
               ) : null}
               {uploadMessage ? (

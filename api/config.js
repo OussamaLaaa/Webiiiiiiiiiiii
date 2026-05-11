@@ -1,253 +1,377 @@
+/**
+ * Site Config API Handler - Vercel Serverless Function
+ * Handles GET/PUT operations for persistent site configuration storage
+ * Supports multiple backends: Vercel KV, Upstash Redis, Local File
+ */
+
 import fs from 'fs';
 import path from 'path';
-import { Redis } from '@upstash/redis';
-import { kv } from '@vercel/kv';
 
-const STORAGE_PATH = path.resolve(process.cwd(), 'data');
-const STORAGE_FILE = path.join(STORAGE_PATH, 'site-config.json');
+// ============================================================================
+// ENVIRONMENT & CONFIGURATION
+// ============================================================================
+
 const CONFIG_KEY = 'site:config';
 const isProduction = process.env.NODE_ENV === 'production';
+const isVercel = !!process.env.VERCEL;
 
-const hasVercelKvConfig =
-  typeof process.env.KV_REST_API_URL === 'string' &&
-  process.env.KV_REST_API_URL.length > 0 &&
-  typeof process.env.KV_REST_API_TOKEN === 'string' &&
-  process.env.KV_REST_API_TOKEN.length > 0;
+const storageConfig = {
+  vercelKv: {
+    enabled: !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN),
+    url: process.env.KV_REST_API_URL,
+    token: process.env.KV_REST_API_TOKEN,
+  },
+  upstashRedis: {
+    enabled: !!(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN),
+    url: process.env.UPSTASH_REDIS_REST_URL,
+    token: process.env.UPSTASH_REDIS_REST_TOKEN,
+  },
+  localFile: {
+    enabled: !isProduction,
+    path: path.resolve(process.cwd(), 'data', 'site-config.json'),
+  },
+};
 
-const hasUpstashConfig =
-  typeof process.env.UPSTASH_REDIS_REST_URL === 'string' &&
-  process.env.UPSTASH_REDIS_REST_URL.length > 0 &&
-  typeof process.env.UPSTASH_REDIS_REST_TOKEN === 'string' &&
-  process.env.UPSTASH_REDIS_REST_TOKEN.length > 0;
+console.log('[API:Config] Storage backends available:', {
+  vercelKv: storageConfig.vercelKv.enabled,
+  upstashRedis: storageConfig.upstashRedis.enabled,
+  localFile: storageConfig.localFile.enabled,
+  environment: isProduction ? 'production' : 'development',
+  isVercel,
+});
 
-// Log storage availability on startup
-if (typeof process !== 'undefined' && process.env.NODE_ENV) {
-  const storageStatus = {
-    vercel_kv: hasVercelKvConfig,
-    upstash_redis: hasUpstashConfig,
-    file: !isProduction,
-    environment: isProduction ? 'production' : 'development',
-  };
-  console.log('[Config API] Storage availability:', JSON.stringify(storageStatus));
-}
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
 
-const redis = hasUpstashConfig
-  ? new Redis({
-      url: process.env.UPSTASH_REDIS_REST_URL,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN,
-    })
-  : null;
-
-const ensureStorageDir = () => {
+/**
+ * Make HTTP request to Redis/KV backend
+ */
+const makeRedisRequest = async (url, token, method = 'GET', body = null) => {
   try {
-    if (!fs.existsSync(STORAGE_PATH)) {
-      fs.mkdirSync(STORAGE_PATH, { recursive: true });
+    const options = {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    };
+    
+    if (body) {
+      options.body = JSON.stringify(body);
     }
-    return true;
-  } catch (e) {
-    console.warn('Storage dir not available:', e?.message || e);
-    return false;
+
+    const response = await fetch(url, options);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Redis request failed: ${response.status} ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('[API:Config] Redis request error:', error?.message || error);
+    throw error;
   }
 };
 
-const readStoredConfig = () => {
-  try {
-    if (!fs.existsSync(STORAGE_FILE)) return null;
-    const raw = fs.readFileSync(STORAGE_FILE, 'utf8');
-    if (!raw) return null;
-    return JSON.parse(raw);
-  } catch (e) {
-    console.error('Failed to read stored config:', e?.message || e);
-    return null;
-  }
-};
-
-const writeStoredConfig = (data) => {
-  try {
-    if (!ensureStorageDir()) return false;
-    fs.writeFileSync(STORAGE_FILE, JSON.stringify(data, null, 2), 'utf8');
-    return true;
-  } catch (e) {
-    console.error('Failed to write stored config:', e?.message || e);
-    return false;
-  }
-};
-
+/**
+ * Read config from Vercel KV
+ */
 const readFromVercelKv = async () => {
-  if (!hasVercelKvConfig) return null;
+  if (!storageConfig.vercelKv.enabled) return null;
   try {
-    const value = await kv.get(CONFIG_KEY);
-    if (!value || typeof value !== 'object') return null;
-    return value;
-  } catch (e) {
-    console.error('Failed to read config from Vercel KV:', e?.message || e);
+    console.log('[API:Config] Reading from Vercel KV...');
+    const url = `${storageConfig.vercelKv.url}/get/${CONFIG_KEY}`;
+    const response = await makeRedisRequest(url, storageConfig.vercelKv.token);
+    
+    if (response.result) {
+      return typeof response.result === 'string' ? JSON.parse(response.result) : response.result;
+    }
+    return null;
+  } catch (error) {
+    console.error('[API:Config] Failed to read from Vercel KV:', error?.message);
     return null;
   }
 };
 
+/**
+ * Write config to Vercel KV
+ */
 const writeToVercelKv = async (data) => {
-  if (!hasVercelKvConfig) return false;
+  if (!storageConfig.vercelKv.enabled) return false;
   try {
-    await kv.set(CONFIG_KEY, data);
+    console.log('[API:Config] Writing to Vercel KV...');
+    const url = `${storageConfig.vercelKv.url}/set/${CONFIG_KEY}`;
+    const payload = {
+      value: JSON.stringify(data),
+      ex: 31536000, // 1 year TTL
+    };
+    
+    await makeRedisRequest(url, storageConfig.vercelKv.token, 'POST', payload);
+    console.log('[API:Config] Successfully wrote to Vercel KV');
     return true;
-  } catch (e) {
-    console.error('Failed to write config to Vercel KV:', e?.message || e);
+  } catch (error) {
+    console.error('[API:Config] Failed to write to Vercel KV:', error?.message);
     return false;
   }
 };
 
-const readFromRedis = async () => {
-  if (!redis) return null;
+/**
+ * Read config from Upstash Redis
+ */
+const readFromUpstashRedis = async () => {
+  if (!storageConfig.upstashRedis.enabled) return null;
   try {
-    const value = await redis.get(CONFIG_KEY);
-    if (!value || typeof value !== 'object') return null;
-    return value;
-  } catch (e) {
-    console.error('Failed to read config from Redis:', e?.message || e);
+    console.log('[API:Config] Reading from Upstash Redis...');
+    const url = `${storageConfig.upstashRedis.url}/get/${CONFIG_KEY}`;
+    const response = await makeRedisRequest(url, storageConfig.upstashRedis.token);
+    
+    if (response.result) {
+      return typeof response.result === 'string' ? JSON.parse(response.result) : response.result;
+    }
+    return null;
+  } catch (error) {
+    console.error('[API:Config] Failed to read from Upstash:', error?.message);
     return null;
   }
 };
 
-const writeToRedis = async (data) => {
-  if (!redis) return false;
+/**
+ * Write config to Upstash Redis
+ */
+const writeToUpstashRedis = async (data) => {
+  if (!storageConfig.upstashRedis.enabled) return false;
   try {
-    await redis.set(CONFIG_KEY, data);
+    console.log('[API:Config] Writing to Upstash Redis...');
+    const url = `${storageConfig.upstashRedis.url}/set/${CONFIG_KEY}`;
+    const payload = {
+      value: JSON.stringify(data),
+      ex: 31536000, // 1 year TTL
+    };
+    
+    await makeRedisRequest(url, storageConfig.upstashRedis.token, 'POST', payload);
+    console.log('[API:Config] Successfully wrote to Upstash Redis');
     return true;
-  } catch (e) {
-    console.error('Failed to write config to Redis:', e?.message || e);
+  } catch (error) {
+    console.error('[API:Config] Failed to write to Upstash:', error?.message);
     return false;
   }
 };
 
-export default (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
+/**
+ * Read config from local file (development only)
+ */
+const readFromLocalFile = () => {
+  if (!storageConfig.localFile.enabled) return null;
+  try {
+    console.log('[API:Config] Reading from local file...');
+    if (!fs.existsSync(storageConfig.localFile.path)) return null;
+    
+    const raw = fs.readFileSync(storageConfig.localFile.path, 'utf8');
+    if (!raw) return null;
+    
+    return JSON.parse(raw);
+  } catch (error) {
+    console.error('[API:Config] Failed to read from local file:', error?.message);
+    return null;
+  }
+};
 
+/**
+ * Write config to local file (development only)
+ */
+const writeToLocalFile = (data) => {
+  if (!storageConfig.localFile.enabled) return false;
+  try {
+    console.log('[API:Config] Writing to local file...');
+    const dir = path.dirname(storageConfig.localFile.path);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(storageConfig.localFile.path, JSON.stringify(data, null, 2), 'utf8');
+    console.log('[API:Config] Successfully wrote to local file');
+    return true;
+  } catch (error) {
+    console.error('[API:Config] Failed to write to local file:', error?.message);
+    return false;
+  }
+};
+
+/**
+ * Parse request body
+ */
+const parseRequestBody = async (req) => {
+  return new Promise((resolve) => {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    req.on('end', () => {
+      try {
+        resolve(body ? JSON.parse(body) : {});
+      } catch (error) {
+        console.warn('[API:Config] Failed to parse request body:', error?.message);
+        resolve({});
+      }
+    });
+  });
+};
+
+// ============================================================================
+// MAIN HANDLER
+// ============================================================================
+
+export default async (req, res) => {
+  // Set CORS & content type headers
+  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  // Handle OPTIONS requests
   if (req.method === 'OPTIONS') {
-    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST,PUT');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     return res.status(200).end();
   }
 
-  // GET /api/config/status - check storage availability
-  if (req.method === 'GET' && req.url && req.url.includes('/status')) {
-    return res.status(200).json({
-      success: true,
-      storage: {
-        vercel_kv: {
-          available: hasVercelKvConfig,
-          description: 'Vercel KV - Primary persistent storage'
-        },
-        upstash_redis: {
-          available: hasUpstashConfig,
-          description: 'Upstash Redis - Secondary persistent storage'
-        },
-        file: {
-          available: !isProduction,
-          description: 'Local file - Development only'
-        }
-      },
-      environment: isProduction ? 'production' : 'development',
-      message: hasVercelKvConfig || hasUpstashConfig ? 'Persistent storage configured' : 'No persistent storage - configure Upstash/Vercel KV'
-    });
-  }
-
-  // GET - return stored config if available
-  if (req.method === 'GET') {
-    return (async () => {
-      const vercelKvData = await readFromVercelKv();
-      if (vercelKvData) {
-        return res.status(200).json({ success: true, data: vercelKvData, source: 'vercel-kv' });
-      }
-
-      const redisData = await readFromRedis();
-      if (redisData) {
-        return res.status(200).json({ success: true, data: redisData, source: 'upstash' });
-      }
-
-      if (!isProduction) {
-        const stored = readStoredConfig();
-        if (stored) {
-          return res.status(200).json({ success: true, data: stored, source: 'file' });
-        }
-      }
-
-      // Fallback: empty but successful response
-      return res.status(200).json({ success: true, data: {} });
-    })();
-  }
-
-  // PUT/POST - persist incoming config
-  if (req.method === 'PUT' || req.method === 'POST') {
-    return (async () => {
-      let body = {};
-      try {
-        if (req.body && typeof req.body === 'string') {
-          body = JSON.parse(req.body);
-        } else if (req.body && typeof req.body === 'object') {
-          body = req.body;
-        }
-      } catch (e) {
-        console.warn('[Config API] Invalid JSON body for config update');
-        return res.status(400).json({ success: false, error: 'Invalid JSON body' });
-      }
-
-      console.log('[Config API] Attempting to persist config...');
+  try {
+    // GET /api/config - Read configuration
+    if (req.method === 'GET') {
+      console.log('[API:Config] GET request received');
       
-      // Try Vercel KV first
-      if (hasVercelKvConfig) {
-        console.log('[Config API] Trying Vercel KV...');
+      // Try each backend in priority order
+      const kvData = await readFromVercelKv();
+      if (kvData) {
+        console.log('[API:Config] Returning data from Vercel KV');
+        return res.status(200).json({
+          success: true,
+          data: kvData,
+          source: 'vercel-kv',
+          timestamp: Date.now(),
+        });
+      }
+
+      const redisData = await readFromUpstashRedis();
+      if (redisData) {
+        console.log('[API:Config] Returning data from Upstash Redis');
+        return res.status(200).json({
+          success: true,
+          data: redisData,
+          source: 'upstash-redis',
+          timestamp: Date.now(),
+        });
+      }
+
+      const fileData = readFromLocalFile();
+      if (fileData) {
+        console.log('[API:Config] Returning data from local file');
+        return res.status(200).json({
+          success: true,
+          data: fileData,
+          source: 'local-file',
+          timestamp: Date.now(),
+          warning: 'Using local file storage - not shared across instances',
+        });
+      }
+
+      console.log('[API:Config] No config found, returning empty data');
+      return res.status(200).json({
+        success: true,
+        data: {},
+        source: 'none',
+        timestamp: Date.now(),
+      });
+    }
+
+    // PUT/POST /api/config - Write configuration
+    if (req.method === 'PUT' || req.method === 'POST') {
+      console.log(`[API:Config] ${req.method} request received`);
+      
+      const body = await parseRequestBody(req);
+      
+      if (!body || Object.keys(body).length === 0) {
+        console.warn('[API:Config] Empty body received');
+        return res.status(400).json({
+          success: false,
+          error: 'Request body is empty',
+        });
+      }
+
+      console.log('[API:Config] Request body received, attempting to persist...');
+
+      // Try each backend in priority order
+      if (storageConfig.vercelKv.enabled) {
         const kvOk = await writeToVercelKv(body);
         if (kvOk) {
-          console.log('[Config API] Successfully saved to Vercel KV');
-          return res.status(200).json({ 
-            success: true, 
-            lastUpdated: Date.now(), 
+          console.log('[API:Config] Successfully persisted to Vercel KV');
+          return res.status(200).json({
+            success: true,
             source: 'vercel-kv',
-            message: 'Saved to Vercel KV - visible to all users'
+            timestamp: Date.now(),
+            message: 'Configuration saved to Vercel KV - visible to all users',
           });
         }
-        console.warn('[Config API] Vercel KV write failed');
-      } else {
-        console.warn('[Config API] Vercel KV not configured');
+        console.warn('[API:Config] Vercel KV write failed, trying next backend');
       }
 
-      // Try Upstash Redis
-      if (hasUpstashConfig) {
-        console.log('[Config API] Trying Upstash Redis...');
-        const redisOk = await writeToRedis(body);
+      if (storageConfig.upstashRedis.enabled) {
+        const redisOk = await writeToUpstashRedis(body);
         if (redisOk) {
-          console.log('[Config API] Successfully saved to Upstash Redis');
-          return res.status(200).json({ 
-            success: true, 
-            lastUpdated: Date.now(), 
-            source: 'upstash',
-            message: 'Saved to Upstash Redis - visible to all users'
+          console.log('[API:Config] Successfully persisted to Upstash Redis');
+          return res.status(200).json({
+            success: true,
+            source: 'upstash-redis',
+            timestamp: Date.now(),
+            message: 'Configuration saved to Upstash Redis - visible to all users',
           });
         }
-        console.warn('[Config API] Upstash Redis write failed');
-      } else {
-        console.warn('[Config API] Upstash Redis not configured');
+        console.warn('[API:Config] Upstash Redis write failed, trying next backend');
       }
 
-      // Fallback for local development only
-      if (!isProduction) {
-        console.log('[Config API] Falling back to local file storage (development only)');
-        const fileOk = writeStoredConfig(body);
+      if (storageConfig.localFile.enabled) {
+        const fileOk = writeToLocalFile(body);
         if (fileOk) {
-          console.log('[Config API] Successfully saved to local file');
-          return res.status(200).json({ 
-            success: true, 
-            lastUpdated: Date.now(), 
-            source: 'file',
-            warning: 'Saved to local file only - not visible to other users'
+          console.log('[API:Config] Successfully persisted to local file');
+          return res.status(200).json({
+            success: true,
+            source: 'local-file',
+            timestamp: Date.now(),
+            warning: 'Configuration saved to local file only - NOT visible to other users. Configure Vercel KV or Upstash Redis for production.',
           });
         }
-        console.error('[Config API] Local file write also failed');
+        console.warn('[API:Config] Local file write failed');
       }
 
-      console.error('[Config API] All storage methods failed');
-      return res.status(500).json({
+      console.error('[API:Config] All storage backends failed');
+      return res.status(503).json({
         success: false,
+        error: 'All storage backends failed. Configure Vercel KV or Upstash Redis.',
+        availableBackends: {
+          vercelKv: storageConfig.vercelKv.enabled,
+          upstashRedis: storageConfig.upstashRedis.enabled,
+          localFile: storageConfig.localFile.enabled,
+        },
+      });
+    }
+
+    // 405 Method Not Allowed
+    console.warn(`[API:Config] Unsupported method: ${req.method}`);
+    return res.status(405).json({
+      success: false,
+      error: 'Method not allowed',
+      allowedMethods: ['GET', 'POST', 'PUT', 'OPTIONS'],
+    });
+
+  } catch (error) {
+    console.error('[API:Config] Unhandled error:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+      message: error?.message || 'Unknown error occurred',
+    });
+  }
+};
         error: 'No persistent storage available. Configure Upstash/Vercel KV environment variables for production.',
         availableStorages: {
           vercel_kv: hasVercelKvConfig,

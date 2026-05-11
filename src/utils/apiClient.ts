@@ -21,12 +21,62 @@ export interface ApiResponse<T> {
     upstash_redis: boolean;
     file: boolean;
   };
+  timestamp?: number;
 }
 
 export interface AuthResponse {
   success: boolean;
   authenticated: boolean;
   error?: string;
+}
+
+export interface HealthCheckResponse {
+  success: boolean;
+  status: 'healthy' | 'degraded' | 'critical' | 'error';
+  storage?: {
+    vercelKv?: { configured: boolean; status: string };
+    upstashRedis?: { configured: boolean; status: string };
+    localFile?: { configured: boolean; status: string };
+  };
+  recommendations?: string[];
+  timestamp?: string;
+}
+
+/**
+ * Check API health and storage backend status
+ */
+export async function checkApiHealth(): Promise<HealthCheckResponse> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/health`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      cache: 'no-store',
+    });
+
+    if (!response.ok) {
+      console.error('[API Health] HTTP error:', response.status);
+      return {
+        success: false,
+        status: 'error',
+        recommendations: ['API endpoint is not responding. Check your connection.'],
+      };
+    }
+
+    const data = await response.json();
+    return data as HealthCheckResponse;
+  } catch (error) {
+    console.error('[API Health] Error checking health:', error);
+    return {
+      success: false,
+      status: 'error',
+      recommendations: [
+        `Connection error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'Make sure your site is deployed and the API endpoint is accessible.',
+      ],
+    };
+  }
 }
 
 /**
@@ -48,9 +98,10 @@ export async function fetchSiteConfig(): Promise<ApiResponse<SiteConfig>> {
     }
 
     const data = await response.json();
+    console.log('[API Fetch] Config loaded from:', data.source);
     return data;
   } catch (error) {
-    console.error('Error fetching site config from API:', error);
+    console.error('[API Fetch] Error fetching site config:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to fetch configuration',
@@ -63,6 +114,8 @@ export async function fetchSiteConfig(): Promise<ApiResponse<SiteConfig>> {
  */
 export async function updateSiteConfig(config: SiteConfig): Promise<ApiResponse<SiteConfig>> {
   try {
+    console.log('[API Update] Starting config update...');
+    
     const response = await fetch(`${API_BASE_URL}/config`, {
       method: 'PUT',
       headers: {
@@ -72,14 +125,43 @@ export async function updateSiteConfig(config: SiteConfig): Promise<ApiResponse<
       body: JSON.stringify(config),
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
+      console.error('[API Update] Update failed:', data);
+      
+      // Provide helpful error messages based on response
+      if (response.status === 503) {
+        return {
+          success: false,
+          error: 'Storage backend is not configured. Please add Vercel KV or Upstash Redis environment variables.',
+          message: 'To set up persistent storage, follow the QUICK_UPSTASH_SETUP.md guide in your project.',
+        };
+      }
+
+      if (response.status === 400) {
+        return {
+          success: false,
+          error: 'Invalid request format. The configuration data may be corrupted.',
+        };
+      }
+
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data = await response.json();
+    console.log('[API Update] Config saved successfully to:', data.source);
     return data;
   } catch (error) {
-    console.error('Error updating site config via API:', error);
+    console.error('[API Update] Error updating config:', error);
+    
+    // Check if it's a network error
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      return {
+        success: false,
+        error: 'Network error: Cannot reach the API endpoint. Check your connection and that the site is deployed.',
+      };
+    }
+
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to update configuration',
@@ -88,16 +170,46 @@ export async function updateSiteConfig(config: SiteConfig): Promise<ApiResponse<
 }
 
 /**
- * Check if API is available
+ * Get detailed API diagnostics for troubleshooting
  */
-export async function checkApiHealth(): Promise<boolean> {
+export async function getApiDiagnostics(): Promise<{
+  configEndpoint: boolean;
+  healthEndpoint: HealthCheckResponse | null;
+  errorMessages: string[];
+}> {
+  const errors: string[] = [];
+  let healthStatus: HealthCheckResponse | null = null;
+
+  // Check config endpoint
+  let configOk = false;
   try {
     const response = await fetch(`${API_BASE_URL}/config`, {
       method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
       cache: 'no-store',
     });
-    return response.ok;
-  } catch {
+    configOk = response.ok;
+    if (!configOk) errors.push(`Config endpoint returned status ${response.status}`);
+  } catch (error) {
+    errors.push(`Config endpoint error: ${error instanceof Error ? error.message : 'Unknown'}`);
+  }
+
+  // Check health endpoint
+  try {
+    healthStatus = await checkApiHealth();
+    if (healthStatus.recommendations && healthStatus.recommendations.length > 0) {
+      errors.push(...healthStatus.recommendations);
+    }
+  } catch (error) {
+    errors.push(`Health check failed: ${error instanceof Error ? error.message : 'Unknown'}`);
+  }
+
+  return {
+    configEndpoint: configOk,
+    healthEndpoint: healthStatus,
+    errorMessages: errors,
+  };
+}
     return false;
   }
 }
