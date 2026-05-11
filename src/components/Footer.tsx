@@ -60,7 +60,11 @@ export const Footer: React.FC = () => {
 
     if (isStandaloneRoute()) {
       if (typeof window !== 'undefined') {
-        window.sessionStorage.setItem(PENDING_NAV_SECTION_KEY, section);
+        try {
+          window.sessionStorage?.setItem(PENDING_NAV_SECTION_KEY, section);
+        } catch {
+          console.warn('Unable to set session storage');
+        }
       }
 
       window.location.hash = '/';

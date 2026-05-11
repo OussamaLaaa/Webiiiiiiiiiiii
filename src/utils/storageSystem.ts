@@ -151,6 +151,25 @@ const safeRemoveItem = (key: string): boolean => {
   }
 };
 
+const safeSessionStorageGetItem = (key: string): string | null => {
+  try {
+    return sessionStorage?.getItem(key) ?? null;
+  } catch (error) {
+    console.warn(`Failed to get session storage item ${key}:`, error);
+    return null;
+  }
+};
+
+const safeSessionStorageSetItem = (key: string, value: string): boolean => {
+  try {
+    sessionStorage?.setItem(key, value);
+    return true;
+  } catch (error) {
+    console.warn(`Failed to set session storage item ${key}:`, error);
+    return false;
+  }
+};
+
 // Get storage metadata
 const getMetadata = (): StorageMetadata => {
   const metadataStr = safeGetItem(STORAGE_KEYS.METADATA);
@@ -284,8 +303,7 @@ const saveToSession = (config: SiteConfig): boolean => {
     const data = safeStringify(config);
     if (!data) return false;
 
-    sessionStorage.setItem(STORAGE_KEYS.SESSION, compress(data));
-    return true;
+    return safeSessionStorageSetItem(STORAGE_KEYS.SESSION, compress(data));
   } catch (error) {
     console.error('Failed to save to session storage:', error);
     return false;
@@ -362,7 +380,7 @@ const loadFromBackup = (): SiteConfig | null => {
 // Load from session storage
 const loadFromSession = (): SiteConfig | null => {
   try {
-    const data = sessionStorage.getItem(STORAGE_KEYS.SESSION);
+    const data = safeSessionStorageGetItem(STORAGE_KEYS.SESSION);
     if (!data) return null;
 
     const decompressed = decompress(data);
@@ -538,7 +556,7 @@ export const resetAllStorage = (): boolean => {
     // Also clear session storage
     Object.values(STORAGE_KEYS).forEach((key) => {
       try {
-        sessionStorage.removeItem(key);
+        sessionStorage?.removeItem(key);
       } catch {
         // Ignore session storage errors
       }
@@ -556,7 +574,7 @@ export const getStorageInfo = () => {
   const metadata = getMetadata();
   const primarySize = safeGetItem(STORAGE_KEYS.PRIMARY)?.length || 0;
   const backupSize = safeGetItem(STORAGE_KEYS.BACKUP)?.length || 0;
-  const sessionSize = sessionStorage.getItem(STORAGE_KEYS.SESSION)?.length || 0;
+  const sessionSize = safeSessionStorageGetItem(STORAGE_KEYS.SESSION)?.length || 0;
   const recoverySize = safeGetItem(STORAGE_KEYS.RECOVERY)?.length || 0;
   const history = loadVersionHistory();
 

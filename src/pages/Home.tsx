@@ -46,24 +46,28 @@ export const Home: React.FC = () => {
   React.useEffect(() => {
     if (!hasStarted || typeof window === 'undefined') return;
 
-    const pendingSection = window.sessionStorage.getItem(PENDING_NAV_SECTION_KEY);
-    if (!pendingSection) return;
+    try {
+      const pendingSection = window.sessionStorage?.getItem(PENDING_NAV_SECTION_KEY);
+      if (!pendingSection) return;
 
-    window.sessionStorage.removeItem(PENDING_NAV_SECTION_KEY);
+      window.sessionStorage?.removeItem(PENDING_NAV_SECTION_KEY);
 
-    if (pendingSection === 'home') return;
+      if (pendingSection === 'home') return;
 
-    const dispatchNavigation = () => {
-      window.dispatchEvent(new CustomEvent('nav-to-section', { detail: { section: pendingSection } }));
-    };
+      const dispatchNavigation = () => {
+        window.dispatchEvent(new CustomEvent('nav-to-section', { detail: { section: pendingSection } }));
+      };
 
-    const t1 = window.setTimeout(dispatchNavigation, 60);
-    const t2 = window.setTimeout(dispatchNavigation, 220);
+      const t1 = window.setTimeout(dispatchNavigation, 60);
+      const t2 = window.setTimeout(dispatchNavigation, 220);
 
-    return () => {
-      window.clearTimeout(t1);
-      window.clearTimeout(t2);
-    };
+      return () => {
+        window.clearTimeout(t1);
+        window.clearTimeout(t2);
+      };
+    } catch (error) {
+      console.warn('Session storage access error:', error);
+    }
   }, [hasStarted]);
 
   return (
