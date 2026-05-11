@@ -315,10 +315,16 @@ const writeToLocalFile = (data) => {
  * Parse request body
  */
 const parseRequestBody = async (req) => {
-  // Vercel Serverless Functions automatically parse JSON bodies.
-  // If req.body is already parsed (it's an object), we can just return it.
-  if (req.body && typeof req.body === 'object') {
-    return req.body;
+  // Vercel explicitly populates req.body
+  if (req.body !== undefined) {
+    if (typeof req.body === 'object') {
+      return req.body;
+    }
+    try {
+      return JSON.parse(req.body);
+    } catch (e) {
+      return {};
+    }
   }
   
   // Fallback for non-Vercel environments (like local node scripts if any)
