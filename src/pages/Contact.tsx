@@ -61,7 +61,7 @@ const iconMap: Record<string, React.ReactNode> = {
   ),
   phone: (
     <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
     </svg>
   ),
   location: (
@@ -306,13 +306,13 @@ const Contact: React.FC = () => {
       <AdvancedNavbar isLightMode={true} />
 
       {/* Main Content */}
-      <main className="relative pt-32 pb-20 px-4 md:px-8 lg:px-12">
+      <main className="relative pt-24 md:pt-32 pb-16 md:pb-20 px-4 md:px-8 lg:px-12">
         <div className="max-w-[1152px] mx-auto">
           {/* Hero Section */}
-          <div className="mb-16">
+          <div className="mb-8 md:mb-12 lg:mb-16">
             <h1
               ref={titleRef}
-              className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tight"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 md:mb-6 tracking-tight"
               style={{ color: '#000000' }}
             >
               {contactPage.heroTitleLine1}
@@ -321,33 +321,33 @@ const Contact: React.FC = () => {
             </h1>
             <p
               ref={subtitleRef}
-              className="text-base md:text-lg text-gray-600 max-w-[576px] leading-relaxed"
+              className="text-sm md:text-base lg:text-lg text-gray-600 max-w-[576px] leading-relaxed"
             >
               {contactPage.heroSubtitle}
             </p>
           </div>
 
-          <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-16" />
+          <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-8 md:mb-12 lg:mb-16" />
 
           {/* Contact Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 mb-12 md:mb-16">
             {/* Sidebar */}
-            <div className="contact-sidebar lg:col-span-4 space-y-6">
+            <div className="contact-sidebar lg:col-span-4 space-y-4 md:space-y-6">
               {/* Direct Contact Card */}
-              <div className={`p-6 rounded-2xl ${getCardClass('card-2', 'light')}`} style={{ borderColor: 'rgba(0,0,0,0.1)' }}>
-                <div className="flex items-center justify-between mb-6">
-                  <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <div className={`p-4 md:p-6 rounded-2xl ${getCardClass('card-2', 'light')}`} style={{ borderColor: 'rgba(0,0,0,0.1)' }}>
+                <div className="flex items-center justify-between mb-4 md:mb-6">
+                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-black flex items-center justify-center">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                     </svg>
                   </div>
                   <span className="text-xs font-medium uppercase tracking-wider text-gray-500">{contactPage.directContactTitle}</span>
                 </div>
 
-                <div className="space-y-5">
+                <div className="space-y-4 md:space-y-5">
                   <div className="flex items-start gap-3">
                     <div className="w-5 h-5 mt-1 flex-shrink-0 text-gray-500">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                       </svg>
                     </div>
@@ -359,7 +359,7 @@ const Contact: React.FC = () => {
 
                   <div className="flex items-start gap-3">
                     <div className="w-5 h-5 mt-1 flex-shrink-0 text-gray-500">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                         <polyline points="22,6 12,13 2,6" />
                       </svg>
@@ -368,8 +368,8 @@ const Contact: React.FC = () => {
                       <p className="text-xs font-medium uppercase tracking-wider mb-1 text-gray-500">{contactPage.emailLabel}</p>
                       <div className="flex items-center gap-2">
                         <a href={`mailto:${contactPage.emailAddress}`} className="text-sm font-medium hover:underline text-gray-900">{contactPage.emailAddress}</a>
-                        <button onClick={() => navigator.clipboard.writeText(contactPage.emailAddress)} className="w-7 h-7 rounded-full flex items-center justify-center transition-colors bg-gray-100 hover:bg-gray-200">
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <button onClick={() => navigator.clipboard.writeText(contactPage.emailAddress)} className="w-6 h-6 md:w-7 md:h-7 rounded-full flex items-center justify-center transition-colors bg-gray-100 hover:bg-gray-200">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
                             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
                           </svg>
@@ -380,7 +380,7 @@ const Contact: React.FC = () => {
 
                   <div className="flex items-start gap-3">
                     <div className="w-5 h-5 mt-1 flex-shrink-0 text-gray-500">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                         <circle cx="12" cy="10" r="3" />
                       </svg>
@@ -394,7 +394,7 @@ const Contact: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="pt-6 mt-6 border-t border-gray-200/80">
+                <div className="pt-4 md:pt-6 mt-4 md:mt-6 border-t border-gray-200/80">
                   <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
                     <p className="text-sm text-gray-600">{contactPage.availabilityText}</p>
@@ -402,8 +402,8 @@ const Contact: React.FC = () => {
                 </div>
               </div>
 
-              {/* Response Time Card */}
-              <div className={`p-6 rounded-2xl border ${getCardClass('card-2', 'light')}`} style={{ borderColor: 'rgba(0,0,0,0.1)' }}>
+              {/* Response Time Card - Hidden on mobile */}
+              <div className={`hidden lg:block p-6 rounded-2xl border ${getCardClass('card-2', 'light')}`} style={{ borderColor: 'rgba(0,0,0,0.1)' }}>
                 <p className="text-xs font-medium uppercase tracking-wider mb-2 text-gray-500">{contactPage.responseTimeLabel}</p>
                 <p className="text-lg font-semibold mb-2 text-gray-900">{contactPage.responseTimeValue}</p>
                 <p className="text-sm leading-relaxed text-gray-600">{contactPage.responseTimeDescription}</p>
@@ -412,17 +412,17 @@ const Contact: React.FC = () => {
 
             {/* Form Section */}
             <div ref={formRef} className="lg:col-span-8">
-              <div className={`p-8 rounded-2xl ${getCardClass('card-2', 'light')}`} style={{ borderColor: 'rgba(0,0,0,0.1)' }}>
-                <div className="flex items-start justify-between mb-8">
+              <div className={`p-4 md:p-6 lg:p-8 rounded-2xl ${getCardClass('card-2', 'light')}`} style={{ borderColor: 'rgba(0,0,0,0.1)' }}>
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-6 md:mb-8 gap-4">
                   <div>
-                    <h2 className="text-2xl font-semibold mb-2" style={{ color: '#000000' }}>{contactPage.formTitle}</h2>
+                    <h2 className="text-xl md:text-2xl font-semibold mb-2" style={{ color: '#000000' }}>{contactPage.formTitle}</h2>
                     <p className="text-sm text-gray-500">{contactPage.formSubtitle}</p>
                   </div>
                   <span className="text-xs font-medium uppercase tracking-wider text-gray-400">01 / Form</span>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-5">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <form onSubmit={handleSubmit} className="space-y-4 md:space-y-5">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                     <div className="space-y-1.5">
                       <label className="block text-xs font-medium uppercase tracking-wider text-gray-500">{contactPage.formNameLabel}</label>
                       <input type="text" name="name" value={formData.name} onChange={handleInputChange} placeholder={contactPage.formNamePlaceholder} className="w-full px-4 py-3 rounded-xl text-sm font-medium transition-colors bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900" required />
@@ -440,9 +440,9 @@ const Contact: React.FC = () => {
                     <label className="block text-xs font-medium uppercase tracking-wider text-gray-500">{contactPage.formMessageLabel}</label>
                     <textarea name="message" value={formData.message} onChange={handleInputChange} placeholder={contactPage.formMessagePlaceholder} rows={5} className="w-full px-4 py-3 rounded-xl text-sm font-medium transition-colors resize-none bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900" required />
                   </div>
-                  <div className="flex items-center justify-between pt-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-2">
                     <p className="text-xs text-gray-500">By sending, you agree to our <a href={contactPage.formPrivacyLink} className="underline text-gray-700">{contactPage.formPrivacyText}</a>.</p>
-                    <button type="submit" className="px-8 py-3.5 rounded-xl bg-black text-white font-medium text-sm flex items-center gap-2 hover:bg-gray-800 transition-colors duration-300">
+                    <button type="submit" className="px-6 md:px-8 py-3 md:py-3.5 rounded-xl bg-black text-white font-medium text-sm flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors duration-300">
                       {contactPage.formSubmitButton}
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M5 12h14M12 5l7 7-7 7" />
@@ -455,28 +455,28 @@ const Contact: React.FC = () => {
           </div>
 
           {/* Social Channels Section */}
-          <div className="space-y-8">
-            <div className="flex items-start justify-between">
+          <div className="space-y-6 md:space-y-8">
+            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
               <div>
                 <span className="text-xs font-medium uppercase tracking-wider mb-2 block text-gray-400">{contactPage.socialSectionLabel}</span>
-                <h2 className="text-3xl md:text-4xl font-semibold" style={{ color: '#000000' }}>{contactPage.socialSectionTitle}</h2>
+                <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold" style={{ color: '#000000' }}>{contactPage.socialSectionTitle}</h2>
               </div>
               <p className="text-sm max-w-[384px] text-gray-500">{contactPage.socialSectionDescription}</p>
             </div>
 
-            <div ref={cardsRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div ref={cardsRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {contactCards.map((card) => (
                 <a
                   key={card.id}
                   href={card.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`social-card group relative p-6 rounded-2xl border transition-all duration-400 ${getCardClass('card-2', 'light')}`}
+                  className={`social-card group relative p-4 md:p-6 rounded-2xl border transition-all duration-400 ${getCardClass('card-2', 'light')}`}
                   onMouseEnter={(e) => handleCardHover(e.currentTarget, true, card.color, card.hoverColor)}
                   onMouseLeave={(e) => handleCardHover(e.currentTarget, false, card.color, card.hoverColor)}
                   style={{ borderColor: 'rgba(0,0,0,0.08)' }}
                 >
-                  <div className="card-header flex items-center justify-between mb-6">
+                  <div className="card-header flex items-center justify-between mb-4 md:mb-6">
                     <span className="text-xs font-medium uppercase tracking-wider text-gray-500 group-hover:text-white/90 transition-colors duration-300">{card.action}</span>
                     <div className="w-8 h-8 rounded-full flex items-center justify-center transition-colors bg-gray-100 group-hover:bg-white/20">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-white transition-colors duration-300">
@@ -485,11 +485,11 @@ const Contact: React.FC = () => {
                     </div>
                   </div>
                   <div className="card-content flex items-center gap-3">
-                    <div className="card-icon w-11 h-11 rounded-xl flex items-center justify-center transition-colors duration-300" style={{ backgroundColor: '#F3F4F6' }}>
+                    <div className="card-icon w-10 h-10 md:w-11 md:h-11 rounded-xl flex items-center justify-center transition-colors duration-300" style={{ backgroundColor: '#F3F4F6' }}>
                       <div style={{ color: card.color }}>{card.icon}</div>
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-base font-semibold mb-0.5 transition-colors duration-300" style={{ color: '#000000' }}>{card.title}</h3>
+                      <h3 className="text-sm md:text-base font-semibold mb-0.5 transition-colors duration-300" style={{ color: '#000000' }}>{card.title}</h3>
                       <p className="text-xs text-gray-500 transition-colors duration-300">{card.subtitle}</p>
                     </div>
                   </div>
