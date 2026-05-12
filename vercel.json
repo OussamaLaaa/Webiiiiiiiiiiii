@@ -4,10 +4,25 @@
   "framework": "vite",
   "installCommand": "npm install",
   "outputDirectory": "dist",
-  "rewrites": [
+  "routes": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "handle": "filesystem"
+    },
+    {
+      "src": "/videos/(.*)",
+      "dest": "/videos/$1"
+    },
+    {
+      "src": "/frames/(.*)",
+      "dest": "/frames/$1"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ],
   "headers": [
