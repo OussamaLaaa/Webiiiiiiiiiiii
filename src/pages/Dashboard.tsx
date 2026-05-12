@@ -1695,6 +1695,19 @@ export const Dashboard: React.FC = () => {
 
             <Card title="Portal Frame Window" subtitle="Edit the first-scene window size, offsets, and matte tone">
               <div className="grid gap-4 xl:grid-cols-2">
+                <Toggle
+                  label="Watermark cover"
+                  checked={siteConfig.globalFrame.watermarkMaskEnabled}
+                  onChange={(next) =>
+                    updateConfig((prev) => ({
+                      ...prev,
+                      globalFrame: {
+                        ...prev.globalFrame,
+                        watermarkMaskEnabled: next,
+                      },
+                    }))
+                  }
+                />
                 <Input
                   label="Top offset mobile (px)"
                   type="number"
