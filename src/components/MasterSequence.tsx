@@ -104,15 +104,12 @@ export const MasterSequence: React.FC<MasterSequenceProps> = memo(({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const precomputedScene02 = scene02Duration;
-    const precomputedScene03 = scene03Duration;
-    const precomputedScene07 = scene07Duration;
-    const scene02Duration = precomputedScene02;
-    const scene03Duration = precomputedScene03;
-    const scene07Duration = precomputedScene07;
-    const preHeroDuration = scene02Duration + scene03Duration;
+    const scene02DurationValue = scene02Duration;
+    const scene03DurationValue = scene03Duration;
+    const scene07DurationValue = scene07Duration;
+    const preHeroDuration = scene02DurationValue + scene03DurationValue;
 
-    if (!scene02Duration || !scene03Duration || !scene07Duration) return;
+    if (!scene02DurationValue || !scene03DurationValue || !scene07DurationValue) return;
 
     let resizeCallback = 0;
     let isVisible = true;
@@ -241,28 +238,28 @@ export const MasterSequence: React.FC<MasterSequenceProps> = memo(({
       if (clampP < PHASE_PLAY_SCENE_02_03_END) {
         const subP = clampP / PHASE_PLAY_SCENE_02_03_END;
         const targetTime = subP * preHeroDuration;
-        if (targetTime <= scene02Duration) {
+        if (targetTime <= scene02DurationValue) {
           if (scene02Video) {
             setVideoTime(scene02Video, targetTime, false);
           }
         } else if (scene03Video) {
-          setVideoTime(scene03Video, targetTime - scene02Duration, false);
+          setVideoTime(scene03Video, targetTime - scene02DurationValue, false);
         }
       } else if (clampP < PHASE_ABOUT_END) {
         if (scene03Video) {
-          setVideoTime(scene03Video, Math.max(0, scene03Duration - 0.001), false);
+          setVideoTime(scene03Video, Math.max(0, scene03DurationValue - 0.001), false);
         }
       } else if (clampP <= PHASE_SCENE_07_END) {
         if (scene07Video) {
           const rawSubP = clamp((clampP - PHASE_ABOUT_END) / (PHASE_SCENE_07_END - PHASE_ABOUT_END), 0, 1);
           const subP = Math.pow(rawSubP, SCENE_07_ACCELERATION_POWER);
           const targetTime = subP >= 0.995
-            ? scene07Duration - 0.001
-            : subP * scene07Duration;
+            ? scene07DurationValue - 0.001
+            : subP * scene07DurationValue;
           setVideoTime(scene07Video, targetTime, true);
         }
       } else if (scene07Video) {
-        setVideoTime(scene07Video, Math.max(0, scene07Duration - 0.001), true);
+        setVideoTime(scene07Video, Math.max(0, scene07DurationValue - 0.001), true);
       }
 
       if (onGlobalProgressRef.current) {
