@@ -46,13 +46,35 @@ interface PreloadState {
 
 const preloadStateCache = new Map<string, PreloadState>();
 
-const CRITICAL_FIRST_SCENE_FRAMES = 12;
-const CRITICAL_MAX_WAIT_MS = 8000;
-const CRITICAL_CHUNK_SIZE = 6;
-const BACKGROUND_CHUNK_SIZE = 20;
+const DEFAULT_CRITICAL_FIRST_SCENE_FRAMES = 8;
+const CRITICAL_MAX_WAIT_MS = 4000;
+const CRITICAL_CHUNK_SIZE = 4;
+const BACKGROUND_CHUNK_SIZE = 24;
+const BACKGROUND_START_DELAY_MS = 500;
+
+const getConnectionProfile = () => {
+  if (typeof navigator === 'undefined') {
+    return { effectiveType: '4g', downlink: 10, saveData: false };
+  }
+  const connection = (navigator as Navigator & { connection?: { effectiveType?: string; downlink?: number; saveData?: boolean } }).connection;
+  return {
+    effectiveType: connection?.effectiveType ?? '4g',
+    downlink: typeof connection?.downlink === 'number' ? connection.downlink : 10,
+    saveData: !!connection?.saveData,
+  };
+};
+
+const getFrameStep = () => {
+  const { effectiveType, downlink, saveData } = getConnectionProfile();
+  if (saveData) return 4;
+  if (effectiveType === '2g' || downlink < 1) return 4;
+  if (effectiveType === '3g' || downlink < 3) return 2;
+  return 1;
+};
 
 export function usePreloadFrames(scenes: string[]) {
-  const scenesKey = scenes.join(',');
+  const [frameStep] = useState(() => getFrameStep());
+  const scenesKey = `${scenes.join(',')}|step:${frameStep}`;
   const [state, setState] = useState<PreloadState>(() => {
     return (
       preloadStateCache.get(scenesKey) ?? {
@@ -78,13 +100,19 @@ export function usePreloadFrames(scenes: string[]) {
     }
 
     let mounted = true;
-    let loadedCount = 0;
     
     // Get URLs grouped by scene
-    const totalScenesUrls: { scene: string; urls: string[] }[] = scenes.map(scene => ({
-      scene,
-      urls: getFramesForScene(scene)
-    }));
+    const totalScenesUrls: { scene: string; urls: string[] }[] = scenes.map(scene => {
+      const rawUrls = getFramesForScene(scene);
+      if (frameStep <= 1) {
+        return { scene, urls: rawUrls };
+      }
+      let filteredUrls = rawUrls.filter((_, index) => index % frameStep === 0);
+      if (filteredUrls.length === 0 && rawUrls.length > 0) {
+        filteredUrls = [rawUrls[0]];
+      }
+      return { scene, urls: filteredUrls };
+    });
 
     const totalFrames = totalScenesUrls.reduce((acc, curr) => acc + curr.urls.length, 0);
     
@@ -122,7 +150,8 @@ export function usePreloadFrames(scenes: string[]) {
     const firstScene = scenes[0];
     const firstSceneUrls = totalScenesUrls.find(s => s.scene === firstScene)?.urls || [];
     const firstSceneFrameCount = firstSceneUrls.length;
-    const criticalFrameTarget = Math.min(firstSceneFrameCount, CRITICAL_FIRST_SCENE_FRAMES);
+    const baseCriticalTarget = frameStep >= 4 ? 2 : frameStep >= 2 ? 4 : DEFAULT_CRITICAL_FIRST_SCENE_FRAMES;
+    const criticalFrameTarget = Math.min(firstSceneFrameCount, baseCriticalTarget);
 
     const isLoadedImage = (image?: HTMLImageElement | null) => {
       return !!image && image.complete && image.naturalWidth > 0;
@@ -173,6 +202,8 @@ export function usePreloadFrames(scenes: string[]) {
       forceComplete = true;
       updateProgress();
     }, CRITICAL_MAX_WAIT_MS);
+
+    let backgroundTimer: number | null = null;
 
     // Sequential batched chunk loading to prevent UI freeze and memory spiking
     const loadImagesInChunks = async () => {
@@ -246,8 +277,20 @@ export function usePreloadFrames(scenes: string[]) {
         }
       }
 
+      const startBackgroundLoad = () => {
+        void runLoaders(backgroundLoaders, BACKGROUND_CHUNK_SIZE);
+      };
+
+      backgroundTimer = window.setTimeout(() => {
+        if (!mounted) return;
+        if ('requestIdleCallback' in window) {
+          (window as Window & { requestIdleCallback?: (cb: () => void) => number }).requestIdleCallback?.(startBackgroundLoad);
+        } else {
+          startBackgroundLoad();
+        }
+      }, BACKGROUND_START_DELAY_MS);
+
       await runLoaders(criticalLoaders, CRITICAL_CHUNK_SIZE);
-      await runLoaders(backgroundLoaders, BACKGROUND_CHUNK_SIZE);
     };
 
     updateProgress();
@@ -256,8 +299,11 @@ export function usePreloadFrames(scenes: string[]) {
     return () => {
       mounted = false;
       window.clearTimeout(maxWaitTimeout);
+      if (backgroundTimer) {
+        window.clearTimeout(backgroundTimer);
+      }
     };
-  }, [scenes, scenesKey]);
+  }, [scenes, scenesKey, frameStep]);
 
   return state;
 }
