@@ -88,9 +88,12 @@ export function usePreloadVideos(scenes: string[]): VideoPreloadState {
       const video = document.createElement('video');
       video.preload = 'auto';
       video.muted = true;
+      video.autoplay = false;
       video.playsInline = true;
       video.loop = false;
       video.controls = false;
+      video.setAttribute('playsinline', 'true');
+      video.setAttribute('muted', 'true');
 
       const candidates = getVideoSourcesForScene(scene).filter((source) => {
         return video.canPlayType(source.type) !== '';
@@ -152,6 +155,14 @@ export function usePreloadVideos(scenes: string[]): VideoPreloadState {
 
       trySource();
 
+      // Attach temporarily to DOM to improve decoding reliability
+      video.style.position = 'fixed';
+      video.style.width = '1px';
+      video.style.height = '1px';
+      video.style.opacity = '0';
+      video.style.pointerEvents = 'none';
+      document.body.appendChild(video);
+
       return video;
     };
 
@@ -172,6 +183,9 @@ export function usePreloadVideos(scenes: string[]): VideoPreloadState {
       window.clearTimeout(fallbackTimer);
       Object.values(videos).forEach((video) => {
         if (!video) return;
+        if (video.parentElement) {
+          video.parentElement.removeChild(video);
+        }
         video.pause();
         video.removeAttribute('src');
         video.load();
