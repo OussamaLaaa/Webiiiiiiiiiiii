@@ -20,7 +20,6 @@ interface VideoPreloadState {
 
 const getVideoSourcesForScene = (sceneName: string): VideoSource[] => {
   return [
-    { src: `/videos/${sceneName}.webm`, type: 'video/webm' },
     { src: `/videos/${sceneName}.mp4`, type: 'video/mp4' },
   ];
 };

@@ -1,5 +1,4 @@
 import React, { useRef, useState } from 'react';
-import { hasFrameAssets, usePreloadFrames } from '../hooks/usePreloadFrames';
 import { usePreloadVideos } from '../hooks/usePreloadVideos';
 import { LoadingScreen } from '../components/LoadingScreen';
 import { MasterSequence } from '../components/MasterSequence';
@@ -31,20 +30,10 @@ export const Home: React.FC = () => {
   const { siteConfig } = useSiteConfig();
   const { visibility, globalFrame, crt } = siteConfig;
   const videoState = usePreloadVideos(SCENES);
-  const hasFrames = hasFrameAssets(SCENES);
-  const [useFramesFallback, setUseFramesFallback] = useState(false);
-  React.useEffect(() => {
-    if (videoState.shouldFallback && hasFrames) {
-      setUseFramesFallback(true);
-    }
-  }, [videoState.shouldFallback, hasFrames]);
-
-  const shouldUseVideo = videoState.hasVideoSupport && (!useFramesFallback || !hasFrames);
-  const frameScenes = shouldUseVideo ? [] : SCENES;
-  const frameState = usePreloadFrames(frameScenes);
-  const progress = shouldUseVideo ? videoState.progress : frameState.progress;
-  const isComplete = shouldUseVideo ? videoState.isComplete && videoState.isReady : frameState.isComplete;
-  const images = frameState.images;
+  const shouldUseVideo = videoState.hasVideoSupport;
+  const progress = videoState.progress;
+  const isComplete = videoState.isComplete && videoState.isReady;
+  const images: Record<string, HTMLImageElement[]> = {};
   const videoDurations = videoState.isReady ? {
     scene02: videoState.durations[SCENE_02] ?? 0,
     scene03: videoState.durations[SCENE_03] ?? 0,
