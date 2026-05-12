@@ -4,6 +4,7 @@ import { useSiteConfig } from '../context/SiteConfigContext';
 import { DEFAULT_SITE_CONFIG } from '../config/siteConfig';
 import { getButtonClass, getCardClass, getGlassClass } from './designSystem';
 import { AdvancedNavbar } from './AdvancedNavbar';
+import { VerticalNavigation } from './VerticalNavigation';
 
 interface PersistentUIProps {
   isLightMode?: boolean;
@@ -292,6 +293,7 @@ export const PersistentUI: React.FC<PersistentUIProps> = ({ isLightMode = false 
   return (
     <>
       <AdvancedNavbar isLightMode={isLightMode} />
+      <VerticalNavigation isLightMode={isLightMode} />
     </>
   );
 };
