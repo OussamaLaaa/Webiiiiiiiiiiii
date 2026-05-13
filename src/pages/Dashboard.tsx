@@ -281,7 +281,7 @@ const SectionButton: React.FC<{
       onClick={onClick}
       className={`group w-full rounded-[14px] border px-3.5 py-3 text-left transition-all duration-300 ${
         isActive
-          ? 'border-[#b6f45b]/50 bg-[#b6f45b]/12 text-white shadow-[0_16px_34px_-24px_rgba(182,244,91,0.6)]'
+          ? 'border-[#000000]/50 bg-[#000000]/12 text-white shadow-[0_16px_34px_-24px_rgba(182,244,91,0.6)]'
           : 'border-white/12 bg-white/[0.04] text-white/84 hover:border-white/24 hover:bg-white/[0.08]'
       }`}
     >
@@ -368,7 +368,7 @@ const Input: React.FC<{
           step={stepValue}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full rounded-[10px] border border-white/14 bg-white/[0.06] px-3 py-2 text-[13px] text-white outline-none transition-all focus:border-[#b6f45b]/58 focus:ring-2 focus:ring-[#b6f45b]/24"
+          className="w-full rounded-[10px] border border-white/14 bg-white/[0.06] px-3 py-2 text-[13px] text-white outline-none transition-all focus:border-[#000000]/58 focus:ring-2 focus:ring-[#000000]/24"
         />
 
         {showSlider ? (
@@ -396,7 +396,7 @@ const Input: React.FC<{
         step={step}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded-[10px] border border-white/14 bg-white/[0.06] px-3 py-2 text-[13px] text-white outline-none transition-all focus:border-[#b6f45b]/58 focus:ring-2 focus:ring-[#b6f45b]/24"
+        className="rounded-[10px] border border-white/14 bg-white/[0.06] px-3 py-2 text-[13px] text-white outline-none transition-all focus:border-[#000000]/58 focus:ring-2 focus:ring-[#000000]/24"
       />
     </label>
   );
@@ -415,7 +415,7 @@ const Textarea: React.FC<{
         rows={rows}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded-[10px] border border-white/14 bg-white/[0.06] px-3 py-2 text-[13px] text-white outline-none transition-all focus:border-[#b6f45b]/58 focus:ring-2 focus:ring-[#b6f45b]/24"
+        className="rounded-[10px] border border-white/14 bg-white/[0.06] px-3 py-2 text-[13px] text-white outline-none transition-all focus:border-[#000000]/58 focus:ring-2 focus:ring-[#000000]/24"
       />
     </label>
   );
@@ -433,7 +433,7 @@ const SelectInput: React.FC<{
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded-[10px] border border-white/14 bg-white/[0.06] px-3 py-2 text-[13px] text-white outline-none transition-all focus:border-[#b6f45b]/58 focus:ring-2 focus:ring-[#b6f45b]/24"
+        className="rounded-[10px] border border-white/14 bg-white/[0.06] px-3 py-2 text-[13px] text-white outline-none transition-all focus:border-[#000000]/58 focus:ring-2 focus:ring-[#000000]/24"
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>
@@ -619,7 +619,7 @@ const Toggle: React.FC<{ label: string; checked: boolean; onChange: (checked: bo
   return (
     <label className="flex items-center justify-between gap-3 rounded-[10px] border border-white/14 bg-white/[0.05] px-3 py-2">
       <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/78">{label}</span>
-      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="h-4 w-4 accent-[#b6f45b]" />
+      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="h-4 w-4 accent-[#000000]" />
     </label>
   );
 };
@@ -630,7 +630,7 @@ const listItemClass =
 const dashboardActionButtonBaseClass =
   'inline-flex h-10 items-center justify-center rounded-[10px] border px-4 font-mono text-[10px] uppercase tracking-[0.16em] transition-all focus-visible:outline-none focus-visible:ring-2';
 const dashboardActionButtonPrimaryClass =
-  `${dashboardActionButtonBaseClass} border-[#b6f45b]/38 bg-[#b6f45b] text-[#0a0d11] hover:bg-[#c4ff67] focus-visible:ring-[#b6f45b]/45`;
+  `${dashboardActionButtonBaseClass} border-[#000000]/38 bg-[#000000] text-[#0a0d11] hover:bg-[#333333] focus-visible:ring-[#000000]/45`;
 const dashboardActionButtonSecondaryClass =
   `${dashboardActionButtonBaseClass} border-white/16 bg-white/[0.06] text-white hover:bg-white/[0.12] focus-visible:ring-white/22`;
 const dashboardActionButtonApiClass =
@@ -3409,7 +3409,7 @@ export const Dashboard: React.FC = () => {
                     href: '#',
                     action: 'Send Message',
                     color: '#ffffff',
-                    hoverColor: '#b6f45b',
+                    hoverColor: '#000000',
                     visible: true,
                   };
                   updateConfig((prev) => ({
@@ -6324,7 +6324,7 @@ export const Dashboard: React.FC = () => {
                       onClick={() => setActiveArticleId(article.id)}
                       className={`w-full rounded-[14px] border p-3 text-left transition-all ${
                         isActive
-                          ? 'border-[#b6f45b]/45 bg-[#b6f45b]/14 text-white'
+                          ? 'border-[#000000]/45 bg-[#000000]/14 text-white'
                           : 'border-white/12 bg-white/[0.04] text-white hover:border-white/24 hover:bg-white/[0.08]'
                       }`}
                     >
@@ -6519,7 +6519,7 @@ export const Dashboard: React.FC = () => {
                 onClick={() => setActiveSettingsPanel(panel.id)}
                 className={`rounded-[11px] border px-3 py-2 text-left transition-all ${
                   activeSettingsPanel === panel.id
-                    ? 'border-[#b6f45b]/45 bg-[#b6f45b]/14 text-white'
+                    ? 'border-[#000000]/45 bg-[#000000]/14 text-white'
                     : 'border-white/12 bg-white/[0.04] text-white/78 hover:border-white/20 hover:bg-white/[0.08]'
                 }`}
               >
@@ -7013,7 +7013,7 @@ export const Dashboard: React.FC = () => {
               <div key={point.label} className="flex flex-col items-center gap-2">
                 <div className="flex h-[140px] w-full items-end rounded-[8px] bg-white/[0.06] p-1">
                   <div
-                    className="w-full rounded-[6px] bg-[#b6f45b]"
+                    className="w-full rounded-[6px] bg-[#000000]"
                     style={{ height: `${Math.max(8, (point.visitors / maxTrendVisitors) * 100)}%` }}
                   />
                 </div>
@@ -7034,7 +7034,7 @@ export const Dashboard: React.FC = () => {
                   </div>
                   <div className="mt-2 h-2 rounded-full bg-white/10">
                     <div
-                      className="h-2 rounded-full bg-[#b6f45b]"
+                      className="h-2 rounded-full bg-[#000000]"
                       style={{ width: `${Math.max(6, (channel.sessions / maxSessions) * 100)}%` }}
                     />
                   </div>
@@ -7113,7 +7113,7 @@ export const Dashboard: React.FC = () => {
                   onClick={() => setMessageFilter(option.id as 'all' | SiteMessageStatus)}
                   className={`rounded-[999px] border px-2.5 py-1 text-[11px] ${
                     messageFilter === option.id
-                      ? 'border-[#b6f45b]/45 bg-[#b6f45b]/16 text-[#d7ff9d]'
+                      ? 'border-[#000000]/45 bg-[#000000]/16 text-[#ffffff]'
                       : 'border-white/14 bg-white/[0.04] text-white/70 hover:bg-white/[0.09]'
                   }`}
                 >
@@ -7316,7 +7316,7 @@ export const Dashboard: React.FC = () => {
                     }}
                     className={`inline-flex h-11 w-11 items-center justify-center rounded-[12px] border font-mono text-[10px] uppercase tracking-[0.14em] transition-all ${
                       active
-                        ? 'border-[#b6f45b]/46 bg-[#b6f45b]/18 text-[#d7ff9d]'
+                        ? 'border-[#000000]/46 bg-[#000000]/18 text-[#ffffff]'
                         : 'border-white/12 bg-white/[0.03] text-white/68 hover:bg-white/[0.08] hover:text-white'
                     }`}
                     title={workspace.label}
@@ -7328,7 +7328,7 @@ export const Dashboard: React.FC = () => {
             </div>
 
             <div className="mt-auto flex flex-col gap-2 pt-3">
-              <button type="button" onClick={handleSaveChanges} title="Save changes" className="inline-flex h-11 w-11 items-center justify-center rounded-[12px] border border-[#b6f45b]/46 bg-[#b6f45b] text-[#0a0d11]">
+              <button type="button" onClick={handleSaveChanges} title="Save changes" className="inline-flex h-11 w-11 items-center justify-center rounded-[12px] border border-[#000000]/46 bg-[#000000] text-[#0a0d11]">
                 <SaveIcon size={16} strokeWidth={1.9} />
               </button>
               <button 
@@ -7402,7 +7402,7 @@ export const Dashboard: React.FC = () => {
                       }}
                       className={`dashboard-nav-item inline-flex items-center gap-2 rounded-[999px] border px-3 py-2 text-left transition-all ${
                         active
-                          ? 'dashboard-nav-item-active border-[#b6f45b]/46 bg-[#b6f45b]/18 text-white shadow-[0_12px_28px_-20px_rgba(182,244,91,0.55)]'
+                          ? 'dashboard-nav-item-active border-[#000000]/46 bg-[#000000]/18 text-white shadow-[0_12px_28px_-20px_rgba(182,244,91,0.55)]'
                           : 'dashboard-nav-item-idle border-white/14 bg-white/[0.04] text-white/80 hover:border-white/24 hover:bg-white/[0.1]'
                       }`}
                     >
@@ -7424,7 +7424,7 @@ export const Dashboard: React.FC = () => {
                   <input
                     type="text"
                     placeholder="Search workspace"
-                    className="w-full rounded-[999px] border border-white/14 bg-white/[0.06] px-4 py-2 text-[13px] text-white outline-none transition-all placeholder:text-white/38 focus:border-[#b6f45b]/52 focus:ring-2 focus:ring-[#b6f45b]/22"
+                    className="w-full rounded-[999px] border border-white/14 bg-white/[0.06] px-4 py-2 text-[13px] text-white outline-none transition-all placeholder:text-white/38 focus:border-[#000000]/52 focus:ring-2 focus:ring-[#000000]/22"
                   />
                 </label>
                 <div className="inline-flex items-center gap-2 rounded-[999px] border border-white/12 bg-white/[0.04] px-2 py-1.5">
@@ -7460,8 +7460,8 @@ export const Dashboard: React.FC = () => {
                 <p className="mt-1 text-xs text-white/58">Projects and articles</p>
               </div>
 
-              <div className="dashboard-kpi dashboard-kpi-primary rounded-[16px] border border-[#b6f45b]/36 bg-[#b6f45b]/14 p-2.5">
-                <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#d7ff9d]">Unread Messages</p>
+              <div className="dashboard-kpi dashboard-kpi-primary rounded-[16px] border border-[#000000]/36 bg-[#000000]/14 p-2.5">
+                <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffffff]">Unread Messages</p>
                 <p className="mt-1 text-xl font-semibold text-white">{stats.inboxUnread}</p>
                 <p className="mt-1 text-xs text-white/74">Leads waiting for follow-up</p>
               </div>
