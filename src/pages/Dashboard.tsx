@@ -7,45 +7,46 @@ import {
   getScaledRem,
   type SurfaceTone,
 } from '../components/designSystem';
-import { useSiteConfig } from '../context/SiteConfigContext';
-import { loginToDashboard, checkDashboardAuth, logoutFromDashboard, getApiDiagnostics } from '../utils/apiClient';
-import {
-  DEFAULT_SITE_CONFIG,
-  SITE_BUTTON_VARIANTS,
-  SITE_CARD_VARIANTS,
-  SITE_GLASS_VARIANTS,
-  SITE_SOCIAL_ICON_KEYS,
-  SITE_CONFIG_STORAGE_KEY,
-  type SiteButtonVariant,
-  type SiteCardVariant,
-  type SiteCursorAnimationMode,
-  type SiteGlassVariant,
-  type SiteConfig,
-  type SiteContentStatus,
-  type SiteNavItem,
-  type SiteArticle,
-  type SiteProject,
-  type SiteSection,
-  type SiteTestimonial,
-  type SiteExperienceMarqueeItem,
-  type SiteScene05Certification,
-  type SiteScene05LogoItem,
-  type SiteInboxMessage,
-  type SiteMessageStatus,
-} from '../config/siteConfig';
-import {
-  BarChart3Icon,
-  ExternalLinkIcon,
-  FileTextIcon,
-  GlobeIcon,
-  InboxIcon,
-  LogOutIcon,
-  RotateCcwIcon,
-  SaveIcon,
-  SettingsIcon,
-  DownloadIcon,
-  UploadIcon,
-} from '../components/icons';
+  import { useSiteConfig } from '../context/SiteConfigContext';
+  import { loginToDashboard, checkDashboardAuth, logoutFromDashboard, getApiDiagnostics, fetchMessages } from '../utils/apiClient';
+  import {
+    DEFAULT_SITE_CONFIG,
+    SITE_BUTTON_VARIANTS,
+    SITE_CARD_VARIANTS,
+    SITE_GLASS_VARIANTS,
+    SITE_SOCIAL_ICON_KEYS,
+    SITE_CONFIG_STORAGE_KEY,
+    type SiteButtonVariant,
+    type SiteCardVariant,
+    type SiteCursorAnimationMode,
+    type SiteGlassVariant,
+    type SiteConfig,
+    type SiteContentStatus,
+    type SiteNavItem,
+    type SiteArticle,
+    type SiteProject,
+    type SiteSection,
+    type SiteTestimonial,
+    type SiteExperienceMarqueeItem,
+    type SiteScene05Certification,
+    type SiteScene05LogoItem,
+    type SiteInboxMessage,
+    type SiteMessageStatus,
+  } from '../config/siteConfig';
+  import {
+    BarChart3Icon,
+    ExternalLinkIcon,
+    FileTextIcon,
+    GlobeIcon,
+    InboxIcon,
+    LogOutIcon,
+    RotateCcwIcon,
+    SaveIcon,
+    SettingsIcon,
+    DownloadIcon,
+    UploadIcon,
+    RefreshCwIcon,
+  } from '../components/icons';
 
 const DASHBOARD_LOGO_FALLBACK_SRC = new URL('../../my logo/white.png', import.meta.url).href;
 
@@ -673,7 +674,9 @@ export const Dashboard: React.FC = () => {
   const [activeCardStudio, setActiveCardStudio] = useState<SiteCardVariant>('card-1');
   const previewAnimationAreaRef = useRef<HTMLDivElement | null>(null);
   const [isUnlocked, setIsUnlocked] = useState(false);
+  const [isFetchingMessages, setIsFetchingMessages] = useState(false);
 
+  // Fetch messages from API when entering messages workspace
   React.useEffect(() => {
     let isMounted = true;
 
@@ -690,6 +693,28 @@ export const Dashboard: React.FC = () => {
       isMounted = false;
     };
   }, []);
+
+  // Auto-fetch messages when switching to messages workspace
+  React.useEffect(() => {
+    if (activeWorkspace === 'messages' && isUnlocked) {
+      const loadMessages = async () => {
+        setIsFetchingMessages(true);
+        try {
+          const response = await fetchMessages();
+          if (response.success && response.messages) {
+            // Update inbox with fetched messages
+            updateDashboardInbox('items', response.messages);
+          }
+        } catch (error) {
+          console.error('Failed to fetch messages:', error);
+        } finally {
+          setIsFetchingMessages(false);
+        }
+      };
+
+      void loadMessages();
+    }
+  }, [activeWorkspace, isUnlocked]);
 
   const updateConfig = (updater: (prev: SiteConfig) => SiteConfig) => {
     setSiteConfig((prev) => updater(prev));
@@ -7122,29 +7147,57 @@ export const Dashboard: React.FC = () => {
               ))}
             </div>
 
-            <button
-              type="button"
-              onClick={() => {
-                const now = new Date().toISOString();
-                const nextMessage: SiteInboxMessage = {
-                  id: `inbox-${Date.now()}`,
-                  senderName: 'New Contact',
-                  companyName: 'Company',
-                  email: 'contact@example.com',
-                  subject: 'New inquiry',
-                  message: 'Message content from website form.',
-                  receivedAt: now,
-                  status: 'new',
-                  source: 'website',
-                };
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={async () => {
+                  setIsFetchingMessages(true);
+                  try {
+                    const response = await fetchMessages();
+                    if (response.success && response.messages) {
+                      updateDashboardInbox('items', response.messages);
+                    }
+                  } catch (error) {
+                    console.error('Failed to fetch messages:', error);
+                  } finally {
+                    setIsFetchingMessages(false);
+                  }
+                }}
+                disabled={isFetchingMessages}
+                className={`flex items-center gap-2 rounded-[10px] border px-3 py-2 text-xs font-medium transition-all ${
+                  isFetchingMessages
+                    ? 'border-white/14 bg-white/[0.04] text-white/50 cursor-not-allowed'
+                    : 'border-white/14 bg-white/[0.06] text-white hover:bg-white/[0.12]'
+                }`}
+              >
+                <RefreshCwIcon size={14} className={isFetchingMessages ? 'animate-spin' : ''} />
+                {isFetchingMessages ? 'Refreshing...' : 'Refresh'}
+              </button>
 
-                updateDashboardInbox('items', [nextMessage, ...siteConfig.dashboard.inbox.items]);
-                setActiveMessageId(nextMessage.id);
-              }}
-              className={dashboardActionButtonSecondaryClass}
-            >
-              Add Test Message
-            </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const now = new Date().toISOString();
+                  const nextMessage: SiteInboxMessage = {
+                    id: `inbox-${Date.now()}`,
+                    senderName: 'New Contact',
+                    companyName: 'Company',
+                    email: 'contact@example.com',
+                    subject: 'New inquiry',
+                    message: 'Message content from website form.',
+                    receivedAt: now,
+                    status: 'new',
+                    source: 'website',
+                  };
+
+                  updateDashboardInbox('items', [nextMessage, ...siteConfig.dashboard.inbox.items]);
+                  setActiveMessageId(nextMessage.id);
+                }}
+                className={dashboardActionButtonSecondaryClass}
+              >
+                Add Test Message
+              </button>
+            </div>
           </div>
 
           <div className="mt-3 overflow-hidden rounded-[14px] border border-white/12 bg-black/20">

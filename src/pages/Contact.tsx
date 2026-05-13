@@ -3,6 +3,8 @@ import { gsap } from 'gsap';
 import { useSiteConfig } from '../context/SiteConfigContext';
 import { getButtonClass, getCardClass, getScaledRem } from '../components/designSystem';
 import { AdvancedNavbar } from '../components/AdvancedNavbar';
+import { sendMessage, type MessageData } from '../utils/apiClient';
+import { validateMessage, sanitizeMessageData } from '../utils/messageValidator';
 
 interface ContactCard {
   id: string;
@@ -107,6 +109,10 @@ const Contact: React.FC = () => {
     subject: '',
     message: '',
   });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [submitMessage, setSubmitMessage] = useState('');
 
   const containerRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -285,11 +291,48 @@ const Contact: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    alert('Thank you for your message! We will get back to you soon.');
-    setFormData({ name: '', email: '', subject: '', message: '' });
+    
+    // Validate form data
+    const validation = validateMessage(formData);
+    if (!validation.isValid) {
+      setSubmitStatus('error');
+      setSubmitMessage(Object.values(validation.errors).join('\n'));
+      return;
+    }
+
+    // Sanitize data
+    const sanitizedData = sanitizeMessageData(formData);
+
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+    setSubmitMessage('');
+
+    try {
+      const response = await sendMessage(sanitizedData);
+      
+      if (response.success) {
+        setSubmitStatus('success');
+        setSubmitMessage('تم إرسال رسالتك بنجاح! سنتواصل معك قريباً.');
+        setFormData({ name: '', email: '', subject: '', message: '' });
+        
+        // Reset status after 5 seconds
+        setTimeout(() => {
+          setSubmitStatus('idle');
+          setSubmitMessage('');
+        }, 5000);
+      } else {
+        setSubmitStatus('error');
+        setSubmitMessage(response.error || 'فشل إرسال الرسالة. يرجى المحاولة مرة أخرى.');
+      }
+    } catch (error) {
+      setSubmitStatus('error');
+      setSubmitMessage('حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة مرة أخرى.');
+      console.error('Error submitting form:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!persistentUI) {
@@ -448,13 +491,40 @@ const Contact: React.FC = () => {
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-2">
                     <p className="text-xs text-gray-500">By sending, you agree to our <a href={contactPage.formPrivacyLink} className="underline text-gray-700">{contactPage.formPrivacyText}</a>.</p>
-                    <button type="submit" className="px-6 md:px-8 py-3 md:py-3.5 rounded-xl bg-black text-white font-medium text-sm flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors duration-300">
-                      {contactPage.formSubmitButton}
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M5 12h14M12 5l7 7-7 7" />
-                      </svg>
+                    <button 
+                      type="submit" 
+                      disabled={isSubmitting}
+                      className="px-6 md:px-8 py-3 md:py-3.5 rounded-xl bg-black text-white font-medium text-sm flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <svg className="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
+                            <path d="M12 2a10 10 0 0 1 10 10" strokeOpacity="1" />
+                          </svg>
+                          جاري الإرسال...
+                        </>
+                      ) : (
+                        <>
+                          {contactPage.formSubmitButton}
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M5 12h14M12 5l7 7-7 7" />
+                          </svg>
+                        </>
+                      )}
                     </button>
                   </div>
+
+                  {/* Status Message */}
+                  {submitStatus !== 'idle' && (
+                    <div className={`mt-4 p-4 rounded-xl text-sm ${
+                      submitStatus === 'success' 
+                        ? 'bg-green-50 text-green-800 border border-green-200' 
+                        : 'bg-red-50 text-red-800 border border-red-200'
+                    }`}>
+                      {submitMessage}
+                    </div>
+                  )}
                 </form>
               </div>
             </div>

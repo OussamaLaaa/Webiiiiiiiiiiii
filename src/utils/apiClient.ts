@@ -390,3 +390,135 @@ export async function checkStorageStatus(): Promise<{
     };
   }
 }
+
+export interface Message {
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  timestamp: number;
+  ip?: string;
+  userAgent?: string;
+  read: boolean;
+}
+
+export interface MessageData {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}
+
+export interface MessagesResponse {
+  success: boolean;
+  data?: Message[];
+  error?: string;
+  source?: string;
+  timestamp?: number;
+  count?: number;
+}
+
+export interface SendMessageResponse {
+  success: boolean;
+  message?: string;
+  messageId?: string;
+  error?: string;
+  source?: string;
+  timestamp?: number;
+  rateLimitRemaining?: number;
+}
+
+/**
+ * Send a contact message
+ */
+export async function sendMessage(messageData: MessageData): Promise<SendMessageResponse> {
+  try {
+    console.log('[API Messages] Sending message...');
+    
+    const { signal, clear } = createTimeoutSignal();
+    const response = await fetch(`${API_BASE_URL}/messages`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(messageData),
+      signal,
+    });
+    const raw = await response.text();
+    clear();
+
+    const data = safeParseJson(raw);
+    
+    if (!response.ok) {
+      console.error('[API Messages] Send failed:', data);
+      return {
+        success: false,
+        error: data?.error || `HTTP error! status: ${response.status}`,
+      };
+    }
+
+    if (!data) {
+      return {
+        success: false,
+        error: 'API returned non-JSON response for message send.',
+      };
+    }
+
+    console.log('[API Messages] Message sent successfully');
+    return data as SendMessageResponse;
+  } catch (error) {
+    console.error('[API Messages] Error sending message:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send message',
+    };
+  }
+}
+
+/**
+ * Fetch all messages
+ */
+export async function fetchMessages(): Promise<MessagesResponse> {
+  try {
+    console.log('[API Messages] Fetching messages...');
+    
+    const { signal, clear } = createTimeoutSignal();
+    const response = await fetch(`${API_BASE_URL}/messages`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      cache: 'no-store',
+      signal,
+    });
+    const raw = await response.text();
+    clear();
+
+    const data = safeParseJson(raw);
+    
+    if (!response.ok) {
+      console.error('[API Messages] Fetch failed:', data);
+      return {
+        success: false,
+        error: data?.error || `HTTP error! status: ${response.status}`,
+      };
+    }
+
+    if (!data) {
+      return {
+        success: false,
+        error: 'API returned non-JSON response for messages fetch.',
+      };
+    }
+
+    console.log(`[API Messages] Fetched ${data.count || 0} messages from ${data.source}`);
+    return data as MessagesResponse;
+  } catch (error) {
+    console.error('[API Messages] Error fetching messages:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to fetch messages',
+    };
+  }
+}
