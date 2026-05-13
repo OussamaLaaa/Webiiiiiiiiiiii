@@ -2154,7 +2154,7 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
     footerSocialLinks: true,
     footerLegalLinks: true,
     footerNavLinks: true,
-    footerOffice: false,
+    footerOffice: true,
   },
   // Personal Hub defaults
   partners: [],

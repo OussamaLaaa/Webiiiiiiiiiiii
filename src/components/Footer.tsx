@@ -82,10 +82,9 @@ export const Footer: React.FC = () => {
 
   return (
     <footer className="w-full bg-white text-[#0a0a0b] border-t border-[#0a0a0b]/10 relative z-10 selection:bg-[#0a0a0b]/10 font-mono uppercase text-[10px] sm:text-[11px] tracking-[0.15em] leading-relaxed">
-      <div className="site-shell py-12 md:py-16">
-        <div className="grid gap-8 lg:grid-cols-2 items-center">
-          {/* Left Column: Email & Social Links */}
-          <div className="flex flex-col gap-6">
+      <div className="site-shell pt-16 pb-12 md:pt-20">
+        <div className="grid gap-12 lg:grid-cols-[1.1fr_0.7fr_0.7fr]">
+          <div className="flex flex-col gap-10">
             {visibility.footerEmail ? (
               <a
                 href={`mailto:${footer.email}`}
@@ -99,7 +98,7 @@ export const Footer: React.FC = () => {
             ) : null}
 
             {visibility.footerSocialLinks && visibleSocialLinks.length > 0 ? (
-              <div className="flex flex-wrap items-center gap-4 text-[#0a0a0b]">
+              <div className="flex flex-wrap items-center gap-5 text-[#0a0a0b]">
                 {visibleSocialLinks.map((social, index) => {
                   const SocialIcon = getSocialIconComponent(social.icon);
                   return (
@@ -125,9 +124,8 @@ export const Footer: React.FC = () => {
             ) : null}
           </div>
 
-          {/* Right Column: Navigation Links */}
           {visibility.footerNavLinks && syncedNavLinks.length > 0 ? (
-            <ul className="flex flex-col gap-4">
+            <ul className="flex flex-col gap-5">
               {syncedNavLinks.map((item) => (
                 <li key={item.id}>
                   <a
@@ -142,9 +140,23 @@ export const Footer: React.FC = () => {
               ))}
             </ul>
           ) : null}
+
+          {visibility.footerOffice ? (
+            <div className="flex flex-col gap-3">
+              <p className="text-[#0a0a0b] font-bold mb-1 tracking-[0.2em]">{footer.officeTitle}</p>
+              <p className="text-[#0a0a0b]/60 leading-loose font-medium">
+                {footer.officeAddress.split('\n').map((line, idx) => (
+                  <React.Fragment key={`${line}-${idx}`}>
+                    {line}
+                    <br />
+                  </React.Fragment>
+                ))}
+              </p>
+            </div>
+          ) : null}
         </div>
 
-        <div className="mt-10 flex flex-col gap-4 border-t border-[#0a0a0b]/10 pt-6 md:flex-row md:items-center md:justify-between">
+        <div className="mt-12 flex flex-col gap-4 border-t border-[#0a0a0b]/10 pt-6 md:flex-row md:items-center md:justify-between">
           <p className="text-[#0a0a0b]/60">© {new Date().getFullYear()} {footer.copyrightText}</p>
           {visibility.footerLegalLinks && visibleLegalLinks.length > 0 ? (
             <div className="flex flex-wrap items-center gap-2 text-[#0a0a0b]/45">
