@@ -23,39 +23,39 @@ export const validateMessage = (data: MessageData): ValidationResult => {
 
   // Validate name
   if (!data.name || data.name.trim().length === 0) {
-    errors.name = 'الاسم مطلوب';
+    errors.name = 'Name is required';
   } else if (data.name.trim().length < 2) {
-    errors.name = 'الاسم يجب أن يكون حرفين على الأقل';
+    errors.name = 'Name must be at least 2 characters';
   } else if (data.name.trim().length > 100) {
-    errors.name = 'الاسم يجب أن لا يتجاوز 100 حرف';
+    errors.name = 'Name must not exceed 100 characters';
   }
 
   // Validate email
   if (!data.email || data.email.trim().length === 0) {
-    errors.email = 'البريد الإلكتروني مطلوب';
+    errors.email = 'Email is required';
   } else {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(data.email)) {
-      errors.email = 'البريد الإلكتروني غير صالح';
+      errors.email = 'Email is invalid';
     }
   }
 
   // Validate subject
   if (!data.subject || data.subject.trim().length === 0) {
-    errors.subject = 'الموضوع مطلوب';
+    errors.subject = 'Subject is required';
   } else if (data.subject.trim().length < 3) {
-    errors.subject = 'الموضوع يجب أن يكون 3 أحرف على الأقل';
+    errors.subject = 'Subject must be at least 3 characters';
   } else if (data.subject.trim().length > 200) {
-    errors.subject = 'الموضوع يجب أن لا يتجاوز 200 حرف';
+    errors.subject = 'Subject must not exceed 200 characters';
   }
 
   // Validate message
   if (!data.message || data.message.trim().length === 0) {
-    errors.message = 'الرسالة مطلوبة';
+    errors.message = 'Message is required';
   } else if (data.message.trim().length < 10) {
-    errors.message = 'الرسالة يجب أن تكون 10 أحرف على الأقل';
+    errors.message = 'Message must be at least 10 characters';
   } else if (data.message.trim().length > 5000) {
-    errors.message = 'الرسالة يجب أن لا تتجاوز 5000 حرف';
+    errors.message = 'Message must not exceed 5000 characters';
   }
 
   return {
