@@ -6,6 +6,7 @@ import { Footer } from './Footer';
 import { ExperienceMarquee } from './ExperienceMarquee';
 import { useSiteConfig } from '../context/SiteConfigContext';
 import { getButtonClass, getCardClass, getGlassClass, getScaledRem } from './designSystem';
+import { useLanguage } from '../hooks/useLanguage';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,6 +19,7 @@ const isPlaceholderHref = (href: string) => href.trim() === '#';
 export const FeaturedWork: React.FC<FeaturedWorkProps> = memo(({ isActive }) => {
   const { siteConfig } = useSiteConfig();
   const { featured, visibility, designSystem } = siteConfig;
+  const { isAr, ar } = useLanguage();
   const projectAnimations = siteConfig.animation.sections.projects;
   const projects = useMemo(() => siteConfig.projects.filter((project) => project.visible), [siteConfig.projects]);
 
@@ -388,10 +390,12 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = memo(({ isActive }) => 
                 fontWeight: Math.min(400, Math.max(300, siteConfig.designSystem.theme.headingWeight - 40)),
               }}
             >
-              {featured.titleLine1} {featured.titleLine2}
+              {isAr
+                ? `${ar.featuredTitleLine1} ${ar.featuredTitleLine2}`
+                : `${featured.titleLine1} ${featured.titleLine2}`}
             </h1>
             <p className="fw-header-text opacity-0 max-w-[360px] font-mono text-[11px] uppercase tracking-[0.16em] text-[#0f1219]/56 md:text-xs md:leading-[1.9]">
-              {featured.description}
+              {isAr ? ar.featuredDescription : featured.description}
             </p>
           </div>
         ) : null}
@@ -431,7 +435,7 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = memo(({ isActive }) => 
                         'min-w-[138px] justify-center gap-2',
                       )}
                     >
-                      <span>{featured.liveLabel}</span>
+                      <span>{isAr ? ar.featuredLiveLabel : featured.liveLabel}</span>
                       <span aria-hidden="true">{'->'}</span>
                     </a>
                   ) : (
@@ -447,7 +451,7 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = memo(({ isActive }) => 
                         'min-w-[138px] justify-center',
                       )}
                     >
-                      {featured.caseStudyLabel}
+                      {isAr ? ar.featuredCaseStudyLabel : featured.caseStudyLabel}
                     </a>
                   )}
                 </div>
@@ -467,7 +471,7 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = memo(({ isActive }) => 
                 'min-w-[220px] justify-center',
               )}
             >
-              {featured.viewAllLabel}
+              {isAr ? ar.featuredViewAllLabel : featured.viewAllLabel}
             </button>
           </div>
         ) : null}
@@ -486,12 +490,12 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = memo(({ isActive }) => 
 
               <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-col items-center border-t border-[#0f1219]/10 px-6 py-16 text-center md:py-28">
                 <h2 className="text-[#0f1219] text-[11vw] leading-[1.03] tracking-tight sm:text-5xl md:text-7xl lg:text-[6.7rem]">
-                  <span className="mb-2 block font-sans font-medium md:mb-4">{featured.ctaTitleLine1}</span>
-                  <span className="block font-serif text-[#0f1219]/82">{featured.ctaTitleLine2}</span>
+                  <span className="mb-2 block font-sans font-medium md:mb-4">{isAr ? ar.featuredCtaTitleLine1 : featured.ctaTitleLine1}</span>
+                  <span className="block font-serif text-[#0f1219]/82">{isAr ? ar.featuredCtaTitleLine2 : featured.ctaTitleLine2}</span>
                 </h2>
 
                 <p className="mb-11 mt-7 max-w-2xl px-4 text-sm leading-relaxed text-[#0f1219]/62 md:mb-14 md:text-lg">
-                  {featured.ctaDescription}
+                  {isAr ? ar.featuredCtaDescription : featured.ctaDescription}
                 </p>
 
                 <a
@@ -503,7 +507,7 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = memo(({ isActive }) => 
                     'min-w-[220px] justify-center',
                   )}
                 >
-                  {featured.ctaButtonText}
+                  {isAr ? ar.featuredCtaButtonText : featured.ctaButtonText}
                 </a>
               </div>
             </div>
