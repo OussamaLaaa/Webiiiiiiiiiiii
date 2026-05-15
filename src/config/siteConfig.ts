@@ -1237,6 +1237,7 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
       { id: 'social-linkedin', label: 'LinkedIn', href: '#', icon: 'linkedin', visible: true },
       { id: 'social-instagram', label: 'Instagram', href: '#', icon: 'instagram', visible: true },
       { id: 'social-telegram', label: 'Telegram', href: '#', icon: 'telegram', visible: true },
+      { id: 'social-mail', label: 'Mail', href: 'mailto:hello@example.com', icon: 'mail', visible: true },
     ],
     legalLinks: [
       { id: 'legal-terms', label: 'Terms of Service', href: '#', visible: true },
