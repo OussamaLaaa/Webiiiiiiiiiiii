@@ -843,6 +843,9 @@ export interface SiteConfig {
     brandDescription: string;
     quickLinksTitle: string;
     followTitle: string;
+    socialIconBackgroundColor: string;
+    socialIconBorderColor: string;
+    socialIconColor: string;
     ctaTitle: string;
     ctaDescription: string;
     ctaButtonLabel: string;
@@ -1231,6 +1234,9 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
       'Digital product designer and AI expert. I help companies craft better products and practical AI workflows.',
     quickLinksTitle: 'Quick Links',
     followTitle: 'Follow Me',
+    socialIconBackgroundColor: '#e7eefc',
+    socialIconBorderColor: '#b9cdfa',
+    socialIconColor: '#1f4fd4',
     ctaTitle: 'Need a designer for your product?',
     ctaDescription:
       'If your company needs UX/UI design, SaaS design, Webflow development, or AI consulting, book a free 30-minute call.',
@@ -2872,6 +2878,12 @@ export const hydrateSiteConfig = (value: unknown): SiteConfig => {
       brandDescription: asString(footer.brandDescription, DEFAULT_SITE_CONFIG.footer.brandDescription),
       quickLinksTitle: asString(footer.quickLinksTitle, DEFAULT_SITE_CONFIG.footer.quickLinksTitle),
       followTitle: asString(footer.followTitle, DEFAULT_SITE_CONFIG.footer.followTitle),
+      socialIconBackgroundColor: asString(
+        footer.socialIconBackgroundColor,
+        DEFAULT_SITE_CONFIG.footer.socialIconBackgroundColor,
+      ),
+      socialIconBorderColor: asString(footer.socialIconBorderColor, DEFAULT_SITE_CONFIG.footer.socialIconBorderColor),
+      socialIconColor: asString(footer.socialIconColor, DEFAULT_SITE_CONFIG.footer.socialIconColor),
       ctaTitle: asString(footer.ctaTitle, DEFAULT_SITE_CONFIG.footer.ctaTitle),
       ctaDescription: asString(footer.ctaDescription, DEFAULT_SITE_CONFIG.footer.ctaDescription),
       ctaButtonLabel: asString(footer.ctaButtonLabel, DEFAULT_SITE_CONFIG.footer.ctaButtonLabel),

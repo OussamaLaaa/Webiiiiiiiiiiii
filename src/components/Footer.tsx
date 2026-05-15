@@ -101,20 +101,15 @@ export const Footer: React.FC = () => {
     'md',
     'min-w-[190px] justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111217]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f6f6f7]',
   );
-  const socialButtonClass = getButtonClass(
-    designSystem.components.featuredCtaButtonVariant,
-    'light',
-    'icon',
-    'h-10 w-10',
-  );
+  const socialButtonClass = getButtonClass(designSystem.components.featuredCtaButtonVariant, 'light', 'icon', 'h-11 w-11');
 
   const ctaSection = getSectionFromHref(footer.ctaButtonHref);
 
   return (
     <footer className="relative z-10 w-full border-t border-[#111217]/10 bg-[#f6f6f7] text-[#111217] selection:bg-[#111217]/10">
-      <div className="site-shell pb-6 pt-12 md:pb-8 md:pt-14">
-        <div className="grid gap-8 border-b border-[#111217]/10 pb-10 md:grid-cols-2 xl:grid-cols-[1.05fr_0.95fr_0.95fr_1.05fr] xl:gap-10">
-          <div className="space-y-4">
+      <div className="site-shell pb-8 pt-14 md:pb-10 md:pt-16">
+        <div className="grid gap-10 border-b border-[#111217]/10 pb-12 md:grid-cols-2 xl:grid-cols-[1.05fr_0.95fr_0.95fr_1.05fr] xl:gap-12">
+          <div className="space-y-5">
             <p className="text-[1.6rem] font-semibold leading-tight tracking-tight text-[#111217] md:text-[1.75rem]">
               {footer.brandTitle}
             </p>
@@ -131,11 +126,11 @@ export const Footer: React.FC = () => {
           </div>
 
           {visibility.footerNavLinks && syncedNavLinks.length > 0 ? (
-            <div className="space-y-4">
+            <div className="space-y-5">
               <p className="text-[1.2rem] font-semibold leading-tight tracking-tight text-[#111217] md:text-[1.28rem]">
                 {footer.quickLinksTitle}
               </p>
-              <ul className="space-y-2.5">
+              <ul className="space-y-3">
                 {syncedNavLinks.map((item) => (
                   <li key={item.id}>
                     <a
@@ -152,11 +147,11 @@ export const Footer: React.FC = () => {
           ) : null}
 
           {visibility.footerSocialLinks && visibleSocialLinks.length > 0 ? (
-            <div className="space-y-4">
+            <div className="space-y-5">
               <p className="text-[1.2rem] font-semibold leading-tight tracking-tight text-[#111217] md:text-[1.28rem]">
                 {footer.followTitle}
               </p>
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center gap-3">
                 {visibleSocialLinks.map((social) => {
                   const SocialIcon = getSocialIconComponent(social.icon);
                   return (
@@ -168,9 +163,14 @@ export const Footer: React.FC = () => {
                       rel={isPlaceholderHref(social.href) ? undefined : 'noopener noreferrer'}
                       aria-label={social.label}
                       title={social.label}
-                      className={socialButtonClass}
+                      className={`${socialButtonClass} border transition-all hover:-translate-y-[1px] hover:brightness-95`}
+                      style={{
+                        backgroundColor: footer.socialIconBackgroundColor,
+                        borderColor: footer.socialIconBorderColor,
+                        color: footer.socialIconColor,
+                      }}
                     >
-                      <SocialIcon size={16} strokeWidth={1.8} />
+                      <SocialIcon size={17} strokeWidth={1.9} />
                     </a>
                   );
                 })}
@@ -178,7 +178,7 @@ export const Footer: React.FC = () => {
             </div>
           ) : null}
 
-          <div className="space-y-4">
+          <div className="space-y-5">
             <p className="max-w-[24ch] text-[1.22rem] font-semibold leading-tight tracking-tight text-[#111217] md:text-[1.3rem]">
               {footer.ctaTitle}
             </p>
@@ -209,7 +209,7 @@ export const Footer: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-4 flex flex-col gap-2.5 pt-3 text-[0.86rem] text-[#111217]/57 md:flex-row md:items-center md:justify-between">
+        <div className="mt-6 flex flex-col gap-3.5 pt-4 text-[0.86rem] text-[#111217]/57 md:flex-row md:items-center md:justify-between">
           <p>© {new Date().getFullYear()} {footer.copyrightText}</p>
           {visibility.footerLegalLinks && visibleLegalLinks.length > 0 ? (
             <div className="flex flex-wrap items-center gap-2 text-[#111217]/52">
