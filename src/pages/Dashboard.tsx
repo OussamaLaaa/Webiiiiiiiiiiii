@@ -2884,6 +2884,41 @@ export const Dashboard: React.FC = () => {
                   onChange={(next) => updateConfig((prev) => ({ ...prev, footer: { ...prev.footer, followTitle: next } }))}
                 />
               </div>
+              <div className="grid gap-3 md:grid-cols-3">
+                <Input
+                  label="Social icon background"
+                  type="color"
+                  value={siteConfig.footer.socialIconBackgroundColor}
+                  onChange={(next) =>
+                    updateConfig((prev) => ({
+                      ...prev,
+                      footer: { ...prev.footer, socialIconBackgroundColor: next },
+                    }))
+                  }
+                />
+                <Input
+                  label="Social icon border"
+                  type="color"
+                  value={siteConfig.footer.socialIconBorderColor}
+                  onChange={(next) =>
+                    updateConfig((prev) => ({
+                      ...prev,
+                      footer: { ...prev.footer, socialIconBorderColor: next },
+                    }))
+                  }
+                />
+                <Input
+                  label="Social icon color"
+                  type="color"
+                  value={siteConfig.footer.socialIconColor}
+                  onChange={(next) =>
+                    updateConfig((prev) => ({
+                      ...prev,
+                      footer: { ...prev.footer, socialIconColor: next },
+                    }))
+                  }
+                />
+              </div>
               <Input
                 label="CTA title"
                 value={siteConfig.footer.ctaTitle}
@@ -7777,5 +7812,4 @@ export const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
-
 

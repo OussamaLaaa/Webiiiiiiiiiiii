@@ -2,30 +2,12 @@ import React from 'react';
 import { getButtonClass } from './designSystem';
 import { getSocialIconComponent, MailIcon } from './icons';
 import { useSiteConfig } from '../context/SiteConfigContext';
-import { type SiteSection, type SiteSocialIconKey } from '../config/siteConfig';
+import { type SiteSection } from '../config/siteConfig';
 
 const isPlaceholderHref = (href: string) => href.trim() === '#';
 const PENDING_NAV_SECTION_KEY = 'portfolio.pending-nav-section.v1';
 
 const SITE_SECTIONS: SiteSection[] = ['home', 'about', 'projects', 'testimonials', 'articles', 'contact'];
-
-const FOOTER_SOCIAL_STYLE_BY_ICON: Partial<Record<SiteSocialIconKey, string>> = {
-  instagram: 'bg-[#fce7f3] text-[#be185d] border-[#f9a8d4]/70 hover:bg-[#fbcfe8]',
-  linkedin: 'bg-[#dbeafe] text-[#1d4ed8] border-[#93c5fd]/70 hover:bg-[#bfdbfe]',
-  twitter: 'bg-[#e5e7eb] text-[#1f2937] border-[#cbd5e1]/80 hover:bg-[#d1d5db]',
-  youtube: 'bg-[#fee2e2] text-[#dc2626] border-[#fca5a5]/70 hover:bg-[#fecaca]',
-  telegram: 'bg-[#dbeafe] text-[#0284c7] border-[#7dd3fc]/70 hover:bg-[#bae6fd]',
-  facebook: 'bg-[#dbeafe] text-[#1d4ed8] border-[#93c5fd]/70 hover:bg-[#bfdbfe]',
-  github: 'bg-[#e5e7eb] text-[#111827] border-[#d1d5db]/80 hover:bg-[#d1d5db]',
-  dribbble: 'bg-[#ffe4e6] text-[#db2777] border-[#fda4af]/70 hover:bg-[#fecdd3]',
-  figma: 'bg-[#f3e8ff] text-[#9333ea] border-[#d8b4fe]/70 hover:bg-[#e9d5ff]',
-  behance: 'bg-[#dbeafe] text-[#2563eb] border-[#93c5fd]/70 hover:bg-[#bfdbfe]',
-  mail: 'bg-[#ecfeff] text-[#0891b2] border-[#99f6e4]/70 hover:bg-[#ccfbf1]',
-  globe: 'bg-[#f3f4f6] text-[#374151] border-[#d1d5db]/80 hover:bg-[#e5e7eb]',
-};
-
-const getFooterSocialClass = (icon: SiteSocialIconKey) =>
-  FOOTER_SOCIAL_STYLE_BY_ICON[icon] ?? 'bg-[#f3f4f6] text-[#374151] border-[#d1d5db]/80 hover:bg-[#e5e7eb]';
 
 export const Footer: React.FC = () => {
   const { siteConfig } = useSiteConfig();
@@ -181,7 +163,12 @@ export const Footer: React.FC = () => {
                       rel={isPlaceholderHref(social.href) ? undefined : 'noopener noreferrer'}
                       aria-label={social.label}
                       title={social.label}
-                      className={`${socialButtonClass} border transition-colors ${getFooterSocialClass(social.icon)}`}
+                      className={`${socialButtonClass} border transition-all hover:-translate-y-[1px] hover:brightness-95`}
+                      style={{
+                        backgroundColor: footer.socialIconBackgroundColor,
+                        borderColor: footer.socialIconBorderColor,
+                        color: footer.socialIconColor,
+                      }}
                     >
                       <SocialIcon size={17} strokeWidth={1.9} />
                     </a>
