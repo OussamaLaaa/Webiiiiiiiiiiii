@@ -833,6 +833,9 @@ export interface SiteConfig {
     logoLightSrc: string;
     logoDarkSrc: string;
     musicToggleAriaLabel: string;
+    musicToggleAriaLabelAr: string;
+    menuToggleAriaLabel: string;
+    menuToggleAriaLabelAr: string;
     languageToggleLabelEn: string;
     languageToggleLabelAr: string;
     navItems: SiteNavItem[];
@@ -1198,6 +1201,9 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
     logoLightSrc: '/logo-black.png',
     logoDarkSrc: '/logo-white.png',
     musicToggleAriaLabel: 'Toggle Music',
+    musicToggleAriaLabelAr: 'تبديل الموسيقى',
+    menuToggleAriaLabel: 'Toggle Menu',
+    menuToggleAriaLabelAr: 'تبديل القائمة',
     languageToggleLabelEn: 'English',
     languageToggleLabelAr: 'العربية',
     navItems: [
@@ -2813,6 +2819,18 @@ export const hydrateSiteConfig = (value: unknown): SiteConfig => {
       musicToggleAriaLabel: asString(
         persistentUI.musicToggleAriaLabel,
         DEFAULT_SITE_CONFIG.persistentUI.musicToggleAriaLabel,
+      ),
+      musicToggleAriaLabelAr: asString(
+        persistentUI.musicToggleAriaLabelAr,
+        DEFAULT_SITE_CONFIG.persistentUI.musicToggleAriaLabelAr,
+      ),
+      menuToggleAriaLabel: asString(
+        persistentUI.menuToggleAriaLabel,
+        DEFAULT_SITE_CONFIG.persistentUI.menuToggleAriaLabel,
+      ),
+      menuToggleAriaLabelAr: asString(
+        persistentUI.menuToggleAriaLabelAr,
+        DEFAULT_SITE_CONFIG.persistentUI.menuToggleAriaLabelAr,
       ),
       languageToggleLabelEn: asString(
         persistentUI.languageToggleLabelEn,

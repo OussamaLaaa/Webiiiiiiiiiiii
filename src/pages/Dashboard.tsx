@@ -2678,6 +2678,46 @@ export const Dashboard: React.FC = () => {
                 }
               />
               <Input
+                label="Music toggle aria label (English)"
+                value={siteConfig.persistentUI.musicToggleAriaLabel}
+                onChange={(next) =>
+                  updateConfig((prev) => ({
+                    ...prev,
+                    persistentUI: { ...prev.persistentUI, musicToggleAriaLabel: next },
+                  }))
+                }
+              />
+              <Input
+                label="Music toggle aria label (Arabic)"
+                value={siteConfig.persistentUI.musicToggleAriaLabelAr}
+                onChange={(next) =>
+                  updateConfig((prev) => ({
+                    ...prev,
+                    persistentUI: { ...prev.persistentUI, musicToggleAriaLabelAr: next },
+                  }))
+                }
+              />
+              <Input
+                label="Menu toggle aria label (English)"
+                value={siteConfig.persistentUI.menuToggleAriaLabel}
+                onChange={(next) =>
+                  updateConfig((prev) => ({
+                    ...prev,
+                    persistentUI: { ...prev.persistentUI, menuToggleAriaLabel: next },
+                  }))
+                }
+              />
+              <Input
+                label="Menu toggle aria label (Arabic)"
+                value={siteConfig.persistentUI.menuToggleAriaLabelAr}
+                onChange={(next) =>
+                  updateConfig((prev) => ({
+                    ...prev,
+                    persistentUI: { ...prev.persistentUI, menuToggleAriaLabelAr: next },
+                  }))
+                }
+              />
+              <Input
                 label="Let's Talk label"
                 value={siteConfig.persistentUI.letsTalkLabel}
                 onChange={(next) =>

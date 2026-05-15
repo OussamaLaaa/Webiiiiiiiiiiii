@@ -407,7 +407,11 @@ export const AdvancedNavbar: React.FC<AdvancedNavbarProps> = ({ isLightMode = fa
                       ? 'bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-200'
                       : 'bg-white/15 hover:bg-white/25 text-white border border-white/30'
                   }`}
-                  aria-label={persistentUI.musicToggleAriaLabel || (isAr ? 'تبديل الموسيقى' : 'Toggle Music')}
+                  aria-label={
+                    isAr
+                      ? (persistentUI.musicToggleAriaLabelAr || persistentUI.musicToggleAriaLabel)
+                      : persistentUI.musicToggleAriaLabel
+                  }
                 >
                   {isMusicPlaying ? (
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -473,7 +477,7 @@ export const AdvancedNavbar: React.FC<AdvancedNavbarProps> = ({ isLightMode = fa
                 ? 'bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-200'
                 : 'bg-white/15 hover:bg-white/25 text-white border border-white/30'
             }`}
-            aria-label={isAr ? 'تبديل القائمة' : 'Toggle Menu'}
+            aria-label={isAr ? persistentUI.menuToggleAriaLabelAr : persistentUI.menuToggleAriaLabel}
           >
             <svg
               width="22"
@@ -507,7 +511,11 @@ export const AdvancedNavbar: React.FC<AdvancedNavbarProps> = ({ isLightMode = fa
                   ? 'bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-200'
                   : 'bg-white/15 hover:bg-white/25 text-white border border-white/30'
               }`}
-              aria-label={persistentUI.musicToggleAriaLabel || (isAr ? 'تبديل الموسيقى' : 'Toggle Music')}
+              aria-label={
+                isAr
+                  ? (persistentUI.musicToggleAriaLabelAr || persistentUI.musicToggleAriaLabel)
+                  : persistentUI.musicToggleAriaLabel
+              }
             >
               {isMusicPlaying ? (
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -553,7 +561,7 @@ export const AdvancedNavbar: React.FC<AdvancedNavbarProps> = ({ isLightMode = fa
                     !isAr ? 'bg-white text-black' : isLightMode ? 'text-gray-700' : 'text-gray-200'
                   }`}
                 >
-                  EN
+                  {languageLabelEn}
                 </button>
                 <button
                   type="button"
@@ -565,7 +573,7 @@ export const AdvancedNavbar: React.FC<AdvancedNavbarProps> = ({ isLightMode = fa
                     isAr ? 'bg-white text-black' : isLightMode ? 'text-gray-700' : 'text-gray-200'
                   }`}
                 >
-                  AR
+                  {languageLabelAr}
                 </button>
               </div>
               <div className="flex flex-col items-center justify-center h-full gap-8">
