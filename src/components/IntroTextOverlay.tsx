@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSiteConfig } from '../context/SiteConfigContext';
 import { getScaledRem } from './designSystem';
+import { useLanguage } from '../hooks/useLanguage';
 
 interface IntroTextOverlayProps {
   hasStarted: boolean;
@@ -9,6 +10,7 @@ interface IntroTextOverlayProps {
 
 export const IntroTextOverlay: React.FC<IntroTextOverlayProps> = ({ hasStarted, isScrolling }) => {
   const { siteConfig } = useSiteConfig();
+  const { isAr, ar } = useLanguage();
   const {
     headingScale,
     displayTitleSizeRem,
@@ -35,8 +37,8 @@ export const IntroTextOverlay: React.FC<IntroTextOverlayProps> = ({ hasStarted, 
   const initial = 'opacity-0 translate-y-[20px]';
 
   const containerState = isScrolling ? exit : mounted ? enter : initial;
-  const primaryText = siteConfig.introText.trim();
-  const scrollPrompt = siteConfig.introScrollPrompt.trim();
+  const primaryText = isAr ? ar.introText : siteConfig.introText.trim();
+  const scrollPrompt = isAr ? ar.introScrollPrompt : siteConfig.introScrollPrompt.trim();
   const backdropColor = siteConfig.introOverlayBackdropColor;
   const backdropOpacity = mounted && !isScrolling ? siteConfig.introOverlayBackdropOpacity : 0;
   const headlineBoost = 1.4;
