@@ -318,7 +318,7 @@ export const AdvancedNavbar: React.FC<AdvancedNavbarProps> = ({ isLightMode = fa
         }`}
       >
         <div className="max-w-[1800px] mx-auto px-4 md:px-8 lg:px-12">
-          <div className="relative h-[80px] md:h-[96px] flex items-center">
+          <div className="relative h-[80px] md:h-[96px] grid grid-cols-[auto,1fr,auto] items-center gap-4">
             {/* Logo */}
             {visibility.navigationLogo ? (
               <a
@@ -336,11 +336,11 @@ export const AdvancedNavbar: React.FC<AdvancedNavbarProps> = ({ isLightMode = fa
               <div className="w-0" />
             )}
 
-            {/* Navigation Links - True Center */}
+            {/* Navigation Links */}
             {visibility.navigationMenu && visibleNavItems.length > 0 ? (
-              <div className="pointer-events-none absolute inset-0 hidden items-center justify-center md:flex">
+              <div className="hidden min-w-0 items-center justify-center md:flex">
                 <div
-                  className="pointer-events-auto flex max-w-[70vw] items-center gap-1"
+                  className="flex max-w-full items-center gap-1 overflow-hidden"
                   ref={navLinksRef}
                 >
                   {visibleNavItems.map((item) => (
@@ -349,7 +349,7 @@ export const AdvancedNavbar: React.FC<AdvancedNavbarProps> = ({ isLightMode = fa
                       href={item.section === 'articles' || item.section === 'contact' ? `#/${item.section}` : `#${item.section}`}
                       onClick={(e) => handleNav(e, item.section)}
                       data-section={item.section}
-                      className={`nav-link px-6 py-3 text-sm font-medium tracking-[0.01em] transition-all duration-400 rounded-lg ${
+                      className={`nav-link whitespace-nowrap px-6 py-3 text-sm font-medium tracking-[0.01em] transition-all duration-400 rounded-lg ${
                         activeSection === item.section
                           ? isLightMode
                             ? 'text-black bg-gray-100/80'
@@ -367,7 +367,7 @@ export const AdvancedNavbar: React.FC<AdvancedNavbarProps> = ({ isLightMode = fa
             ) : null}
 
             {/* Right Actions */}
-            <div className="ml-auto flex items-center gap-4 flex-shrink-0">
+            <div className="ms-auto flex items-center gap-4 flex-shrink-0">
               {visibility.musicToggle ? <audio ref={audioRef} src={persistentUI.musicSrc} loop /> : null}
 
               {/* Language Toggle */}
@@ -454,7 +454,7 @@ export const AdvancedNavbar: React.FC<AdvancedNavbarProps> = ({ isLightMode = fa
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className={`md:hidden fixed top-4 right-4 z-[260] h-12 w-12 flex items-center justify-center rounded-xl transition-all duration-400 ${
+            className={`md:hidden fixed top-4 ${isAr ? 'left-4' : 'right-4'} z-[260] h-12 w-12 flex items-center justify-center rounded-xl transition-all duration-400 ${
               isLightMode
                 ? 'bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-200'
                 : 'bg-white/15 hover:bg-white/25 text-white border border-white/30'
@@ -488,7 +488,7 @@ export const AdvancedNavbar: React.FC<AdvancedNavbarProps> = ({ isLightMode = fa
           {visibility.musicToggle ? (
             <button
               onClick={toggleMusic}
-              className={`md:hidden fixed top-4 right-20 z-[260] h-12 w-12 flex items-center justify-center rounded-xl transition-all duration-400 ${
+              className={`md:hidden fixed top-4 ${isAr ? 'left-20' : 'right-20'} z-[260] h-12 w-12 flex items-center justify-center rounded-xl transition-all duration-400 ${
                 isLightMode
                   ? 'bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-200'
                   : 'bg-white/15 hover:bg-white/25 text-white border border-white/30'
