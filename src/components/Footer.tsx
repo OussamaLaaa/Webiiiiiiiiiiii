@@ -2,12 +2,30 @@ import React from 'react';
 import { getButtonClass } from './designSystem';
 import { getSocialIconComponent, MailIcon } from './icons';
 import { useSiteConfig } from '../context/SiteConfigContext';
-import { type SiteSection } from '../config/siteConfig';
+import { type SiteSection, type SiteSocialIconKey } from '../config/siteConfig';
 
 const isPlaceholderHref = (href: string) => href.trim() === '#';
 const PENDING_NAV_SECTION_KEY = 'portfolio.pending-nav-section.v1';
 
 const SITE_SECTIONS: SiteSection[] = ['home', 'about', 'projects', 'testimonials', 'articles', 'contact'];
+
+const FOOTER_SOCIAL_STYLE_BY_ICON: Partial<Record<SiteSocialIconKey, string>> = {
+  instagram: 'bg-[#fce7f3] text-[#be185d] border-[#f9a8d4]/70 hover:bg-[#fbcfe8]',
+  linkedin: 'bg-[#dbeafe] text-[#1d4ed8] border-[#93c5fd]/70 hover:bg-[#bfdbfe]',
+  twitter: 'bg-[#e5e7eb] text-[#1f2937] border-[#cbd5e1]/80 hover:bg-[#d1d5db]',
+  youtube: 'bg-[#fee2e2] text-[#dc2626] border-[#fca5a5]/70 hover:bg-[#fecaca]',
+  telegram: 'bg-[#dbeafe] text-[#0284c7] border-[#7dd3fc]/70 hover:bg-[#bae6fd]',
+  facebook: 'bg-[#dbeafe] text-[#1d4ed8] border-[#93c5fd]/70 hover:bg-[#bfdbfe]',
+  github: 'bg-[#e5e7eb] text-[#111827] border-[#d1d5db]/80 hover:bg-[#d1d5db]',
+  dribbble: 'bg-[#ffe4e6] text-[#db2777] border-[#fda4af]/70 hover:bg-[#fecdd3]',
+  figma: 'bg-[#f3e8ff] text-[#9333ea] border-[#d8b4fe]/70 hover:bg-[#e9d5ff]',
+  behance: 'bg-[#dbeafe] text-[#2563eb] border-[#93c5fd]/70 hover:bg-[#bfdbfe]',
+  mail: 'bg-[#ecfeff] text-[#0891b2] border-[#99f6e4]/70 hover:bg-[#ccfbf1]',
+  globe: 'bg-[#f3f4f6] text-[#374151] border-[#d1d5db]/80 hover:bg-[#e5e7eb]',
+};
+
+const getFooterSocialClass = (icon: SiteSocialIconKey) =>
+  FOOTER_SOCIAL_STYLE_BY_ICON[icon] ?? 'bg-[#f3f4f6] text-[#374151] border-[#d1d5db]/80 hover:bg-[#e5e7eb]';
 
 export const Footer: React.FC = () => {
   const { siteConfig } = useSiteConfig();
@@ -101,20 +119,15 @@ export const Footer: React.FC = () => {
     'md',
     'min-w-[190px] justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111217]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f6f6f7]',
   );
-  const socialButtonClass = getButtonClass(
-    designSystem.components.featuredCtaButtonVariant,
-    'light',
-    'icon',
-    'h-10 w-10',
-  );
+  const socialButtonClass = getButtonClass(designSystem.components.featuredCtaButtonVariant, 'light', 'icon', 'h-11 w-11');
 
   const ctaSection = getSectionFromHref(footer.ctaButtonHref);
 
   return (
     <footer className="relative z-10 w-full border-t border-[#111217]/10 bg-[#f6f6f7] text-[#111217] selection:bg-[#111217]/10">
-      <div className="site-shell pb-6 pt-12 md:pb-8 md:pt-14">
-        <div className="grid gap-8 border-b border-[#111217]/10 pb-10 md:grid-cols-2 xl:grid-cols-[1.05fr_0.95fr_0.95fr_1.05fr] xl:gap-10">
-          <div className="space-y-4">
+      <div className="site-shell pb-8 pt-14 md:pb-10 md:pt-16">
+        <div className="grid gap-10 border-b border-[#111217]/10 pb-12 md:grid-cols-2 xl:grid-cols-[1.05fr_0.95fr_0.95fr_1.05fr] xl:gap-12">
+          <div className="space-y-5">
             <p className="text-[1.6rem] font-semibold leading-tight tracking-tight text-[#111217] md:text-[1.75rem]">
               {footer.brandTitle}
             </p>
@@ -131,11 +144,11 @@ export const Footer: React.FC = () => {
           </div>
 
           {visibility.footerNavLinks && syncedNavLinks.length > 0 ? (
-            <div className="space-y-4">
+            <div className="space-y-5">
               <p className="text-[1.2rem] font-semibold leading-tight tracking-tight text-[#111217] md:text-[1.28rem]">
                 {footer.quickLinksTitle}
               </p>
-              <ul className="space-y-2.5">
+              <ul className="space-y-3">
                 {syncedNavLinks.map((item) => (
                   <li key={item.id}>
                     <a
@@ -152,11 +165,11 @@ export const Footer: React.FC = () => {
           ) : null}
 
           {visibility.footerSocialLinks && visibleSocialLinks.length > 0 ? (
-            <div className="space-y-4">
+            <div className="space-y-5">
               <p className="text-[1.2rem] font-semibold leading-tight tracking-tight text-[#111217] md:text-[1.28rem]">
                 {footer.followTitle}
               </p>
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center gap-3">
                 {visibleSocialLinks.map((social) => {
                   const SocialIcon = getSocialIconComponent(social.icon);
                   return (
@@ -168,9 +181,9 @@ export const Footer: React.FC = () => {
                       rel={isPlaceholderHref(social.href) ? undefined : 'noopener noreferrer'}
                       aria-label={social.label}
                       title={social.label}
-                      className={socialButtonClass}
+                      className={`${socialButtonClass} border transition-colors ${getFooterSocialClass(social.icon)}`}
                     >
-                      <SocialIcon size={16} strokeWidth={1.8} />
+                      <SocialIcon size={17} strokeWidth={1.9} />
                     </a>
                   );
                 })}
@@ -178,7 +191,7 @@ export const Footer: React.FC = () => {
             </div>
           ) : null}
 
-          <div className="space-y-4">
+          <div className="space-y-5">
             <p className="max-w-[24ch] text-[1.22rem] font-semibold leading-tight tracking-tight text-[#111217] md:text-[1.3rem]">
               {footer.ctaTitle}
             </p>
@@ -209,7 +222,7 @@ export const Footer: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-4 flex flex-col gap-2.5 pt-3 text-[0.86rem] text-[#111217]/57 md:flex-row md:items-center md:justify-between">
+        <div className="mt-6 flex flex-col gap-3.5 pt-4 text-[0.86rem] text-[#111217]/57 md:flex-row md:items-center md:justify-between">
           <p>© {new Date().getFullYear()} {footer.copyrightText}</p>
           {visibility.footerLegalLinks && visibleLegalLinks.length > 0 ? (
             <div className="flex flex-wrap items-center gap-2 text-[#111217]/52">
