@@ -81,7 +81,7 @@ export const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="w-full bg-white text-[#0a0a0b] border-t border-[#0a0a0b]/10 relative z-10 selection:bg-[#0a0a0b]/10 font-mono uppercase text-[10px] sm:text-[11px] tracking-[0.15em] leading-relaxed">
+    <footer className="w-full bg-white text-[#0a0a0b] border-t border-[#0a0a0b]/10 relative z-10 shadow-[0_-20px_45px_-40px_rgba(15,18,25,0.35)] selection:bg-[#0a0a0b]/10 font-mono uppercase text-[10px] sm:text-[11px] tracking-[0.15em] leading-relaxed">
       <div className="site-shell pt-16 pb-12 md:pt-20">
         <div className="grid gap-12 lg:grid-cols-[1.1fr_0.7fr_0.7fr]">
           <div className="flex flex-col gap-10">

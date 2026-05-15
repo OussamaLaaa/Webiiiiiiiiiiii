@@ -119,6 +119,10 @@ const Contact: React.FC = () => {
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLDivElement>(null);
+  const baseContactCardShadow = '0 20px 40px -30px rgba(15, 23, 42, 0.32), 0 10px 24px -22px rgba(15, 23, 42, 0.25)';
+  const elevatedContactCardShadow =
+    '0 26px 56px -30px rgba(15, 23, 42, 0.35), 0 14px 30px -24px rgba(15, 23, 42, 0.28)';
+  const baseSocialCardShadow = '0 18px 36px -28px rgba(15, 23, 42, 0.34), 0 8px 18px -14px rgba(15, 23, 42, 0.2)';
 
   // Build contact cards from siteConfig.contactPage
   const contactCards: ContactCard[] = useMemo(() => {
@@ -240,7 +244,7 @@ const Contact: React.FC = () => {
       }
       
       gsap.to(card, {
-        boxShadow: `0 20px 40px -10px ${color}80`,
+        boxShadow: `0 26px 50px -20px ${hoverColor}70, 0 14px 26px -18px rgba(15,23,42,0.35)`,
         duration: 0.4,
       });
     } else {
@@ -285,7 +289,7 @@ const Contact: React.FC = () => {
       }
       
       gsap.to(card, {
-        boxShadow: 'none',
+        boxShadow: baseSocialCardShadow,
         duration: 0.4,
       });
     }
@@ -383,7 +387,10 @@ const Contact: React.FC = () => {
             {/* Sidebar */}
             <div className="contact-sidebar lg:col-span-4 space-y-4 md:space-y-6">
               {/* Direct Contact Card */}
-              <div className={`p-4 md:p-6 rounded-2xl ${getCardClass('card-2', 'light')}`} style={{ borderColor: 'rgba(0,0,0,0.1)' }}>
+              <div
+                className={`p-4 md:p-6 rounded-2xl ${getCardClass('card-2', 'light')}`}
+                style={{ borderColor: 'rgba(0,0,0,0.1)', boxShadow: elevatedContactCardShadow }}
+              >
                 <div className="flex items-center justify-between mb-4 md:mb-6">
                   <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-black flex items-center justify-center">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -452,7 +459,10 @@ const Contact: React.FC = () => {
               </div>
 
               {/* Response Time Card - Hidden on mobile */}
-              <div className={`hidden lg:block p-6 rounded-2xl border ${getCardClass('card-2', 'light')}`} style={{ borderColor: 'rgba(0,0,0,0.1)' }}>
+              <div
+                className={`hidden lg:block p-6 rounded-2xl border ${getCardClass('card-2', 'light')}`}
+                style={{ borderColor: 'rgba(0,0,0,0.1)', boxShadow: baseContactCardShadow }}
+              >
                 <p className="text-xs font-medium uppercase tracking-wider mb-2 text-gray-500">{contactPage.responseTimeLabel}</p>
                 <p className="text-lg font-semibold mb-2 text-gray-900">{contactPage.responseTimeValue}</p>
                 <p className="text-sm leading-relaxed text-gray-600">{contactPage.responseTimeDescription}</p>
@@ -461,7 +471,10 @@ const Contact: React.FC = () => {
 
             {/* Form Section */}
             <div ref={formRef} className="lg:col-span-8">
-              <div className={`p-4 md:p-6 lg:p-8 rounded-2xl ${getCardClass('card-2', 'light')}`} style={{ borderColor: 'rgba(0,0,0,0.1)' }}>
+              <div
+                className={`p-4 md:p-6 lg:p-8 rounded-2xl ${getCardClass('card-2', 'light')}`}
+                style={{ borderColor: 'rgba(0,0,0,0.1)', boxShadow: elevatedContactCardShadow }}
+              >
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-6 md:mb-8 gap-4">
                   <div>
                     <h2 className="text-xl md:text-2xl font-semibold mb-2" style={{ color: '#000000' }}>{contactPage.formTitle}</h2>
@@ -550,7 +563,7 @@ const Contact: React.FC = () => {
                   className={`social-card group relative p-4 md:p-6 rounded-2xl border transition-all duration-400 ${getCardClass('card-2', 'light')}`}
                   onMouseEnter={(e) => handleCardHover(e.currentTarget, true, card.color, card.hoverColor)}
                   onMouseLeave={(e) => handleCardHover(e.currentTarget, false, card.color, card.hoverColor)}
-                  style={{ borderColor: 'rgba(0,0,0,0.08)' }}
+                  style={{ borderColor: 'rgba(0,0,0,0.08)', boxShadow: baseSocialCardShadow }}
                 >
                   <div className="card-header flex items-center justify-between mb-4 md:mb-6">
                     <span className="text-xs font-medium uppercase tracking-wider text-gray-500 group-hover:text-white/90 transition-colors duration-300">{card.action}</span>

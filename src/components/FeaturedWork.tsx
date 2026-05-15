@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, memo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState, memo } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Testimonials } from './Testimonials';
@@ -19,7 +19,13 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = memo(({ isActive }) => 
   const { siteConfig } = useSiteConfig();
   const { featured, visibility, designSystem } = siteConfig;
   const projectAnimations = siteConfig.animation.sections.projects;
+  const [showAllProjects, setShowAllProjects] = useState(false);
   const projects = useMemo(() => siteConfig.projects.filter((project) => project.visible), [siteConfig.projects]);
+  const hasHiddenProjects = projects.length > 4;
+  const displayedProjects = useMemo(
+    () => (showAllProjects ? projects : projects.slice(0, 4)),
+    [projects, showAllProjects],
+  );
 
   const containerRef = useRef<HTMLDivElement>(null);
   const lastScrollY = useRef(0);
@@ -45,6 +51,12 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = memo(({ isActive }) => 
   // Ref to track if GSAP context has been initialized
   const gsapContextRef = useRef<gsap.Context | null>(null);
   const scrollTriggersCreatedRef = useRef(false);
+
+  useEffect(() => {
+    if (isActive) {
+      setShowAllProjects(false);
+    }
+  }, [isActive]);
 
   useEffect(() => {
     if (!isActive || !containerRef.current) return;
@@ -398,7 +410,7 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = memo(({ isActive }) => 
 
         {visibility.featuredProjectsGrid ? (
           <div className="grid grid-cols-1 gap-x-10 gap-y-14 md:grid-cols-2" style={{ perspective: gridPerspective }}>
-            {projects.map((project) => (
+            {displayedProjects.map((project) => (
               <article
                 key={project.id}
                 className={`fw-reveal group opacity-0 ${projectCardClass} ${projectCardMotionClass}`}
@@ -456,10 +468,11 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = memo(({ isActive }) => 
           </div>
         ) : null}
 
-        {visibility.featuredViewAllButton ? (
+        {visibility.featuredViewAllButton && hasHiddenProjects && !showAllProjects ? (
           <div className="fw-reveal mb-8 mt-16 flex justify-center opacity-0 md:mb-14">
             <button
               type="button"
+              onClick={() => setShowAllProjects(true)}
               className={getButtonClass(
                 designSystem.components.featuredViewAllButtonVariant,
                 'light',
