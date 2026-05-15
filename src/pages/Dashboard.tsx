@@ -2866,6 +2866,11 @@ export const Dashboard: React.FC = () => {
                 value={siteConfig.footer.email}
                 onChange={(next) => updateConfig((prev) => ({ ...prev, footer: { ...prev.footer, email: next } }))}
               />
+              <Input
+                label="Footer top shadow"
+                value={siteConfig.footer.topShadow}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, footer: { ...prev.footer, topShadow: next } }))}
+              />
               <div className="space-y-2 rounded-[10px] border border-white/10 p-3">
                 <div className="flex items-center justify-between gap-3">
                   <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/70">Social links</p>
@@ -3187,6 +3192,16 @@ export const Dashboard: React.FC = () => {
                 rows={2}
                 onChange={(next) => updateConfig((prev) => ({ ...prev, contactPage: { ...prev.contactPage, responseTimeDescription: next } }))}
               />
+              <Input
+                label="Base card shadow"
+                value={siteConfig.contactPage.baseCardShadow}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, contactPage: { ...prev.contactPage, baseCardShadow: next } }))}
+              />
+              <Input
+                label="Elevated card shadow"
+                value={siteConfig.contactPage.elevatedCardShadow}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, contactPage: { ...prev.contactPage, elevatedCardShadow: next } }))}
+              />
             </Card>
 
             <Card title="Contact Form Section" subtitle="Form labels, placeholders, and button text">
@@ -3276,6 +3291,16 @@ export const Dashboard: React.FC = () => {
                 value={siteConfig.contactPage.socialSectionDescription}
                 rows={2}
                 onChange={(next) => updateConfig((prev) => ({ ...prev, contactPage: { ...prev.contactPage, socialSectionDescription: next } }))}
+              />
+              <Input
+                label="Social card base shadow"
+                value={siteConfig.contactPage.socialCardShadow}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, contactPage: { ...prev.contactPage, socialCardShadow: next } }))}
+              />
+              <Input
+                label="Social card hover shadow"
+                value={siteConfig.contactPage.socialCardHoverShadow}
+                onChange={(next) => updateConfig((prev) => ({ ...prev, contactPage: { ...prev.contactPage, socialCardHoverShadow: next } }))}
               />
             </Card>
 
@@ -7624,6 +7649,4 @@ export const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
-
-
 

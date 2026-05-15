@@ -26,6 +26,7 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = memo(({ isActive }) => 
     () => (showAllProjects ? projects : projects.slice(0, 4)),
     [projects, showAllProjects],
   );
+  const shouldShowViewAllButton = visibility.featuredViewAllButton && hasHiddenProjects && !showAllProjects;
 
   const containerRef = useRef<HTMLDivElement>(null);
   const lastScrollY = useRef(0);
@@ -468,7 +469,7 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = memo(({ isActive }) => 
           </div>
         ) : null}
 
-        {visibility.featuredViewAllButton && hasHiddenProjects && !showAllProjects ? (
+        {shouldShowViewAllButton ? (
           <div className="fw-reveal mb-8 mt-16 flex justify-center opacity-0 md:mb-14">
             <button
               type="button"

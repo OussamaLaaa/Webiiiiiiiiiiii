@@ -128,6 +128,8 @@ export interface SiteContactPageConfig {
   responseTimeLabel: string;
   responseTimeValue: string;
   responseTimeDescription: string;
+  baseCardShadow: string;
+  elevatedCardShadow: string;
   
   // Form Section
   formTitle: string;
@@ -148,6 +150,8 @@ export interface SiteContactPageConfig {
   socialSectionLabel: string;
   socialSectionTitle: string;
   socialSectionDescription: string;
+  socialCardShadow: string;
+  socialCardHoverShadow: string;
   
   // Contact Cards
   contactCards: SiteContactCard[];
@@ -842,6 +846,7 @@ export interface SiteConfig {
     copyrightText: string;
     officeTitle: string;
     officeAddress: string;
+    topShadow: string;
     socialLinks: SiteSocialLink[];
     legalLinks: SiteFooterLink[];
     navLinks: SiteFooterLink[];
@@ -1210,6 +1215,7 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
     copyrightText: 'Oussama Lassoued All rights reserved.',
     officeTitle: 'Oussama Office',
     officeAddress: '123 Cinematic Blvd,\nParis, France',
+    topShadow: '0 -20px 45px -40px rgba(15,18,25,0.35)',
     socialLinks: [
       { id: 'social-behance', label: 'Behance', href: '#', icon: 'behance', visible: true },
       { id: 'social-linkedin', label: 'LinkedIn', href: '#', icon: 'linkedin', visible: true },
@@ -1278,6 +1284,8 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
     responseTimeLabel: 'Response Time',
     responseTimeValue: '< 24 hours',
     responseTimeDescription: 'I typically respond within one business day',
+    baseCardShadow: '0 20px 40px -30px rgba(15, 23, 42, 0.32), 0 10px 24px -22px rgba(15, 23, 42, 0.25)',
+    elevatedCardShadow: '0 26px 56px -30px rgba(15, 23, 42, 0.35), 0 14px 30px -24px rgba(15, 23, 42, 0.28)',
     // Form Section
     formTitle: 'Send a Message',
     formSubtitle: "I'd love to hear from you. Fill out the form below and I'll get back to you as soon as possible.",
@@ -1297,6 +1305,8 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
     socialSectionTitle: 'Connect on Social',
     socialSectionDescription:
       'Follow me on social media for updates, behind-the-scenes content, and more.',
+    socialCardShadow: '0 18px 36px -28px rgba(15, 23, 42, 0.34), 0 8px 18px -14px rgba(15, 23, 42, 0.2)',
+    socialCardHoverShadow: '0 14px 26px -18px rgba(15,23,42,0.35)',
     // Contact Cards
     contactCards: [
       {
@@ -2814,6 +2824,7 @@ export const hydrateSiteConfig = (value: unknown): SiteConfig => {
       copyrightText: asString(footer.copyrightText, DEFAULT_SITE_CONFIG.footer.copyrightText),
       officeTitle: asString(footer.officeTitle, DEFAULT_SITE_CONFIG.footer.officeTitle),
       officeAddress: asString(footer.officeAddress, DEFAULT_SITE_CONFIG.footer.officeAddress),
+      topShadow: asString(footer.topShadow, DEFAULT_SITE_CONFIG.footer.topShadow),
       socialLinks: socialLinks.length > 0 ? socialLinks : DEFAULT_SITE_CONFIG.footer.socialLinks,
       legalLinks: legalLinks.length > 0 ? legalLinks : DEFAULT_SITE_CONFIG.footer.legalLinks,
       navLinks: navLinksWithArticles,
@@ -2947,6 +2958,14 @@ export const hydrateSiteConfig = (value: unknown): SiteConfig => {
         contactPage?.responseTimeDescription,
         DEFAULT_SITE_CONFIG.contactPage.responseTimeDescription,
       ),
+      baseCardShadow: asString(
+        contactPage?.baseCardShadow,
+        DEFAULT_SITE_CONFIG.contactPage.baseCardShadow,
+      ),
+      elevatedCardShadow: asString(
+        contactPage?.elevatedCardShadow,
+        DEFAULT_SITE_CONFIG.contactPage.elevatedCardShadow,
+      ),
       formTitle: asString(contactPage?.formTitle, DEFAULT_SITE_CONFIG.contactPage.formTitle),
       formSubtitle: asString(contactPage?.formSubtitle, DEFAULT_SITE_CONFIG.contactPage.formSubtitle),
       formNameLabel: asString(contactPage?.formNameLabel, DEFAULT_SITE_CONFIG.contactPage.formNameLabel),
@@ -2998,6 +3017,14 @@ export const hydrateSiteConfig = (value: unknown): SiteConfig => {
       socialSectionDescription: asString(
         contactPage?.socialSectionDescription,
         DEFAULT_SITE_CONFIG.contactPage.socialSectionDescription,
+      ),
+      socialCardShadow: asString(
+        contactPage?.socialCardShadow,
+        DEFAULT_SITE_CONFIG.contactPage.socialCardShadow,
+      ),
+      socialCardHoverShadow: asString(
+        contactPage?.socialCardHoverShadow,
+        DEFAULT_SITE_CONFIG.contactPage.socialCardHoverShadow,
       ),
       contactCards: Array.isArray(contactPage?.contactCards) 
         ? (contactPage.contactCards as any[]).map((card: any, index: number) => ({
