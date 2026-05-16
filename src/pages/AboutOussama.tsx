@@ -465,7 +465,7 @@ export const AboutOussama: React.FC = () => {
             },
             {
               title: 'Strategic Thinking',
-              desc: 'I don't just make things pretty—I solve business problems and create competitive advantages.',
+              desc: "I don't just make things pretty—I solve business problems and create competitive advantages.",
             },
             {
               title: 'Collaborative Partnership',
