@@ -1552,8 +1552,8 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
   ],
   dashboard: {
     browser: {
-      browserTabTitle: 'Oussama Lassoued ΓÇö Product Designer',
-      faviconUrl: '/favicon.ico',
+      browserTabTitle: 'Oussama Lassoued — Product Designer',
+      faviconUrl: '/logo-white.png',
     },
     integrations: {
       apiBaseUrl: 'https://api.example.com',
