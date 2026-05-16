@@ -4,7 +4,6 @@ import { Footer } from '../components/Footer';
 import { PersistentUI } from '../components/PersistentUI';
 import { useSiteConfig } from '../context/SiteConfigContext';
 import { getButtonClass, getCardClass, getGlassClass, getScaledRem } from '../components/designSystem';
-import { useAdaptivePerformance } from '../hooks/useAdaptivePerformance';
 
 interface ArticlesPageProps {
   slug?: string;
@@ -78,11 +77,6 @@ const buildPagination = (currentPage: number, totalPages: number): PaginationIte
 export const Articles: React.FC<ArticlesPageProps> = ({ slug }) => {
   const { siteConfig } = useSiteConfig();
   const { articlesPage, articles, designSystem, visibility, animation } = siteConfig;
-  const { qualityTier } = useAdaptivePerformance(siteConfig.performance, true);
-  const shouldDisableFluidCursor =
-    qualityTier === 'low' &&
-    siteConfig.performance.disableFluidCursorOnLow &&
-    animation.activeCursorAnimation === 'fluid';
   const foundation = designSystem.foundation;
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -202,9 +196,7 @@ export const Articles: React.FC<ArticlesPageProps> = ({ slug }) => {
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#f7f8fc_0%,#eef1f7_46%,#f6f8fd_100%)] text-[#111217] selection:bg-[#111217]/10" data-surface="base">
-      {visibility.cursorAnimation ? (
-        <CursorAnimationLayer animation={animation} forcedMode={shouldDisableFluidCursor ? 'aura' : undefined} />
-      ) : null}
+      {visibility.cursorAnimation ? <CursorAnimationLayer animation={animation} /> : null}
       <PersistentUI isLightMode />
 
       <main className="ds-section w-full overflow-x-clip" style={layoutStyle}>

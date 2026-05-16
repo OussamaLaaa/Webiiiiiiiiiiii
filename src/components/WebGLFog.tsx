@@ -9,11 +9,7 @@ import React, { useEffect, useRef } from 'react';
  * and structurally responsive to mouse movement with smooth inertia while 
  * keeping the center of the composition perfectly clear for underlying visuals.
  */
-interface WebGLFogProps {
-  qualityTier?: 'low' | 'medium' | 'high';
-}
-
-export const WebGLFog: React.FC<WebGLFogProps> = ({ qualityTier = 'high' }) => {
+export const WebGLFog: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -191,16 +187,16 @@ export const WebGLFog: React.FC<WebGLFogProps> = ({ qualityTier = 'high' }) => {
 
     window.addEventListener('mousemove', onPointerMove, { passive: true });
 
-      const resize = () => {
-        // Massive optimization: render soft fog at reduced density directly via the canvas pixel surface.
-        // High-DPI screens completely waste GPU cycles rendering blurry volumes.
-        // This cuts fragment calculations by ~85% minimum with zero perceived loss in softness.
-        const dpr = qualityTier === 'high' ? 0.42 : qualityTier === 'medium' ? 0.32 : 0.25;
-        canvas.width = window.innerWidth * dpr;
-        canvas.height = window.innerHeight * dpr;
-        gl.viewport(0, 0, canvas.width, canvas.height);
-        gl.uniform2f(uResolution, canvas.width, canvas.height);
-      };
+    const resize = () => {
+      // Massive optimization: render soft fog at reduced density directly via the canvas pixel surface.
+      // High-DPI screens completely waste GPU cycles rendering blurry volumes.
+      // This cuts fragment calculations by ~85% minimum with zero perceived loss in softness.
+      const dpr = 0.35; // Further reduced for better FPS
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      gl.uniform2f(uResolution, canvas.width, canvas.height);
+    };
 
     window.addEventListener('resize', resize, { passive: true });
     resize();
@@ -213,9 +209,6 @@ export const WebGLFog: React.FC<WebGLFogProps> = ({ qualityTier = 'high' }) => {
     let isRendering = false;
     let simulatedTime = 0;
     let lastTime = performance.now();
-    let lastRenderAt = performance.now();
-    const targetFps = qualityTier === 'high' ? 60 : qualityTier === 'medium' ? 45 : 30;
-    const minFrameIntervalMs = 1000 / targetFps;
     
     // Strict Halt: WebGL completely sleeps the RAF cycle if scrolled past to save battery/fans 
     const observer = new IntersectionObserver((entries) => {
@@ -237,11 +230,6 @@ export const WebGLFog: React.FC<WebGLFogProps> = ({ qualityTier = 'high' }) => {
       const delta = now - lastTime;
       lastTime = now;
       simulatedTime += delta;
-
-      if (now - lastRenderAt < minFrameIntervalMs) {
-        return;
-      }
-      lastRenderAt = now;
 
       // Ultra-smooth, elegant inertia for a weighty, premium interaction
       mouseX += (targetMouseX - mouseX) * 0.015;
@@ -271,7 +259,7 @@ export const WebGLFog: React.FC<WebGLFogProps> = ({ qualityTier = 'high' }) => {
       observer.disconnect();
       gl.deleteProgram(program);
     };
-  }, [qualityTier]);
+  }, []);
 
   return (
     <canvas 

@@ -23,18 +23,14 @@ interface MasterSequenceProps {
   scene07Images: HTMLImageElement[];
   isInputLocked?: boolean;
   onGlobalProgress?: (progress: number) => void;
-  enableFog?: boolean;
-  fogQualityTier?: 'low' | 'medium' | 'high';
 }
 
-export const MasterSequence: React.FC<MasterSequenceProps> = memo(({
+export const MasterSequence: React.FC<MasterSequenceProps> = memo(({ 
   scene02Images, 
   scene03Images, 
   scene07Images,
   isInputLocked = false,
-  onGlobalProgress,
-  enableFog = true,
-  fogQualityTier = 'high',
+  onGlobalProgress 
 }) => {
   const containerRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -421,7 +417,7 @@ export const MasterSequence: React.FC<MasterSequenceProps> = memo(({
             className="cinematic-canvas w-full h-full pointer-events-none block"
           />
         </div>
-        {enableFog ? <WebGLFog qualityTier={fogQualityTier} /> : null}
+        <WebGLFog />
         {frameConfig.watermarkMaskEnabled && (frameConfig.watermarkMaskMobilePx > 0 || frameConfig.watermarkMaskDesktopPx > 0) ? (
           <div
             className="cinematic-watermark-cover pointer-events-none absolute z-[25]"
