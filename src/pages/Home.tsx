@@ -2,12 +2,10 @@ import React, { useRef, useState } from 'react';
 import { usePreloadFrames } from '../hooks/usePreloadFrames';
 import { LoadingScreen } from '../components/LoadingScreen';
 import { MasterSequence } from '../components/MasterSequence';
-import { GlobalFrameOverlay } from '../components/GlobalFrameOverlay';
 import { IntroTextOverlay } from '../components/IntroTextOverlay';
 import { PersistentUI } from '../components/PersistentUI';
 import CursorAnimationLayer from '../components/CursorAnimationLayer';
 import { useSiteConfig } from '../context/SiteConfigContext';
-import { CRTEdgeOverlay } from '../components/CRTFrame';
 
 import { Scene05Overlay } from '../components/Scene05Overlay';
 import { FeaturedWork } from '../components/FeaturedWork';
@@ -28,7 +26,7 @@ let hasHomeBootCompleted = false;
 
 export const Home: React.FC = () => {
   const { siteConfig } = useSiteConfig();
-  const { visibility, globalFrame, crt } = siteConfig;
+  const { visibility } = siteConfig;
   const { progress, images, isComplete } = usePreloadFrames(SCENES);
    
   const [hasStarted, setHasStarted] = useState(() => hasHomeBootCompleted);
@@ -72,12 +70,6 @@ export const Home: React.FC = () => {
 
   return (
     <div className="bg-[#111113] min-h-screen text-white selection:bg-white/20" data-surface="base">
-      {/* CRT Edge Overlay - Full Screen Retro TV Effect */}
-      {crt.enabled ? <CRTEdgeOverlay intensity={crt.intensity} /> : null}
-
-      {visibility.globalFrameOverlay ? (
-        <GlobalFrameOverlay innerShadowIntensity={hasStarted ? 0.3 : 0} frameConfig={globalFrame} />
-      ) : null}
       {!hasStarted ? (
         <LoadingScreen 
           progress={progress} 

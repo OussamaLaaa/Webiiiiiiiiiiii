@@ -317,7 +317,6 @@ export interface SiteSectionAnimationConfig {
 }
 
 export interface SiteVisibilityConfig {
-  globalFrameOverlay: boolean;
   cursorAnimation: boolean;
   introOverlay: boolean;
   scene05Overlay: boolean;
@@ -377,61 +376,6 @@ export interface SiteGlobalFrameConfig {
   topRadiusDesktopPx: number;
   bottomRadiusPx: number;
   matteColor: string;
-}
-
-export interface SiteCRTConfig {
-  enabled: boolean;
-  intensity: 'low' | 'medium' | 'high';
-  screenGeometry: {
-    enabled: boolean;
-    curvature: number;
-  };
-  barrelCurvature: {
-    enabled: boolean;
-    intensity: number;
-  };
-  vignette: {
-    enabled: boolean;
-    opacity: number;
-    size: number;
-  };
-  analogSignal: {
-    enabled: boolean;
-    interference: number;
-    sync: number;
-  };
-  colorBleed: {
-    enabled: boolean;
-    intensity: number;
-    chromaticAberration: number;
-  };
-  staticNoise: {
-    enabled: boolean;
-    intensity: number;
-    speed: number;
-  };
-  phosphorDisplay: {
-    enabled: boolean;
-    persistence: number;
-    decay: number;
-  };
-  scanlines: {
-    enabled: boolean;
-    intensity: number;
-    thickness: number;
-    gap: number;
-  };
-  phosphorMask: {
-    enabled: boolean;
-    pattern: 'none' | 'rgb' | 'aperture' | 'slot';
-    intensity: number;
-  };
-  phosphorGlow: {
-    enabled: boolean;
-    intensity: number;
-    spread: number;
-    color: string;
-  };
 }
 
 export interface SiteButtonStylePreset {
@@ -988,65 +932,9 @@ export interface SiteConfig {
   };
   cinematicSequence: SiteCinematicSequenceConfig;
   globalFrame: SiteGlobalFrameConfig;
-  crt: SiteCRTConfig;
   visibility: SiteVisibilityConfig;
   // Personal Hub sections
-  partners: SitePartner[];
-  personalProjects: SitePersonalProject[];
-  socialAccounts: SiteSocialAccount[];
-  socialPosts: SiteSocialPost[];
-  financialTransactions: SiteFinancialTransaction[];
-  investments: SiteInvestment[];
-  invoices: SiteInvoice[];
-  // Communication
-  emails: SiteEmail[];
-  // Notes
-  notes: SiteNote[];
-  // AI Intelligence
-  aiTracking: SiteAITracking[];
-  aiReports: SiteAIReport[];
-}
-
-export const SITE_CONFIG_STORAGE_KEY = 'portfolio.site-config.v1';
-
-export const DEFAULT_SITE_CONFIG: SiteConfig = {
-  introText:
-    'I design thoughtful digital products and cinematic user experiences that connect user needs with business success through AI.',
-  introScrollPrompt: 'Scroll to explore the work',
-  introOverlayBackdropColor: 'rgba(0, 0, 0, 0.6)',
-  introOverlayBackdropOpacity: 0.35,
-  featured: {
-    titleLine1: 'Featured',
-    titleLine2: 'Work',
-    description:
-      'A selection of immersive digital experiences created for ambitious brands and forward thinking teams.',
-    caseStudyLabel: 'Case Study',
-    liveLabel: 'Live App',
-    viewAllLabel: 'View All Projects',
-    ctaTitleLine1: 'Take your product',
-    ctaTitleLine2: 'to the next level',
-    ctaDescription:
-      "Gain complete visibility over your digital experience. Let's design intuitive, engaging, and high-performing interfaces that drive real business outcomes.",
-    ctaButtonText: 'Start a project',
-    ctaButtonHref: 'mailto:hello@example.com',
-  },
-  projects: [
-    {
-      id: 'project-1',
-      title: 'Oryzo AI',
-      tags: 'CONCEPT • WEB • DESIGN • DEVELOPMENT • 3D • ANIMATION',
-      img: '/frames/scene-02-desk-focus/ezgif-frame-001.avif',
-      behance: '#',
-      live: '#',
-      buttonType: 'live',
-      visible: true,
-    },
-    {
-      id: 'project-2',
-      title: 'Of The Oak',
-      tags: 'WEB • DESIGN • DEVELOPMENT • 3D • ANIMATION',
       img: '/frames/scene-03-screen-entry/ezgif-frame-001.avif',
-      behance: '#',
       live: '#',
       buttonType: 'live',
       visible: true,
@@ -1100,65 +988,7 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
     },
     {
       id: 'testimonial-3',
-      name: 'Sarah Jenkins',
-      title: 'Founder of TechNova',
-      quote:
-        'A true visionary. He perfectly blended 3D and web technologies to create a digital experience that our users are still talking about today.',
-      avatar: 'https://i.pravatar.cc/150?u=a04258114e29026702d',
-      visible: true,
-    },
-  ],
-  scene05: {
-    badge: 'ABOUT ME',
-    name: 'Oussama Lassoued',
-    role: 'UX Designer and AI Product Builder',
-    portraitImage: '/frames/scene-02-desk-focus/ezgif-frame-001.avif',
-    portraitAlt: 'Portrait image',
-    portraitCaption: '',
-    visionTitle: 'Vision & Value',
-    visionText:
-      'I design interfaces that are not only visually refined, but also intentionally structured. My goal is to build digital products that feel natural to users and highly profitable for businesses.',
-    storyTitle: 'What I Actually Bring',
-    storyParagraphs: [
-      'I work across the full product arc: research, information architecture, interaction modeling, design systems, and production-quality frontend implementation.',
-      'My process starts with business intent and user behavior, then translates both into interfaces that feel clear, measurable, and commercially strong.',
-      'I focus on decision clarity: every screen should reduce friction, support conversion, and preserve a strong visual identity at the same time.',
-    ],
-    skillsTitle: 'Core Skills',
-    skills: [
-      'UX Research & Strategy',
-      'Design Systems & Libs',
-      'Interaction & Prototyping',
-      'Product Thinking',
-    ],
-    certificationsTitle: 'Certifications',
-    certifications: [
-      'Google UX Design Prof.',
-      'HarvardX Leadership',
-      'Generative AI for Everyone',
-    ],
-    credentialButtonLabel: 'View Credential',
-    featuredCertifications: [
-      {
-        id: 'cert-1',
-        title: 'Google UX Design Professional Certificate',
-        issuer: 'Google',
-        year: '2024',
-        credentialUrl: '#',
-        logoSrc: 'https://logo.clearbit.com/google.com',
-        visible: false,
-      },
-      {
-        id: 'cert-2',
-        title: 'IBM AI Engineering Professional Certificate',
-        issuer: 'IBM',
-        year: '2024',
-        credentialUrl: '#',
         logoSrc: 'https://logo.clearbit.com/ibm.com',
-        visible: false,
-      },
-      {
-        id: 'cert-3',
         title: 'HarvardX Leadership and Communication',
         issuer: 'HarvardX',
         year: '2023',
@@ -2113,63 +1943,8 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
   globalFrame: {
     topOffsetMobilePx: 60,
     topOffsetDesktopPx: 120,
-    bottomOffsetMobilePx: 40,
-    bottomOffsetDesktopPx: 80,
-    watermarkMaskEnabled: true,
-    watermarkMaskMobilePx: 70,
-    watermarkMaskDesktopPx: 90,
-    watermarkMaskWidthMobilePx: 160,
-    watermarkMaskWidthDesktopPx: 220,
-    watermarkMaskRightMobilePx: 12,
-    watermarkMaskRightDesktopPx: 24,
-    watermarkMaskBottomMobilePx: 12,
-    watermarkMaskBottomDesktopPx: 16,
-    sideOffsetMobilePx: 12,
-    sideOffsetDesktopPx: 60,
-    topRadiusMobilePx: 80,
-    topRadiusDesktopPx: 160,
-    bottomRadiusPx: 16,
-    matteColor: '#0c0a08',
-  },
-  crt: {
-    enabled: true,
-    intensity: 'medium',
-    screenGeometry: {
-      enabled: true,
-      curvature: 0.5,
-    },
-    barrelCurvature: {
-      enabled: true,
-      intensity: 0.3,
-    },
-    vignette: {
-      enabled: true,
-      opacity: 0.6,
-      size: 0.8,
-    },
-    analogSignal: {
-      enabled: true,
-      interference: 0.2,
-      sync: 0.1,
-    },
-    colorBleed: {
-      enabled: true,
-      intensity: 0.15,
-      chromaticAberration: 0.1,
-    },
-    staticNoise: {
-      enabled: true,
-      intensity: 0.15,
-      speed: 0.5,
-    },
-    phosphorDisplay: {
-      enabled: true,
-      persistence: 0.3,
-      decay: 0.2,
-    },
     scanlines: {
       enabled: true,
-      intensity: 0.4,
       thickness: 1,
       gap: 2,
     },
@@ -2186,7 +1961,6 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
     },
   },
   visibility: {
-    globalFrameOverlay: true,
     cursorAnimation: true,
     introOverlay: true,
     scene05Overlay: true,
@@ -4355,97 +4129,7 @@ export const hydrateSiteConfig = (value: unknown): SiteConfig => {
       ),
       matteColor: asString(globalFrame.matteColor, DEFAULT_SITE_CONFIG.globalFrame.matteColor),
     },
-    crt: {
-      enabled: asBoolean(crt?.enabled, DEFAULT_SITE_CONFIG.crt.enabled),
-      intensity: (crt?.intensity === 'low' || crt?.intensity === 'medium' || crt?.intensity === 'high'
-        ? crt.intensity
-        : DEFAULT_SITE_CONFIG.crt.intensity) as 'low' | 'medium' | 'high',
-      screenGeometry: {
-        enabled: asBoolean(crt?.screenGeometry?.enabled, DEFAULT_SITE_CONFIG.crt.screenGeometry.enabled),
-        curvature: asBoundedNumber(
-          crt?.screenGeometry?.curvature,
-          DEFAULT_SITE_CONFIG.crt.screenGeometry.curvature,
-          0,
-          1,
-        ),
-      },
-      barrelCurvature: {
-        enabled: asBoolean(crt?.barrelCurvature?.enabled, DEFAULT_SITE_CONFIG.crt.barrelCurvature.enabled),
-        intensity: asBoundedNumber(
-          crt?.barrelCurvature?.intensity,
-          DEFAULT_SITE_CONFIG.crt.barrelCurvature.intensity,
-          0,
-          1,
-        ),
-      },
-      vignette: {
-        enabled: asBoolean((crt?.vignette as any)?.enabled, DEFAULT_SITE_CONFIG.crt.vignette.enabled),
-        opacity: asBoundedNumber(crt?.vignette?.opacity, DEFAULT_SITE_CONFIG.crt.vignette.opacity, 0, 1),
-        size: asBoundedNumber(crt?.vignette?.size, DEFAULT_SITE_CONFIG.crt.vignette.size, 0, 1),
-      },
-      analogSignal: {
-        enabled: asBoolean(crt?.analogSignal?.enabled, DEFAULT_SITE_CONFIG.crt.analogSignal.enabled),
-        interference: asBoundedNumber(
-          crt?.analogSignal?.interference,
-          DEFAULT_SITE_CONFIG.crt.analogSignal.interference,
-          0,
-          1,
-        ),
-        sync: asBoundedNumber(crt?.analogSignal?.sync, DEFAULT_SITE_CONFIG.crt.analogSignal.sync, 0, 1),
-      },
-      colorBleed: {
-        enabled: asBoolean(crt?.colorBleed?.enabled, DEFAULT_SITE_CONFIG.crt.colorBleed.enabled),
-        intensity: asBoundedNumber(crt?.colorBleed?.intensity, DEFAULT_SITE_CONFIG.crt.colorBleed.intensity, 0, 1),
-        chromaticAberration: asBoundedNumber(
-          crt?.colorBleed?.chromaticAberration,
-          DEFAULT_SITE_CONFIG.crt.colorBleed.chromaticAberration,
-          0,
-          1,
-        ),
-      },
-      staticNoise: {
-        enabled: asBoolean(crt?.staticNoise?.enabled, DEFAULT_SITE_CONFIG.crt.staticNoise.enabled),
-        intensity: asBoundedNumber(crt?.staticNoise?.intensity, DEFAULT_SITE_CONFIG.crt.staticNoise.intensity, 0, 1),
-        speed: asBoundedNumber(crt?.staticNoise?.speed, DEFAULT_SITE_CONFIG.crt.staticNoise.speed, 0, 1),
-      },
-      phosphorDisplay: {
-        enabled: asBoolean(crt?.phosphorDisplay?.enabled, DEFAULT_SITE_CONFIG.crt.phosphorDisplay.enabled),
-        persistence: asBoundedNumber(
-          crt?.phosphorDisplay?.persistence,
-          DEFAULT_SITE_CONFIG.crt.phosphorDisplay.persistence,
-          0,
-          1,
-        ),
-        decay: asBoundedNumber(crt?.phosphorDisplay?.decay, DEFAULT_SITE_CONFIG.crt.phosphorDisplay.decay, 0, 1),
-      },
-      scanlines: {
-        enabled: asBoolean(crt?.scanlines?.enabled, DEFAULT_SITE_CONFIG.crt.scanlines.enabled),
-        intensity: asBoundedNumber(crt?.scanlines?.intensity, DEFAULT_SITE_CONFIG.crt.scanlines.intensity, 0, 1),
-        thickness: asBoundedNumber(crt?.scanlines?.thickness, DEFAULT_SITE_CONFIG.crt.scanlines.thickness, 0, 5),
-        gap: asBoundedNumber(crt?.scanlines?.gap, DEFAULT_SITE_CONFIG.crt.scanlines.gap, 0, 10),
-      },
-      phosphorMask: {
-        enabled: asBoolean(crt?.phosphorMask?.enabled, DEFAULT_SITE_CONFIG.crt.phosphorMask.enabled),
-        pattern: (crt?.phosphorMask?.pattern === 'none' ||
-          crt?.phosphorMask?.pattern === 'rgb' ||
-          crt?.phosphorMask?.pattern === 'aperture' ||
-          crt?.phosphorMask?.pattern === 'slot'
-          ? crt.phosphorMask.pattern
-          : DEFAULT_SITE_CONFIG.crt.phosphorMask.pattern) as 'none' | 'rgb' | 'aperture' | 'slot',
-        intensity: asBoundedNumber(crt?.phosphorMask?.intensity, DEFAULT_SITE_CONFIG.crt.phosphorMask.intensity, 0, 1),
-      },
-      phosphorGlow: {
-        enabled: asBoolean((crt?.phosphorGlow as any)?.enabled, DEFAULT_SITE_CONFIG.crt.phosphorGlow.enabled),
-        intensity: asBoundedNumber((crt?.phosphorGlow as any)?.intensity, DEFAULT_SITE_CONFIG.crt.phosphorGlow.intensity, 0, 1),
-        spread: asBoundedNumber((crt?.phosphorGlow as any)?.spread, DEFAULT_SITE_CONFIG.crt.phosphorGlow.spread, 0, 1),
-        color: asString((crt?.phosphorGlow as any)?.color, DEFAULT_SITE_CONFIG.crt.phosphorGlow.color),
-      },
-    },
     visibility: {
-      globalFrameOverlay: asBoolean(
-        visibility.globalFrameOverlay,
-        DEFAULT_SITE_CONFIG.visibility.globalFrameOverlay,
-      ),
       cursorAnimation: asBoolean(visibility.cursorAnimation, DEFAULT_SITE_CONFIG.visibility.cursorAnimation),
       introOverlay: asBoolean(visibility.introOverlay, DEFAULT_SITE_CONFIG.visibility.introOverlay),
       scene05Overlay: asBoolean(visibility.scene05Overlay, DEFAULT_SITE_CONFIG.visibility.scene05Overlay),
