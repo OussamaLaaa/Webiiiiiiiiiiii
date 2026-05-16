@@ -95,9 +95,9 @@ export const Footer: React.FC = () => {
     return null;
   };
 
-  const socialButtonClass = getButtonClass(designSystem.components.featuredCtaButtonVariant, 'light', 'icon', 'h-10 w-10');
+  const socialButtonClass = getButtonClass(designSystem.components.featuredCtaButtonVariant, 'light', 'icon', 'h-10 w-10 transition-all duration-300 hover:shadow-[0_8px_16px_rgba(0,0,0,0.12)]');
   const ctaButtonClass =
-    'inline-flex min-w-[190px] items-center justify-center gap-3 rounded-[18px] bg-[#050505] px-7 py-4 text-[1.02rem] font-semibold tracking-[-0.02em] text-white shadow-[0_16px_30px_rgba(0,0,0,0.14)] transition-transform duration-200 hover:-translate-y-[1px] hover:bg-[#080808] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111217]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f6f6f7]';
+    'inline-flex min-w-[190px] items-center justify-center gap-3 rounded-[18px] bg-[#050505] px-7 py-4 text-[1.02rem] font-semibold tracking-[-0.02em] text-white shadow-[0_12px_24px_rgba(0,0,0,0.12),0_4px_8px_rgba(0,0,0,0.08)] transition-all duration-300 hover:-translate-y-[2px] hover:shadow-[0_20px_40px_rgba(0,0,0,0.16),0_8px_16px_rgba(0,0,0,0.1)] hover:bg-[#080808] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111217]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f6f6f7]';
 
   const ctaSection = getSectionFromHref(footer.ctaButtonHref);
 
