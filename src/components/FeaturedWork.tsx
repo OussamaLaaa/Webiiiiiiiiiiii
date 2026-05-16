@@ -19,7 +19,11 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = memo(({ isActive }) => 
   const { siteConfig } = useSiteConfig();
   const { featured, visibility, designSystem } = siteConfig;
   const projectAnimations = siteConfig.animation.sections.projects;
-  const projects = useMemo(() => siteConfig.projects.filter((project) => project.visible), [siteConfig.projects]);
+        const [showAllProjects, setShowAllProjects] = React.useState(false);
+        const allProjects = useMemo(() => siteConfig.projects.filter((project) => project.visible), [siteConfig.projects]);
+        const projects = useMemo(() => {
+          return showAllProjects ? allProjects : allProjects.slice(0, 4);
+        }, [allProjects, showAllProjects]);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const lastScrollY = useRef(0);
@@ -456,18 +460,19 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = memo(({ isActive }) => 
           </div>
         ) : null}
 
-        {visibility.featuredViewAllButton ? (
+        {visibility.featuredViewAllButton && allProjects.length > 4 ? (
           <div className="fw-reveal mb-8 mt-16 flex justify-center opacity-0 md:mb-14">
             <button
               type="button"
+                            onClick={() => setShowAllProjects(!showAllProjects)}
               className={getButtonClass(
                 designSystem.components.featuredViewAllButtonVariant,
                 'light',
                 'md',
-                'min-w-[220px] justify-center',
+                'min-w-[220px] justify-center transition-all duration-300',
               )}
             >
-              {featured.viewAllLabel}
+              {showAllProjects ? 'Show Less' : featured.viewAllLabel}
             </button>
           </div>
         ) : null}
