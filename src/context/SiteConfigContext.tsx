@@ -307,6 +307,52 @@ export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     };
   }, []);
 
+  // Google Analytics (gtag) injection when enabled in dashboard integrations
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const gaEnabled = siteConfig.dashboard.integrations.googleAnalyticsEnabled;
+    const gaId = (siteConfig.dashboard.integrations.googleAnalyticsMeasurementId || '').trim();
+
+    const scriptId = 'ga-gtag-script';
+    const inlineId = 'ga-gtag-init';
+
+    const removeExisting = () => {
+      const existing = document.getElementById(scriptId);
+      if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
+      const inline = document.getElementById(inlineId);
+      if (inline && inline.parentNode) inline.parentNode.removeChild(inline);
+      try {
+        // @ts-ignore
+        if (window && window.dataLayer) delete (window as any).dataLayer;
+      } catch {
+        // ignore
+      }
+    };
+
+    if (!gaEnabled || !gaId) {
+      removeExisting();
+      return;
+    }
+
+    // Prevent duplicate
+    if (document.getElementById(scriptId)) return;
+
+    const script = document.createElement('script');
+    script.id = scriptId;
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(gaId)}`;
+    document.head.appendChild(script);
+
+    const inline = document.createElement('script');
+    inline.id = inlineId;
+    inline.innerHTML = `window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${gaId}');`;
+    document.head.appendChild(inline);
+
+    return () => {
+      removeExisting();
+    };
+  }, [siteConfig.dashboard.integrations.googleAnalyticsEnabled, siteConfig.dashboard.integrations.googleAnalyticsMeasurementId, siteConfig]);
+
   // Fetch config from API on mount (for public site)
   useEffect(() => {
     // Only fetch from API if we're not in dashboard mode
