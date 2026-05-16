@@ -8,6 +8,10 @@ const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Articles = lazy(() => import('./pages/Articles'));
 const TermsOfService = lazy(() => import('./pages/TermsOfService'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
+const UXUIDesignerTunisia = lazy(() => import('./pages/UXUIDesignerTunisia'));
+const AIProductBuilder = lazy(() => import('./pages/AIProductBuilder'));
+const DesignEngineer = lazy(() => import('./pages/DesignEngineer'));
+const AboutOussama = lazy(() => import('./pages/AboutOussama'));
 
 type AppRoute =
   | { page: 'home' }
@@ -15,6 +19,10 @@ type AppRoute =
   | { page: 'contact' }
   | { page: 'terms' }
   | { page: 'privacy' }
+  | { page: 'ux-ui-designer-tunisia' }
+  | { page: 'ai-product-builder' }
+  | { page: 'design-engineer' }
+  | { page: 'about-oussama' }
   | {
       page: 'articles';
       slug?: string;
@@ -55,6 +63,22 @@ const getRoute = (): AppRoute => {
 
   if (section === 'privacy-policy') {
     return { page: 'privacy' };
+  }
+
+  if (section === 'ux-ui-designer-tunisia') {
+    return { page: 'ux-ui-designer-tunisia' };
+  }
+
+  if (section === 'ai-product-builder') {
+    return { page: 'ai-product-builder' };
+  }
+
+  if (section === 'design-engineer') {
+    return { page: 'design-engineer' };
+  }
+
+  if (section === 'about-oussama-lassoued') {
+    return { page: 'about-oussama' };
   }
 
   return { page: 'home' };
@@ -155,6 +179,22 @@ function App() {
         ) : route.page === 'privacy' ? (
           <Suspense fallback={<div style={{ height: '100vh', background: 'var(--bg-color, #000)' }} />}>
             <PrivacyPolicy />
+          </Suspense>
+        ) : route.page === 'ux-ui-designer-tunisia' ? (
+          <Suspense fallback={<div style={{ height: '100vh', background: 'var(--bg-color, #000)' }} />}>
+            <UXUIDesignerTunisia />
+          </Suspense>
+        ) : route.page === 'ai-product-builder' ? (
+          <Suspense fallback={<div style={{ height: '100vh', background: 'var(--bg-color, #000)' }} />}>
+            <AIProductBuilder />
+          </Suspense>
+        ) : route.page === 'design-engineer' ? (
+          <Suspense fallback={<div style={{ height: '100vh', background: 'var(--bg-color, #000)' }} />}>
+            <DesignEngineer />
+          </Suspense>
+        ) : route.page === 'about-oussama' ? (
+          <Suspense fallback={<div style={{ height: '100vh', background: 'var(--bg-color, #000)' }} />}>
+            <AboutOussama />
           </Suspense>
         ) : (
           <Suspense fallback={<div style={{ height: '100vh', background: 'var(--bg-color, #000)' }} />}>
