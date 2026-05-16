@@ -20,6 +20,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ progress, isComple
   const [isGlowing, setIsGlowing] = useState(false);
   const [isWaiting, setIsWaiting] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
+  const [displayProgress, setDisplayProgress] = useState(progress);
 
   useEffect(() => {
     completeRef.current = isComplete;
@@ -28,6 +29,25 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ progress, isComple
   useEffect(() => {
     onFadeCompleteRef.current = onFadeComplete;
   }, [onFadeComplete]);
+
+  // Animate numeric counter smoothly toward `progress`.
+  useEffect(() => {
+    // use gsap to animate the displayed number for smooth counting
+    const ctx = gsap.context(() => {
+      gsap.to({ val: displayProgress }, {
+        val: isComplete ? 100 : progress,
+        duration: 0.6,
+        ease: 'power1.out',
+        onUpdate() {
+          // @ts-ignore
+          const v = Math.round(this.targets()[0].val);
+          setDisplayProgress(v);
+        },
+      });
+    });
+
+    return () => ctx.revert();
+  }, [progress, isComplete]);
 
   const launch = useCallback(() => {
     if (launchStartedRef.current || !introDoneRef.current || !completeRef.current) {
@@ -146,7 +166,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ progress, isComple
         />
       </svg>
 
-      <div id="pre-counter" aria-live="polite">{progress}%</div>
+      <div id="pre-counter" aria-live="polite">{displayProgress}</div>
     </div>
   );
 };
