@@ -151,27 +151,26 @@ export const Footer: React.FC = () => {
               <p className="text-[1.08rem] font-semibold leading-tight tracking-tight text-[#111217] md:text-[1.15rem]">
                 {footer.followTitle}
               </p>
-              <div className="flex items-center gap-2">
-                {visibleSocialLinks.map((social) => {
+              <div className="flex items-center">
+                {visibleSocialLinks.map((social, idx) => {
                   const SocialIcon = getSocialIconComponent(social.icon);
                   return (
-                    <a
-                      key={social.id}
-                      href={social.href}
-                      onClick={(e) => handlePlaceholderLinkClick(e, social.href)}
-                      target={isPlaceholderHref(social.href) ? undefined : '_blank'}
-                      rel={isPlaceholderHref(social.href) ? undefined : 'noopener noreferrer'}
-                      aria-label={social.label}
-                      title={social.label}
-                      className={`${socialButtonClass} border transition-all hover:-translate-y-[1px] hover:brightness-95`}
-                      style={{
-                        backgroundColor: footer.socialIconBackgroundColor,
-                        borderColor: footer.socialIconBorderColor,
-                        color: footer.socialIconColor,
-                      }}
-                    >
-                      <SocialIcon size={16} strokeWidth={1.9} />
-                    </a>
+                    <React.Fragment key={social.id}>
+                      <a
+                        href={social.href}
+                        onClick={(e) => handlePlaceholderLinkClick(e, social.href)}
+                        target={isPlaceholderHref(social.href) ? undefined : '_blank'}
+                        rel={isPlaceholderHref(social.href) ? undefined : 'noopener noreferrer'}
+                        aria-label={social.label}
+                        title={social.label}
+                        className="inline-flex items-center justify-center p-0 text-[#111217]/72 transition-colors hover:text-[#111217]"
+                      >
+                        <SocialIcon size={20} strokeWidth={1.7} />
+                      </a>
+                      {idx < visibleSocialLinks.length - 1 ? (
+                        <span className="mx-4 h-6 w-px bg-[#111217]/10" aria-hidden />
+                      ) : null}
+                    </React.Fragment>
                   );
                 })}
               </div>
