@@ -178,33 +178,32 @@ export const Footer: React.FC = () => {
               {footer.ctaTitle}
             </p>
             <p className="max-w-[34ch] text-[0.9rem] leading-6 text-[#111217]/70">{footer.ctaDescription}</p>
-            {ctaSection ? (
-              <a href={footer.ctaButtonHref} onClick={(e) => handleSectionNav(e, ctaSection)} className={ctaButtonClass}>
-                <span>{footer.ctaButtonLabel}</span>
-                <span aria-hidden className="text-[1.2rem] leading-none">
-                  →
-                </span>
-              </a>
-            ) : (
+            {visibility.letsTalkButton ? (
               <a
-                href={footer.ctaButtonHref}
-                onClick={(e) => handlePlaceholderLinkClick(e, footer.ctaButtonHref)}
-                target={
-                  isPlaceholderHref(footer.ctaButtonHref) || footer.ctaButtonHref.startsWith('mailto:') ? undefined : '_blank'
+                href={persistentUI.letsTalkHref}
+                onClick={(e) => handlePlaceholderLinkClick(e, persistentUI.letsTalkHref)}
+                target={isPlaceholderHref(persistentUI.letsTalkHref) ? undefined : '_blank'}
+                rel={isPlaceholderHref(persistentUI.letsTalkHref) ? undefined : 'noopener noreferrer'}
+                className={
+                  'inline-flex items-center gap-2.5 px-6 py-3 text-sm font-medium tracking-[0.01em] rounded-xl transition-all duration-400 bg-black text-white hover:bg-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111217]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f6f6f7]'
                 }
-                rel={
-                  isPlaceholderHref(footer.ctaButtonHref) || footer.ctaButtonHref.startsWith('mailto:')
-                    ? undefined
-                    : 'noopener noreferrer'
-                }
-                className={ctaButtonClass}
               >
-                <span>{footer.ctaButtonLabel}</span>
-                <span aria-hidden className="text-[1.2rem] leading-none">
-                  →
-                </span>
+                {persistentUI.letsTalkLabel}
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="transition-transform duration-400"
+                >
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
               </a>
-            )}
+            ) : null}
           </div>
         </div>
 
