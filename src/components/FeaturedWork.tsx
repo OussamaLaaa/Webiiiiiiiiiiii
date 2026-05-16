@@ -19,11 +19,12 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = memo(({ isActive }) => 
   const { siteConfig } = useSiteConfig();
   const { featured, visibility, designSystem } = siteConfig;
   const projectAnimations = siteConfig.animation.sections.projects;
-        const [showAllProjects, setShowAllProjects] = React.useState(false);
-        const allProjects = useMemo(() => siteConfig.projects.filter((project) => project.visible), [siteConfig.projects]);
-        const projects = useMemo(() => {
-          return showAllProjects ? allProjects : allProjects.slice(0, 4);
-        }, [allProjects, showAllProjects]);
+  const MAX_VISIBLE_PROJECTS = 4;
+  const [showAllProjects, setShowAllProjects] = React.useState(false);
+  const allProjects = useMemo(() => siteConfig.projects.filter((project) => project.visible), [siteConfig.projects]);
+  const projects = useMemo(() => {
+    return showAllProjects ? allProjects : allProjects.slice(0, MAX_VISIBLE_PROJECTS);
+  }, [allProjects, showAllProjects]);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const lastScrollY = useRef(0);
@@ -45,6 +46,16 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = memo(({ isActive }) => 
       e.preventDefault();
     }
   };
+
+  useEffect(() => {
+    if (!showAllProjects || !containerRef.current) return;
+
+    const cards = gsap.utils.toArray<HTMLElement>('.fw-reveal', containerRef.current);
+    cards.slice(MAX_VISIBLE_PROJECTS).forEach((card) => {
+      gsap.set(card, { opacity: 1, y: 0, scale: 1, rotationX: 0, rotateY: 0 });
+    });
+    ScrollTrigger.refresh();
+  }, [showAllProjects]);
 
   // Ref to track if GSAP context has been initialized
   const gsapContextRef = useRef<gsap.Context | null>(null);
@@ -460,11 +471,11 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = memo(({ isActive }) => 
           </div>
         ) : null}
 
-        {visibility.featuredViewAllButton && allProjects.length > 4 ? (
+        {visibility.featuredViewAllButton && allProjects.length > MAX_VISIBLE_PROJECTS && !showAllProjects ? (
           <div className="fw-reveal mb-8 mt-16 flex justify-center opacity-0 md:mb-14">
             <button
               type="button"
-                            onClick={() => setShowAllProjects(!showAllProjects)}
+              onClick={() => setShowAllProjects(true)}
               className={getButtonClass(
                 designSystem.components.featuredViewAllButtonVariant,
                 'light',
@@ -472,7 +483,7 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = memo(({ isActive }) => 
                 'min-w-[220px] justify-center transition-all duration-300',
               )}
             >
-              {showAllProjects ? 'Show Less' : featured.viewAllLabel}
+              {featured.viewAllLabel}
             </button>
           </div>
         ) : null}
