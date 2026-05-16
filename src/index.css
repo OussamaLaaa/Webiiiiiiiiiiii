@@ -85,7 +85,24 @@
 
 
 .intro-glow-text {
-  text-shadow: none;
+  text-shadow: var(--ds-glow-text-shadow);
+  filter: drop-shadow(0 0 calc(12px * var(--ds-glow-intensity)) rgba(var(--ds-glow-rgb), 0.32));
+  animation: intro-glow-pulse 3.2s ease-in-out infinite;
+}
+
+@keyframes intro-glow-pulse {
+  0%,
+  100% {
+    text-shadow: var(--ds-glow-text-shadow);
+    filter: drop-shadow(0 0 calc(10px * var(--ds-glow-intensity)) rgba(var(--ds-glow-rgb), 0.28));
+  }
+  50% {
+    text-shadow:
+      0 0 calc(10px * var(--ds-glow-intensity)) rgba(var(--ds-glow-rgb), calc(0.5 * var(--ds-glow-intensity))),
+      0 0 calc(30px * var(--ds-glow-intensity)) rgba(var(--ds-glow-rgb), calc(0.38 * var(--ds-glow-intensity))),
+      0 0 calc(56px * var(--ds-glow-intensity)) rgba(var(--ds-glow-rgb), calc(0.24 * var(--ds-glow-intensity)));
+    filter: drop-shadow(0 0 calc(16px * var(--ds-glow-intensity)) rgba(var(--ds-glow-rgb), 0.4));
+  }
 }
 
 /* Disable glow effects globally in dashboard */
