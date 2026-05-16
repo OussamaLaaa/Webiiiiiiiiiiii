@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSiteConfig } from '../context/SiteConfigContext';
 import { getButtonClass } from './designSystem';
 import { getSocialIconComponent } from './icons';
-import { WebGLFog } from './WebGLFog';
 
 interface CinematicAboutProps {
   progress: number;

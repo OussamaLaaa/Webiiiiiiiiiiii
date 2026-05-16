@@ -2,7 +2,6 @@ import React, { useRef, useEffect, memo } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { drawCoverFrame } from '../utils/drawCoverFrame';
-import { WebGLFog } from './WebGLFog';
 import { useSiteConfig } from '../context/SiteConfigContext';
 
 
@@ -417,7 +416,6 @@ export const MasterSequence: React.FC<MasterSequenceProps> = memo(({
             className="cinematic-canvas w-full h-full pointer-events-none block"
           />
         </div>
-        <WebGLFog />
         {frameConfig.watermarkMaskEnabled && (frameConfig.watermarkMaskMobilePx > 0 || frameConfig.watermarkMaskDesktopPx > 0) ? (
           <div
             className="cinematic-watermark-cover pointer-events-none absolute z-[25]"
