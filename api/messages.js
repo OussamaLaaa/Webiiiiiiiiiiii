@@ -11,6 +11,19 @@ import https from 'https';
 import { Resend } from 'resend';
 import UAParser from 'ua-parser-js';
 
+// Basic security configuration (defaults for local testing)
+const SECURITY_CONFIG = {
+  encryptionKey: process.env.MESSAGE_ENCRYPTION_KEY || 'dev_secret_key',
+  allowedDomains: [],
+  blockedDomains: [],
+  blockedIPs: [],
+  blockDuration: 1000 * 60 * 60, // 1 hour
+  maxMessagesPerDay: 200,
+  maxMessageLength: 100000,
+  maxMessageAge: 1000 * 60 * 60 * 24 * 30, // 30 days
+  rateLimit: { windowMs: 60 * 1000, maxRequests: 6 },
+};
+
 // Load environment variables (development only)
 // Vercel automatically loads from Environment Variables dashboard
 if (process.env.NODE_ENV !== 'production') {
@@ -22,96 +35,6 @@ if (process.env.NODE_ENV !== 'production') {
   }
 }
 
-// ============================================================================
-// ENVIRONMENT & CONFIGURATION
-// ============================================================================
-
-const MESSAGES_KEY = 'site:messages';
-const isProduction = process.env.NODE_ENV === 'production';
-const isVercel = !!process.env.VERCEL;
-
-// Email Configuration
-const emailConfig = {
-  enabled: !!(process.env.RESEND_API_KEY && process.env.CONTACT_EMAIL_TO),
-  apiKey: process.env.RESEND_API_KEY,
-  fromEmail: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
-  fromName: process.env.RESEND_FROM_NAME || 'Contact Form',
-  toEmail: process.env.CONTACT_EMAIL_TO,
-};
-
-// Initialize Resend client only if email is enabled
-let resendClient = null;
-if (emailConfig.enabled) {
-  try {
-    resendClient = new Resend(emailConfig.apiKey);
-    console.log('[API:Messages] ✅ Resend email service initialized');
-    console.log(`[API:Messages] 📧 Email will be sent to: ${emailConfig.toEmail}`);
-    console.log(`[API:Messages] 📤 From: ${emailConfig.fromName} <${emailConfig.fromEmail}>`);
-  } catch (error) {
-    console.error('[API:Messages] ❌ Failed to initialize Resend:', error.message);
-  }
-} else {
-  console.warn('[API:Messages] ⚠️ Email notifications DISABLED');
-  console.warn(`[API:Messages] Missing: ${!process.env.RESEND_API_KEY ? 'RESEND_API_KEY' : ''} ${!process.env.CONTACT_EMAIL_TO ? 'CONTACT_EMAIL_TO' : ''}`);
-  console.log(`[API:Messages] RESEND_API_KEY: ${process.env.RESEND_API_KEY ? '✓ Set' : '✗ Missing'}`);
-  console.log(`[API:Messages] CONTACT_EMAIL_TO: ${process.env.CONTACT_EMAIL_TO ? '✓ Set' : '✗ Missing'}`);
-  console.log(`[API:Messages] RESEND_FROM_EMAIL: ${process.env.RESEND_FROM_EMAIL ? '✓ Set' : '✗ Missing'}`);
-  console.log(`[API:Messages] RESEND_FROM_NAME: ${process.env.RESEND_FROM_NAME ? '✓ Set' : '✗ Missing'}`);
-}
-
-// Enhanced Security Configuration
-const SECURITY_CONFIG = {
-  rateLimit: {
-    maxRequests: 5, // Maximum 5 messages per minute
-    windowMs: 60000, // 1 minute window
-  },
-  maxMessageAge: 90 * 24 * 60 * 60 * 1000, // 90 days in milliseconds
-  encryptionKey: process.env.MESSAGE_ENCRYPTION_KEY || 'default-secure-key-2024-change-this-in-production',
-  maxMessagesPerDay: 50, // Maximum messages per day per IP
-  blockDuration: 24 * 60 * 60 * 1000, // 24 hours block for abuse
-  maxMessageLength: 10000, // Maximum total message length
-  allowedDomains: [], // Whitelist of allowed email domains (empty = all allowed)
-  blockedDomains: [], // Blacklist of blocked email domains
-  blockedIPs: [], // List of permanently blocked IPs
-};
-
-const storageConfig = {
-  vercelKv: {
-    enabled: !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN),
-    url: process.env.KV_REST_API_URL,
-    token: process.env.KV_REST_API_TOKEN,
-  },
-  upstashRedis: {
-    enabled: !!(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN),
-    url: process.env.UPSTASH_REDIS_REST_URL,
-    token: process.env.UPSTASH_REDIS_REST_TOKEN,
-  },
-  localFile: {
-    enabled: !isProduction,
-    path: path.resolve(process.cwd(), 'data', 'messages.json'),
-  },
-};
-
-// In-memory rate limiter and block list
-const rateLimiter = new Map();
-const blockedIPs = new Map();
-const dailyMessageCount = new Map();
-
-console.log('[API:Messages] Storage backends available:', {
-  vercelKv: storageConfig.vercelKv.enabled,
-  upstashRedis: storageConfig.upstashRedis.enabled,
-  localFile: storageConfig.localFile.enabled,
-  environment: isProduction ? 'production' : 'development',
-  isVercel,
-});
-
-// ============================================================================
-// EMAIL FUNCTIONS
-// ============================================================================
-
-/**
- * Generate professional HTML email template
- */
 const generateEmailTemplate = (messageData) => {
   const { name, email, subject, message, timestamp, ip, userAgent, ua, company } = messageData;
   const formattedDate = new Date(timestamp).toLocaleString('en-US', {
@@ -120,7 +43,7 @@ const generateEmailTemplate = (messageData) => {
     month: 'short',
     day: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   });
 
   const escapedMessage = (message || '').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
@@ -135,263 +58,179 @@ const generateEmailTemplate = (messageData) => {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>New Contact Form Submission</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    /* Reset for email clients */
+    body,table,td,a{ -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
+    table,td{ mso-table-lspace:0pt; mso-table-rspace:0pt; }
+    img{ -ms-interpolation-mode:bicubic; }
+    img{ border:0; height:auto; line-height:100%; outline:none; text-decoration:none; }
+    table{ border-collapse:collapse !important; }
+    body{ width:100% !important; height:100% !important; margin:0; padding:0; }
+
+    /* Mobile styles */
+    @media only screen and (max-width:600px){
+      .container{ width:100% !important; padding:12px !important; }
+      .stack-column{ display:block !important; width:100% !important; }
+      .center-mobile{ text-align:center !important; }
+      .button{ width:100% !important; }
     }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      padding: 20px;
-      color: #2c3e50;
-    }
-    .wrapper {
-      max-width: 620px;
-      margin: 0 auto;
-    }
-    .email-container {
-      background: white;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-    }
-    .header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 40px 30px;
-      text-align: center;
-      color: white;
-    }
-    .header-icon {
-      font-size: 48px;
-      margin-bottom: 12px;
-      display: block;
-    }
-    .header h1 {
-      font-size: 28px;
-      font-weight: 700;
-      margin-bottom: 8px;
-      letter-spacing: -0.5px;
-    }
-    .header p {
-      font-size: 14px;
-      opacity: 0.95;
-      font-weight: 500;
-    }
-    .content {
-      padding: 40px 30px;
-    }
-    .timestamp {
-      background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
-      border-left: 4px solid #667eea;
-      padding: 12px 16px;
-      border-radius: 6px;
-      margin-bottom: 28px;
-      font-size: 13px;
-      color: #667eea;
-      font-weight: 600;
-    }
-    .info-section {
-      margin-bottom: 24px;
-    }
-    .info-row {
-      display: flex;
-      margin-bottom: 16px;
-      align-items: flex-start;
-    }
-    .info-icon {
-      font-size: 20px;
-      width: 28px;
-      margin-right: 12px;
-      text-align: center;
-    }
-    .info-content {
-      flex: 1;
-    }
-    .info-label {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: #667eea;
-      margin-bottom: 4px;
-      display: block;
-    }
-    .info-value {
-      font-size: 14px;
-      color: #2c3e50;
-      word-wrap: break-word;
-      line-height: 1.5;
-    }
-    .info-value a {
-      color: #667eea;
-      text-decoration: none;
-      font-weight: 600;
-    }
-    .info-value a:hover {
-      text-decoration: underline;
-    }
-    .message-section {
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-      border: 1px solid #dee2e6;
-      border-radius: 8px;
-      padding: 20px;
-      margin-top: 8px;
-    }
-    .message-content {
-      font-size: 14px;
-      line-height: 1.8;
-      color: #2c3e50;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-    }
-    .divider {
-      height: 2px;
-      background: linear-gradient(90deg, transparent, #e9ecef, transparent);
-      margin: 28px 0;
-    }
-    .action-box {
-      background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-      border: 1px solid #667eea30;
-      border-radius: 8px;
-      padding: 16px;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .action-box p {
-      font-size: 13px;
-      color: #667eea;
-      margin: 0;
-      font-weight: 500;
-    }
-    .footer {
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-      padding: 24px 30px;
-      text-align: center;
-      border-top: 1px solid #dee2e6;
-      font-size: 12px;
-      color: #6c757d;
-      line-height: 1.8;
-    }
-    .footer a {
-      color: #667eea;
-      text-decoration: none;
-      font-weight: 600;
-    }
-    .powered-by {
-      margin-top: 12px;
-      font-size: 11px;
-      opacity: 0.7;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
+
+    /* Visual styles */
+    .card{ background:#ffffff; border-radius:12px; box-shadow:0 6px 20px rgba(17,24,39,0.06); overflow:hidden; }
+    .header-bar{ background:linear-gradient(90deg,#111827 0%, #1f2937 100%); color:#fff; }
+    .brand{ font-weight:700; font-size:16px; color:#111827; }
+    .muted{ color:#6b7280; }
+    .label{ font-size:11px; text-transform:uppercase; color:#9ca3af; letter-spacing:0.8px; }
+    .value{ color:#111827; font-size:14px; }
+    .pill{ display:inline-block; padding:6px 10px; border-radius:999px; background:#ecfdf5; color:#065f46; font-weight:600; font-size:12px; }
+    .btn{ display:inline-block; padding:10px 14px; border-radius:8px; text-decoration:none; font-weight:600; }
+    .btn-primary{ background:#111827; color:#ffffff; }
+    .btn-ghost{ background:#ffffff; color:#111827; border:1px solid #e6e7eb; }
+    .message-box{ background:#f8fafc; border:1px solid #eef2f7; border-radius:10px; padding:18px; color:#111827; }
+    .footer-note{ color:#9ca3af; font-size:12px; }
   </style>
 </head>
-<body>
-  <div class="wrapper">
-    <div class="email-container">
-      <!-- Header -->
-      <div class="header">
-        <span class="header-icon">✉️</span>
-        <h1>New Message Received</h1>
-        <p>Contact Form Submission</p>
-      </div>
-
-      <!-- Body -->
-      <div class="content">
-        <div class="timestamp">
-          📅 Received on ${formattedDate}
-        </div>
-
-        <div class="info-section">
-          <div class="info-row">
-            <div class="info-icon">👤</div>
-            <div class="info-content">
-              <span class="info-label">From</span>
-              <div class="info-value">${escapedName}</div>
-            </div>
+<body style="background:#f3f4f6; padding:20px;">
+  <center>
+    <table width="600" class="container" style="width:100%;max-width:600px; margin:0 auto;" cellpadding="0" cellspacing="0">
+      <tr>
+        <td style="padding:8px 0; text-align:left;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:36px;height:36px;border-radius:8px;background:#111827;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">R</div>
+            <div style="font-size:14px;color:#111827;font-weight:700">oussamalassoued.me</div>
+            <div style="margin-left:auto"></div>
+            <div style="font-size:12px;" class="pill">New submission</div>
           </div>
+        </td>
+      </tr>
 
-          ${escapedCompany ? `
-          <div class="info-row">
-            <div class="info-icon">🏢</div>
-            <div class="info-content">
-              <span class="info-label">Company</span>
-              <div class="info-value">${escapedCompany}</div>
-            </div>
-          </div>
-          ` : ''}
+      <tr>
+        <td>
+          <table width="100%" class="card" cellpadding="0" cellspacing="0" style="background:#fff;">
+            <tr>
+              <td style="padding:24px 28px;">
+                <h1 style="margin:0;font-size:20px;color:#0f172a">New message from ${escapedName || 'a visitor'}</h1>
+                <p style="margin:8px 0 0;color:#6b7280;font-size:14px">You've received a new contact form submission. Reply directly to this email to respond to the sender.</p>
 
-          <div class="info-row">
-            <div class="info-icon">📧</div>
-            <div class="info-content">
-              <span class="info-label">Email Address</span>
-              <div class="info-value"><a href="mailto:${email}">${email}</a></div>
-            </div>
-          </div>
+                <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+                  <a href="mailto:${email}" class="btn btn-primary" style="background:#111827;color:#fff;border-radius:8px;text-decoration:none;">↩ Reply to ${escapedName || 'Sender'}</a>
+                  <a href="${messageData.referer || '#'}" class="btn btn-ghost" style="background:#fff;color:#111827;border:1px solid #e6e7eb;text-decoration:none;">🔗 View page</a>
+                </div>
+              </td>
+            </tr>
 
-          <div class="info-row">
-            <div class="info-icon">📌</div>
-            <div class="info-content">
-              <span class="info-label">Subject</span>
-              <div class="info-value">${escapedSubject}</div>
-            </div>
-          </div>
+            <tr>
+              <td style="border-top:1px solid #eef2f7;padding:20px 28px;">
+                <table width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td style="vertical-align:top;padding-right:20px;width:50%">
+                      <div class="label">Sender</div>
+                      <div style="height:10px"></div>
+                      <div style="display:flex;gap:10px;align-items:center">
+                        <div style="width:36px;height:36px;border-radius:8px;background:#111827;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">${(escapedName||'').charAt(0) || 'U'}</div>
+                        <div>
+                          <div class="value">${escapedName || ''}</div>
+                          <div class="muted" style="font-size:13px">Name</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td style="vertical-align:top;padding-left:20px;width:50%">
+                      <div class="label">Email</div>
+                      <div style="height:10px"></div>
+                      <div class="value"><a href="mailto:${email}" style="color:#111827;text-decoration:none">${email}</a></div>
+                    </td>
+                  </tr>
 
-          <div class="info-row">
-            <div class="info-icon">💬</div>
-            <div class="info-content">
-              <span class="info-label">Message</span>
-              <div class="message-section">
-                <div class="message-content">${escapedMessage}</div>
-              </div>
-            </div>
-          </div>
+                  <tr>
+                    <td style="vertical-align:top;padding-top:18px;padding-right:20px">
+                      <div class="label">Company</div>
+                      <div style="height:6px"></div>
+                      <div class="value">${escapedCompany || '-'}</div>
+                    </td>
+                    <td style="vertical-align:top;padding-top:18px;padding-left:20px">
+                      <div class="label">Submitted</div>
+                      <div style="height:6px"></div>
+                      <div class="value">${formattedDate} </div>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
 
-          <div class="info-row">
-            <div class="info-icon">🖥️</div>
-            <div class="info-content">
-              <span class="info-label">Client Info</span>
-              <div class="info-value">
-                <div><strong>IP:</strong> ${ip || 'unknown'}</div>
-                <div><strong>Browser:</strong> ${ua?.browser || 'unknown'}</div>
-                <div><strong>OS:</strong> ${ua?.os || 'unknown'}</div>
-                <div><strong>Device:</strong> ${ua?.device || 'unknown'}</div>
-                <div><strong>User-Agent:</strong> <small style="color:#6c757d;">${(userAgent||'').substring(0, 240)}</small></div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="info-row">
-            <div class="info-icon">🗺️</div>
-            <div class="info-content">
-              <span class="info-label">Geo (IP)</span>
-              <div class="info-value">
-                <div><strong>Country:</strong> ${messageData.geo?.country || 'unknown'}</div>
-                <div><strong>Region:</strong> ${messageData.geo?.region || 'unknown'}</div>
-                <div><strong>City:</strong> ${messageData.geo?.city || 'unknown'}</div>
-                <div><strong>ISP:</strong> ${messageData.geo?.isp || 'unknown'}</div>
-                <div><strong>Coordinates:</strong> ${messageData.geo?.lat ? `${messageData.geo.lat}, ${messageData.geo.lon}` : 'unknown'}</div>
-              </div>
-            </div>
-          </div>
-        </div>
+            <tr>
+              <td style="padding:20px 28px;border-top:1px solid #eef2f7">
+                <div class="label">Message</div>
+                <div style="height:12px"></div>
+                <div class="label" style="font-size:13px;margin-bottom:8px">Subject</div>
+                <div class="value" style="margin-bottom:12px">${escapedSubject}</div>
 
-        <div class="divider"></div>
+                <div class="message-box">
+                  <div style="font-size:14px;line-height:1.6;color:#111827">${escapedMessage}</div>
+                </div>
+              </td>
+            </tr>
 
-        <div class="action-box">
-          <p>💡 Reply directly to this email to respond to the sender</p>
-        </div>
-      </div>
+            <tr>
+              <td style="padding:20px 28px;border-top:1px solid #eef2f7">
+                <div class="label">Technical details</div>
+                <div style="height:10px"></div>
+                <table width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td style="vertical-align:top;width:50%">
+                      <div class="muted" style="font-size:13px">IP address</div>
+                      <div class="value">${ip || 'unknown'}</div>
+                    </td>
+                    <td style="vertical-align:top;width:50%">
+                      <div class="muted" style="font-size:13px">Location</div>
+                      <div class="value">${messageData.geo?.city ? `${messageData.geo.city}, ${messageData.geo.country}` : (messageData.geo?.country || 'unknown')}</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="vertical-align:top;padding-top:12px">
+                      <div class="muted" style="font-size:13px">Device</div>
+                      <div class="value">${ua?.browser || 'unknown'} · ${ua?.os || 'unknown'}</div>
+                    </td>
+                    <td style="vertical-align:top;padding-top:12px">
+                      <div class="muted" style="font-size:13px">Referrer</div>
+                      <div class="value">${messageData.referer || '-'}</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="vertical-align:top;padding-top:12px">
+                      <div class="muted" style="font-size:13px">Page URL</div>
+                      <div class="value">${messageData.referer || '-'}</div>
+                    </td>
+                    <td style="vertical-align:top;padding-top:12px">
+                      <div class="muted" style="font-size:13px">Submission ID</div>
+                      <div class="value">${messageData.id || messageData.messageId || '-'}</div>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
 
-      <!-- Footer -->
-      <div class="footer">
-        <p>This is an automated notification from your contact form.</p>
-        <p>Do not reply to this address directly.</p>
-        <p class="powered-by">✨ Powered by Resend</p>
-      </div>
-    </div>
-  </div>
+            <tr>
+              <td style="padding:18px 28px;border-top:1px solid #eef2f7;background:#fafafa">
+                <table width="100%"><tr>
+                  <td style="vertical-align:middle">
+                    <div style="display:flex;gap:12px;align-items:center">
+                      <div style="width:28px;height:28px;border-radius:6px;background:#111827;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">O</div>
+                      <div>
+                        <div style="font-weight:700;color:#111827">Oussama Lassoued</div>
+                        <div class="footer-note">Designer & AI builder</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="text-align:right;vertical-align:middle">
+                    <div class="footer-note">This is an automated notification from your contact form. Replying to this email will respond directly to the sender.<br/>© ${new Date().getFullYear()} oussamalassoued.com · Sent via Resend</div>
+                  </td>
+                </tr></table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </center>
 </body>
 </html>`;
 };
@@ -1229,3 +1068,28 @@ const fetchGeoForIP = async (ip) => {
     return null;
   }
 };
+
+// Runtime maps for rate limiting and blocking
+const blockedIPs = new Map();
+const rateLimiter = new Map();
+const dailyMessageCount = new Map();
+
+// Storage key for saved messages
+const MESSAGES_KEY = process.env.MESSAGES_KEY || 'messages:v1';
+
+// Basic storage configuration (local-first for development)
+const storageConfig = {
+  vercelKv: { enabled: false, url: process.env.VERCEL_KV_URL || '', token: process.env.VERCEL_KV_TOKEN || '' },
+  upstashRedis: { enabled: false, url: process.env.UPSTASH_REDIS_URL || '', token: process.env.UPSTASH_REDIS_TOKEN || '' },
+  localFile: { enabled: true, path: path.join(process.cwd(), 'data', 'messages.json') },
+};
+
+// Email configuration and Resend client
+const emailConfig = {
+  enabled: !!process.env.RESEND_API_KEY && !!process.env.CONTACT_EMAIL_TO,
+  fromName: process.env.RESEND_FROM_NAME || 'Website Contact',
+  fromEmail: process.env.RESEND_FROM_EMAIL || 'no-reply@example.com',
+  toEmail: process.env.CONTACT_EMAIL_TO || 'owner@example.com',
+};
+
+const resendClient = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
