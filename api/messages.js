@@ -88,7 +88,7 @@ const generateEmailTemplate = (messageData) => {
     .pill{ display:inline-block; padding:7px 12px; border-radius:999px; background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; font-weight:700; font-size:12px; }
     .btn{ display:inline-block; padding:11px 14px; border-radius:10px; text-decoration:none; font-weight:700; font-size:13px; }
     .btn-primary{ background:#111827; color:#ffffff; }
-    .btn-secondary{ background:#ffffff; color:#111827; border:1px solid #e5e7eb; }
+    .btn-secondary{ background:#ffffff; color:#ffffff; border:1px solid #e5e7eb; }
     .message-box{ background:#fafafa; border:1px solid #eceef3; border-radius:14px; padding:18px 20px; color:#111827; }
     .footer-note{ color:#9ca3af; font-size:12px; line-height:1.5; }
   </style>
@@ -216,7 +216,7 @@ const generateEmailTemplate = (messageData) => {
               <td style="border-top:1px solid #eef2f7; padding:20px 28px; background:#fafafa;">
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                   <tr>
-                    <td style="vertical-align:top; padding-right:16px;">
+                    <td style="vertical-align:top; padding-bottom:12px;">
                       <table role="presentation" cellpadding="0" cellspacing="0" border="0">
                         <tr>
                           <td style="vertical-align:top; padding-right:8px;">
@@ -229,7 +229,9 @@ const generateEmailTemplate = (messageData) => {
                         </tr>
                       </table>
                     </td>
-                    <td class="footer-right" style="vertical-align:top; text-align:right;">
+                  </tr>
+                  <tr>
+                    <td style="vertical-align:top; text-align:left;">
                       <div class="footer-note">This is an automated notification from your contact form. Replying to this email will respond directly to the sender.</div>
                       <div class="footer-note" style="margin-top:4px;">© ${new Date().getFullYear()} oussamalassoued.com · Sent via Resend</div>
                     </td>
