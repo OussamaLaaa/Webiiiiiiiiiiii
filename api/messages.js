@@ -113,7 +113,7 @@ console.log('[API:Messages] Storage backends available:', {
  * Generate professional HTML email template
  */
 const generateEmailTemplate = (messageData) => {
-  const { name, email, subject, message, timestamp, ip, userAgent, ua } = messageData;
+  const { name, email, subject, message, timestamp, ip, userAgent, ua, company } = messageData;
   const formattedDate = new Date(timestamp).toLocaleString('en-US', {
     weekday: 'short',
     year: 'numeric',
@@ -123,9 +123,10 @@ const generateEmailTemplate = (messageData) => {
     minute: '2-digit'
   });
 
-  const escapedMessage = message.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+  const escapedMessage = (message || '').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
   const escapedName = (name || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const escapedSubject = (subject || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const escapedCompany = (company || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -310,6 +311,16 @@ const generateEmailTemplate = (messageData) => {
               <div class="info-value">${escapedName}</div>
             </div>
           </div>
+
+          ${escapedCompany ? `
+          <div class="info-row">
+            <div class="info-icon">🏢</div>
+            <div class="info-content">
+              <span class="info-label">Company</span>
+              <div class="info-value">${escapedCompany}</div>
+            </div>
+          </div>
+          ` : ''}
 
           <div class="info-row">
             <div class="info-icon">📧</div>
@@ -522,6 +533,11 @@ const validateMessage = (data) => {
     errors.message = 'Message must be at least 10 characters';
   } else if (data.message.trim().length > 5000) {
     errors.message = 'Message must not exceed 5000 characters';
+  }
+
+  // Validate company (optional)
+  if (data.company && data.company.trim().length > 200) {
+    errors.company = 'Company must not exceed 200 characters';
   }
 
   // Check total message length
@@ -1044,6 +1060,7 @@ export default async (req, res) => {
         email: sanitizeInput(body.email || '').toLowerCase(),
         subject: sanitizeInput(body.subject || ''),
         message: sanitizeInput(body.message || ''),
+        company: sanitizeInput(body.company || ''),
       };
 
       // Validate data

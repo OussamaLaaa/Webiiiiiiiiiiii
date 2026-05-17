@@ -397,6 +397,7 @@ export interface Message {
   email: string;
   subject: string;
   message: string;
+  company?: string;
   timestamp: number;
   ip?: string;
   userAgent?: string;
@@ -408,6 +409,7 @@ export interface MessageData {
   email: string;
   subject: string;
   message: string;
+  company?: string;
 }
 
 export interface MessagesResponse {

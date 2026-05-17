@@ -109,6 +109,7 @@ const Contact: React.FC = () => {
     email: '',
     subject: '',
     message: '',
+    company: '',
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -322,7 +323,7 @@ const Contact: React.FC = () => {
       if (response.success) {
         setSubmitStatus('success');
         setSubmitMessage('Message sent successfully! I\'ll get back to you soon.');
-        setFormData({ name: '', email: '', subject: '', message: '' });
+        setFormData({ name: '', email: '', subject: '', message: '', company: '' });
         
         // Reset status after 5 seconds
         setTimeout(() => {
@@ -491,6 +492,10 @@ const Contact: React.FC = () => {
                   <div className="space-y-1.5">
                     <label className="block text-xs font-medium uppercase tracking-wider text-gray-500">{contactPage.formSubjectLabel}</label>
                     <input type="text" name="subject" value={formData.subject} onChange={handleInputChange} placeholder={contactPage.formSubjectPlaceholder} className="w-full px-4 py-3 rounded-xl text-sm font-medium transition-colors bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900" required />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-medium uppercase tracking-wider text-gray-500">{contactPage.formCompanyLabel || 'Company'}</label>
+                    <input type="text" name="company" value={formData.company} onChange={handleInputChange} placeholder={contactPage.formCompanyPlaceholder || ''} className="w-full px-4 py-3 rounded-xl text-sm font-medium transition-colors bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900" />
                   </div>
                   <div className="space-y-1.5">
                     <label className="block text-xs font-medium uppercase tracking-wider text-gray-500">{contactPage.formMessageLabel}</label>

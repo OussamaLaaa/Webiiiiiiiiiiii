@@ -8,6 +8,7 @@ export interface MessageData {
   email: string;
   subject: string;
   message: string;
+  company?: string;
 }
 
 export interface ValidationResult {
@@ -58,6 +59,11 @@ export const validateMessage = (data: MessageData): ValidationResult => {
     errors.message = 'الرسالة يجب أن لا تتجاوز 5000 حرف';
   }
 
+  // Validate company (optional)
+  if (data.company && data.company.trim().length > 200) {
+    errors.company = 'اسم الشركة يجب أن لا يتجاوز 200 حرف';
+  }
+
   return {
     isValid: Object.keys(errors).length === 0,
     errors,
@@ -73,6 +79,7 @@ export const sanitizeMessageData = (data: MessageData): MessageData => {
     email: data.email.trim().toLowerCase(),
     subject: data.subject.trim().replace(/[<>]/g, ''),
     message: data.message.trim().replace(/[<>]/g, ''),
+    company: data.company ? data.company.trim().replace(/[<>]/g, '') : '',
   };
 };
 
