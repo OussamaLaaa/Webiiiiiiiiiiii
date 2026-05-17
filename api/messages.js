@@ -36,7 +36,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 const generateEmailTemplate = (messageData) => {
-  const { name, email, subject, message, timestamp, ip, userAgent, ua, company } = messageData;
+  const { name, email, subject, message, timestamp, ip, ua, company } = messageData;
   const formattedDate = new Date(timestamp).toLocaleString('en-US', {
     weekday: 'short',
     year: 'numeric',
@@ -46,10 +46,22 @@ const generateEmailTemplate = (messageData) => {
     minute: '2-digit',
   });
 
-  const escapedMessage = (message || '').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
-  const escapedName = (name || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const escapedSubject = (subject || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const escapedCompany = (company || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const escapeHtml = (value = '') => String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
+  const escapedName = escapeHtml(name || '');
+  const escapedEmail = escapeHtml(email || '');
+  const escapedSubject = escapeHtml(subject || '');
+  const escapedCompany = escapeHtml(company || '');
+  const escapedMessage = escapeHtml(message || '').replace(/\n/g, '<br>');
+  const brandUrl = process.env.SITE_URL || 'https://www.oussamalassoued.me';
+  const logoUrl = `${brandUrl}/logo-black.png`;
+  const pageHref = escapeHtml(messageData.referer || brandUrl);
+  const replyLabel = escapedName.split(' ')[0] || 'Sender';
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -58,98 +70,65 @@ const generateEmailTemplate = (messageData) => {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>New Contact Form Submission</title>
   <style>
-    /* Reset for email clients */
     body,table,td,a{ -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
     table,td{ mso-table-lspace:0pt; mso-table-rspace:0pt; }
-    img{ -ms-interpolation-mode:bicubic; }
-    img{ border:0; height:auto; line-height:100%; outline:none; text-decoration:none; }
+    img{ -ms-interpolation-mode:bicubic; border:0; outline:none; text-decoration:none; }
     table{ border-collapse:collapse !important; }
     body{ width:100% !important; height:100% !important; margin:0; padding:0; }
-
-    /* Mobile styles */
     @media only screen and (max-width:600px){
       .container{ width:100% !important; padding:12px !important; }
-      .stack-column{ display:block !important; width:100% !important; }
-      .center-mobile{ text-align:center !important; }
-      .button{ width:100% !important; }
+      .stack{ display:block !important; width:100% !important; }
+      .button-spacer{ display:block !important; height:10px !important; }
+      .footer-right{ text-align:left !important; padding-top:12px !important; }
     }
-
-    /* Visual styles */
-    .card{ background:#ffffff; border-radius:12px; box-shadow:0 6px 20px rgba(17,24,39,0.06); overflow:hidden; }
-    .header-bar{ background:linear-gradient(90deg,#111827 0%, #1f2937 100%); color:#fff; }
-    .brand{ font-weight:700; font-size:16px; color:#111827; }
+    .card{ background:#ffffff; border-radius:16px; box-shadow:0 8px 30px rgba(17,24,39,0.06); overflow:hidden; }
+    .label{ font-size:11px; text-transform:uppercase; color:#9ca3af; letter-spacing:0.08em; }
+    .value{ color:#111827; font-size:15px; line-height:1.45; }
     .muted{ color:#6b7280; }
-    .label{ font-size:11px; text-transform:uppercase; color:#9ca3af; letter-spacing:0.8px; }
-    .value{ color:#111827; font-size:14px; }
-    .pill{ display:inline-block; padding:6px 10px; border-radius:999px; background:#ecfdf5; color:#065f46; font-weight:600; font-size:12px; }
-    .btn{ display:inline-block; padding:10px 14px; border-radius:8px; text-decoration:none; font-weight:600; }
+    .pill{ display:inline-block; padding:7px 12px; border-radius:999px; background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; font-weight:700; font-size:12px; }
+    .btn{ display:inline-block; padding:11px 14px; border-radius:10px; text-decoration:none; font-weight:700; font-size:13px; }
     .btn-primary{ background:#111827; color:#ffffff; }
-    .btn-ghost{ background:#ffffff; color:#111827; border:1px solid #e6e7eb; }
-    .message-box{ background:#f8fafc; border:1px solid #eef2f7; border-radius:10px; padding:18px; color:#111827; }
-    .footer-note{ color:#9ca3af; font-size:12px; }
+    .btn-secondary{ background:#ffffff; color:#111827; border:1px solid #e5e7eb; }
+    .message-box{ background:#fafafa; border:1px solid #eceef3; border-radius:14px; padding:18px 20px; color:#111827; }
+    .footer-note{ color:#9ca3af; font-size:12px; line-height:1.5; }
   </style>
 </head>
-<body style="background:#f3f4f6; padding:20px;">
+<body style="background:#f3f4f6; margin:0; padding:24px 12px;">
   <center>
-    <table width="600" class="container" style="width:100%;max-width:600px; margin:0 auto;" cellpadding="0" cellspacing="0">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px; width:100%; margin:0 auto;" class="container">
       <tr>
-        <td style="padding:8px 0; text-align:left;">
-          <div style="display:flex;align-items:center;gap:12px;">
-            <div style="width:36px;height:36px;border-radius:8px;background:#111827;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">R</div>
-            <div style="font-size:14px;color:#111827;font-weight:700">oussamalassoued.me</div>
-            <div style="margin-left:auto"></div>
-            <div style="font-size:12px;" class="pill">New submission</div>
-          </div>
+        <td style="padding:0 4px 12px 4px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+              <td style="vertical-align:middle;">
+                <a href="${brandUrl}" style="text-decoration:none; color:#111827; display:inline-block; vertical-align:middle;">
+                  <img src="${logoUrl}" alt="Oussama Lassoued" width="40" height="40" style="display:inline-block; vertical-align:middle; border-radius:8px; margin-right:12px;">
+                  <span style="font-size:15px; font-weight:700; vertical-align:middle; line-height:40px;">oussamalassoued.me</span>
+                </a>
+              </td>
+              <td align="right" style="vertical-align:middle;">
+                <span class="pill">New submission</span>
+              </td>
+            </tr>
+          </table>
         </td>
       </tr>
 
       <tr>
         <td>
-          <table width="100%" class="card" cellpadding="0" cellspacing="0" style="background:#fff;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="card">
             <tr>
-              <td style="padding:24px 28px;">
-                <h1 style="margin:0;font-size:20px;color:#0f172a">New message from ${escapedName || 'a visitor'}</h1>
-                <p style="margin:8px 0 0;color:#6b7280;font-size:14px">You've received a new contact form submission. Reply directly to this email to respond to the sender.</p>
+              <td style="padding:28px 28px 22px 28px;">
+                <h1 style="margin:0 0 8px 0; font-size:24px; line-height:1.25; color:#111827; font-weight:700;">New message from ${escapedName || 'a visitor'}</h1>
+                <p style="margin:0; color:#6b7280; font-size:15px; line-height:1.55;">You've received a new contact form submission. Reply directly to this email to respond to the sender.</p>
 
-                <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
-                  <a href="mailto:${email}" class="btn btn-primary" style="background:#111827;color:#fff;border-radius:8px;text-decoration:none;">↩ Reply to ${escapedName || 'Sender'}</a>
-                  <a href="${messageData.referer || '#'}" class="btn btn-ghost" style="background:#fff;color:#111827;border:1px solid #e6e7eb;text-decoration:none;">🔗 View page</a>
-                </div>
-              </td>
-            </tr>
-
-            <tr>
-              <td style="border-top:1px solid #eef2f7;padding:20px 28px;">
-                <table width="100%" cellpadding="0" cellspacing="0">
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top:20px;">
                   <tr>
-                    <td style="vertical-align:top;padding-right:20px;width:50%">
-                      <div class="label">Sender</div>
-                      <div style="height:10px"></div>
-                      <div style="display:flex;gap:10px;align-items:center">
-                        <div style="width:36px;height:36px;border-radius:8px;background:#111827;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">${(escapedName||'').charAt(0) || 'U'}</div>
-                        <div>
-                          <div class="value">${escapedName || ''}</div>
-                          <div class="muted" style="font-size:13px">Name</div>
-                        </div>
-                      </div>
+                    <td class="stack" style="padding-right:10px;">
+                      <a href="mailto:${escapedEmail}" class="btn btn-primary">↩ Reply to ${replyLabel}</a>
                     </td>
-                    <td style="vertical-align:top;padding-left:20px;width:50%">
-                      <div class="label">Email</div>
-                      <div style="height:10px"></div>
-                      <div class="value"><a href="mailto:${email}" style="color:#111827;text-decoration:none">${email}</a></div>
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td style="vertical-align:top;padding-top:18px;padding-right:20px">
-                      <div class="label">Company</div>
-                      <div style="height:6px"></div>
-                      <div class="value">${escapedCompany || '-'}</div>
-                    </td>
-                    <td style="vertical-align:top;padding-top:18px;padding-left:20px">
-                      <div class="label">Submitted</div>
-                      <div style="height:6px"></div>
-                      <div class="value">${formattedDate} </div>
+                    <td class="stack">
+                      <a href="${pageHref}" class="btn btn-secondary">↗ View page</a>
                     </td>
                   </tr>
                 </table>
@@ -157,51 +136,76 @@ const generateEmailTemplate = (messageData) => {
             </tr>
 
             <tr>
-              <td style="padding:20px 28px;border-top:1px solid #eef2f7">
-                <div class="label">Message</div>
-                <div style="height:12px"></div>
-                <div class="label" style="font-size:13px;margin-bottom:8px">Subject</div>
-                <div class="value" style="margin-bottom:12px">${escapedSubject}</div>
+              <td style="border-top:1px solid #eef2f7; padding:24px 28px;">
+                <p style="margin:0 0 16px 0;" class="label">Sender</p>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td width="50%" class="stack" style="vertical-align:top; padding-right:12px; padding-bottom:16px;">
+                      <div class="label" style="margin-bottom:6px;">Name</div>
+                      <div class="value" style="font-size:16px; font-weight:600;">${escapedName || '—'}</div>
+                    </td>
+                    <td width="50%" class="stack" style="vertical-align:top; padding-left:12px; padding-bottom:16px;">
+                      <div class="label" style="margin-bottom:6px;">Email</div>
+                      <div class="value" style="font-size:16px; word-break:break-word;">${escapedEmail}</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td width="50%" class="stack" style="vertical-align:top; padding-right:12px;">
+                      <div class="label" style="margin-bottom:6px;">Company</div>
+                      <div class="value" style="font-size:16px;">${escapedCompany || '—'}</div>
+                    </td>
+                    <td width="50%" class="stack" style="vertical-align:top; padding-left:12px;">
+                      <div class="label" style="margin-bottom:6px;">Submitted</div>
+                      <div class="value" style="font-size:16px;">${formattedDate}</div>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
 
+            <tr>
+              <td style="border-top:1px solid #eef2f7; padding:24px 28px;">
+                <p style="margin:0 0 16px 0;" class="label">Message</p>
+                <div class="label" style="margin-bottom:8px;">Subject</div>
+                <div class="value" style="font-size:16px; font-weight:600; margin-bottom:14px;">${escapedSubject}</div>
                 <div class="message-box">
-                  <div style="font-size:14px;line-height:1.6;color:#111827">${escapedMessage}</div>
+                  <div style="font-size:15px; line-height:1.7; color:#111827;">${escapedMessage}</div>
                 </div>
               </td>
             </tr>
 
             <tr>
-              <td style="padding:20px 28px;border-top:1px solid #eef2f7">
-                <div class="label">Technical details</div>
-                <div style="height:10px"></div>
-                <table width="100%" cellpadding="0" cellspacing="0">
+              <td style="border-top:1px solid #eef2f7; padding:24px 28px;">
+                <p style="margin:0 0 16px 0;" class="label">Technical details</p>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                   <tr>
-                    <td style="vertical-align:top;width:50%">
-                      <div class="muted" style="font-size:13px">IP address</div>
+                    <td width="50%" class="stack" style="vertical-align:top; padding-right:12px; padding-bottom:14px;">
+                      <div class="muted" style="font-size:13px; margin-bottom:4px;">IP address</div>
                       <div class="value">${ip || 'unknown'}</div>
                     </td>
-                    <td style="vertical-align:top;width:50%">
-                      <div class="muted" style="font-size:13px">Location</div>
+                    <td width="50%" class="stack" style="vertical-align:top; padding-left:12px; padding-bottom:14px;">
+                      <div class="muted" style="font-size:13px; margin-bottom:4px;">Location</div>
                       <div class="value">${messageData.geo?.city ? `${messageData.geo.city}, ${messageData.geo.country}` : (messageData.geo?.country || 'unknown')}</div>
                     </td>
                   </tr>
                   <tr>
-                    <td style="vertical-align:top;padding-top:12px">
-                      <div class="muted" style="font-size:13px">Device</div>
+                    <td width="50%" class="stack" style="vertical-align:top; padding-right:12px; padding-bottom:14px;">
+                      <div class="muted" style="font-size:13px; margin-bottom:4px;">Device</div>
                       <div class="value">${ua?.browser || 'unknown'} · ${ua?.os || 'unknown'}</div>
                     </td>
-                    <td style="vertical-align:top;padding-top:12px">
-                      <div class="muted" style="font-size:13px">Referrer</div>
-                      <div class="value">${messageData.referer || '-'}</div>
+                    <td width="50%" class="stack" style="vertical-align:top; padding-left:12px; padding-bottom:14px;">
+                      <div class="muted" style="font-size:13px; margin-bottom:4px;">Referrer</div>
+                      <div class="value" style="word-break:break-word;">${messageData.referer || '-'}</div>
                     </td>
                   </tr>
                   <tr>
-                    <td style="vertical-align:top;padding-top:12px">
-                      <div class="muted" style="font-size:13px">Page URL</div>
-                      <div class="value">${messageData.referer || '-'}</div>
+                    <td width="50%" class="stack" style="vertical-align:top; padding-right:12px;">
+                      <div class="muted" style="font-size:13px; margin-bottom:4px;">Page URL</div>
+                      <div class="value" style="word-break:break-word;">${messageData.referer || '-'}</div>
                     </td>
-                    <td style="vertical-align:top;padding-top:12px">
-                      <div class="muted" style="font-size:13px">Submission ID</div>
-                      <div class="value">${messageData.id || messageData.messageId || '-'}</div>
+                    <td width="50%" class="stack" style="vertical-align:top; padding-left:12px;">
+                      <div class="muted" style="font-size:13px; margin-bottom:4px;">Submission ID</div>
+                      <div class="value" style="word-break:break-word;">${messageData.id || messageData.messageId || '-'}</div>
                     </td>
                   </tr>
                 </table>
@@ -209,21 +213,28 @@ const generateEmailTemplate = (messageData) => {
             </tr>
 
             <tr>
-              <td style="padding:18px 28px;border-top:1px solid #eef2f7;background:#fafafa">
-                <table width="100%"><tr>
-                  <td style="vertical-align:middle">
-                    <div style="display:flex;gap:12px;align-items:center">
-                      <div style="width:28px;height:28px;border-radius:6px;background:#111827;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">O</div>
-                      <div>
-                        <div style="font-weight:700;color:#111827">Oussama Lassoued</div>
-                        <div class="footer-note">Designer & AI builder</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td style="text-align:right;vertical-align:middle">
-                    <div class="footer-note">This is an automated notification from your contact form. Replying to this email will respond directly to the sender.<br/>© ${new Date().getFullYear()} oussamalassoued.com · Sent via Resend</div>
-                  </td>
-                </tr></table>
+              <td style="border-top:1px solid #eef2f7; padding:20px 28px; background:#fafafa;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td style="vertical-align:top; padding-right:16px;">
+                      <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                          <td style="vertical-align:top; padding-right:8px;">
+                            <img src="${logoUrl}" alt="Oussama Lassoued" width="30" height="30" style="display:block; border-radius:6px;">
+                          </td>
+                          <td style="vertical-align:top;">
+                            <div style="font-weight:700; color:#111827; font-size:13px; line-height:1.3;">Oussama Lassoued</div>
+                            <div style="font-size:12px; color:#71717a; line-height:1.3;">Designer & AI builder</div>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                    <td class="footer-right" style="vertical-align:top; text-align:right;">
+                      <div class="footer-note">This is an automated notification from your contact form. Replying to this email will respond directly to the sender.</div>
+                      <div class="footer-note" style="margin-top:4px;">© ${new Date().getFullYear()} oussamalassoued.com · Sent via Resend</div>
+                    </td>
+                  </tr>
+                </table>
               </td>
             </tr>
           </table>
