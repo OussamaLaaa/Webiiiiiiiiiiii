@@ -633,12 +633,14 @@ const writeToVercelKv = async (messages) => {
             return resolve(true);
           }
           console.error('[API:Messages] Vercel KV write failed:', response.statusCode);
+          lastStorageError = `VercelKV status:${response.statusCode}`;
           return resolve(false);
         });
       });
 
       request.on('error', (error) => {
         console.error('[API:Messages] Vercel KV write error:', error.message);
+        lastStorageError = error?.message || String(error);
         resolve(false);
       });
       request.write(postData);
@@ -646,6 +648,7 @@ const writeToVercelKv = async (messages) => {
     });
   } catch (error) {
     console.error('[API:Messages] Failed to write to Vercel KV:', error?.message);
+    lastStorageError = error?.message || String(error);
     return false;
   }
 };
@@ -696,9 +699,11 @@ const writeToUpstashRedis = async (messages) => {
     }
 
     console.error('[API:Messages] Upstash write failed:', result);
+    lastStorageError = JSON.stringify(result).slice(0, 1000);
     return false;
   } catch (error) {
     console.error('[API:Messages] Failed to write to Upstash:', error?.message);
+    lastStorageError = error?.message || String(error);
     return false;
   }
 };
@@ -738,6 +743,7 @@ const writeToLocalFile = (messages) => {
     return true;
   } catch (error) {
     console.error('[API:Messages] Failed to write to local file:', error?.message);
+    lastStorageError = error?.message || String(error);
     return false;
   }
 };
@@ -983,10 +989,14 @@ export default async (req, res) => {
 
       if (!writeSuccess) {
         console.error('[API:Messages] All storage backends failed');
-        return res.status(503).json({
+        const payload = {
           success: false,
           error: 'Failed to save message. Please try again.',
-        });
+        };
+        if (process.env.NODE_ENV !== 'production') {
+          payload.debug = { lastStorageError, storageConfig };
+        }
+        return res.status(503).json(payload);
       }
 
       console.log(`[API:Messages] Message saved successfully to ${writeSource}`);
@@ -1079,9 +1089,9 @@ const MESSAGES_KEY = process.env.MESSAGES_KEY || 'messages:v1';
 
 // Basic storage configuration (local-first for development)
 const storageConfig = {
-  vercelKv: { enabled: false, url: process.env.VERCEL_KV_URL || '', token: process.env.VERCEL_KV_TOKEN || '' },
-  upstashRedis: { enabled: false, url: process.env.UPSTASH_REDIS_URL || '', token: process.env.UPSTASH_REDIS_TOKEN || '' },
-  localFile: { enabled: true, path: path.join(process.cwd(), 'data', 'messages.json') },
+  vercelKv: { enabled: Boolean(process.env.VERCEL_KV_URL && process.env.VERCEL_KV_TOKEN), url: process.env.VERCEL_KV_URL || '', token: process.env.VERCEL_KV_TOKEN || '' },
+  upstashRedis: { enabled: Boolean(process.env.UPSTASH_REDIS_URL && process.env.UPSTASH_REDIS_TOKEN), url: process.env.UPSTASH_REDIS_URL || '', token: process.env.UPSTASH_REDIS_TOKEN || '' },
+  localFile: { enabled: process.env.DISABLE_LOCAL_FILE === '1' ? false : true, path: path.join(process.cwd(), 'data', 'messages.json') },
 };
 
 // Email configuration and Resend client
@@ -1093,3 +1103,6 @@ const emailConfig = {
 };
 
 const resendClient = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+
+// Last storage error (for debugging; only returned in non-production)
+let lastStorageError = null;
