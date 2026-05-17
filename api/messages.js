@@ -114,170 +114,246 @@ console.log('[API:Messages] Storage backends available:', {
 const generateEmailTemplate = (messageData) => {
   const { name, email, subject, message, timestamp } = messageData;
   const formattedDate = new Date(timestamp).toLocaleString('en-US', {
-    weekday: 'long',
+    weekday: 'short',
     year: 'numeric',
-    month: 'long',
+    month: 'short',
     day: 'numeric',
     hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    timeZoneName: 'short'
+    minute: '2-digit'
   });
 
-  return `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <style>
-        body {
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-          line-height: 1.6;
-          color: #333;
-          margin: 0;
-          padding: 0;
-          background-color: #f5f5f5;
-        }
-        .container {
-          max-width: 600px;
-          margin: 0 auto;
-          background-color: white;
-          border-radius: 8px;
-          overflow: hidden;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-        .header {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          padding: 32px;
-          text-align: center;
-        }
-        .header h1 {
-          margin: 0;
-          font-size: 24px;
-          font-weight: 600;
-        }
-        .header p {
-          margin: 8px 0 0 0;
-          font-size: 14px;
-          opacity: 0.9;
-        }
-        .content {
-          padding: 32px;
-        }
-        .alert {
-          background-color: #f0f4ff;
-          border-left: 4px solid #667eea;
-          padding: 16px;
-          margin-bottom: 24px;
-          border-radius: 4px;
-        }
-        .alert p {
-          margin: 0;
-          color: #667eea;
-          font-weight: 500;
-        }
-        .field {
-          margin-bottom: 20px;
-        }
-        .field-label {
-          font-weight: 600;
-          color: #667eea;
-          font-size: 12px;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          margin-bottom: 6px;
-        }
-        .field-value {
-          color: #333;
-          word-break: break-word;
-          white-space: pre-wrap;
-        }
-        .message-box {
-          background-color: #f9f9f9;
-          border: 1px solid #e0e0e0;
-          border-radius: 6px;
-          padding: 16px;
-          margin-top: 8px;
-        }
-        .footer {
-          background-color: #f5f5f5;
-          padding: 24px;
-          text-align: center;
-          font-size: 12px;
-          color: #666;
-          border-top: 1px solid #e0e0e0;
-        }
-        .footer p {
-          margin: 0;
-          line-height: 1.8;
-        }
-        .divider {
-          height: 1px;
-          background-color: #e0e0e0;
-          margin: 24px 0;
-        }
-        a {
-          color: #667eea;
-          text-decoration: none;
-        }
-        a:hover {
-          text-decoration: underline;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <h1>📨 New Contact Form Submission</h1>
-          <p>You have received a new message from your contact form</p>
+  const escapedMessage = message.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+  const escapedName = name.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const escapedSubject = subject.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Contact Form Submission</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      padding: 20px;
+      color: #2c3e50;
+    }
+    .wrapper {
+      max-width: 620px;
+      margin: 0 auto;
+    }
+    .email-container {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 40px 30px;
+      text-align: center;
+      color: white;
+    }
+    .header-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+      display: block;
+    }
+    .header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+    .header p {
+      font-size: 14px;
+      opacity: 0.95;
+      font-weight: 500;
+    }
+    .content {
+      padding: 40px 30px;
+    }
+    .timestamp {
+      background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+      border-left: 4px solid #667eea;
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-bottom: 28px;
+      font-size: 13px;
+      color: #667eea;
+      font-weight: 600;
+    }
+    .info-section {
+      margin-bottom: 24px;
+    }
+    .info-row {
+      display: flex;
+      margin-bottom: 16px;
+      align-items: flex-start;
+    }
+    .info-icon {
+      font-size: 20px;
+      width: 28px;
+      margin-right: 12px;
+      text-align: center;
+    }
+    .info-content {
+      flex: 1;
+    }
+    .info-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #667eea;
+      margin-bottom: 4px;
+      display: block;
+    }
+    .info-value {
+      font-size: 14px;
+      color: #2c3e50;
+      word-wrap: break-word;
+      line-height: 1.5;
+    }
+    .info-value a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .info-value a:hover {
+      text-decoration: underline;
+    }
+    .message-section {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 8px;
+    }
+    .message-content {
+      font-size: 14px;
+      line-height: 1.8;
+      color: #2c3e50;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .divider {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #e9ecef, transparent);
+      margin: 28px 0;
+    }
+    .action-box {
+      background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+      border: 1px solid #667eea30;
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .action-box p {
+      font-size: 13px;
+      color: #667eea;
+      margin: 0;
+      font-weight: 500;
+    }
+    .footer {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      padding: 24px 30px;
+      text-align: center;
+      border-top: 1px solid #dee2e6;
+      font-size: 12px;
+      color: #6c757d;
+      line-height: 1.8;
+    }
+    .footer a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .powered-by {
+      margin-top: 12px;
+      font-size: 11px;
+      opacity: 0.7;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="email-container">
+      <!-- Header -->
+      <div class="header">
+        <span class="header-icon">✉️</span>
+        <h1>New Message Received</h1>
+        <p>Contact Form Submission</p>
+      </div>
+
+      <!-- Body -->
+      <div class="content">
+        <div class="timestamp">
+          📅 Received on ${formattedDate}
         </div>
-        <div class="content">
-          <div class="alert">
-            <p>✨ New message received at ${formattedDate}</p>
-          </div>
-          
-          <div class="field">
-            <div class="field-label">From (Name)</div>
-            <div class="field-value">${name}</div>
-          </div>
-          
-          <div class="field">
-            <div class="field-label">Email Address</div>
-            <div class="field-value">
-              <a href="mailto:${email}">${email}</a>
+
+        <div class="info-section">
+          <div class="info-row">
+            <div class="info-icon">👤</div>
+            <div class="info-content">
+              <span class="info-label">From</span>
+              <div class="info-value">${escapedName}</div>
             </div>
           </div>
-          
-          <div class="field">
-            <div class="field-label">Subject</div>
-            <div class="field-value">${subject}</div>
-          </div>
-          
-          <div class="field">
-            <div class="field-label">Message</div>
-            <div class="field-value">
-              <div class="message-box">${message}</div>
+
+          <div class="info-row">
+            <div class="info-icon">📧</div>
+            <div class="info-content">
+              <span class="info-label">Email Address</span>
+              <div class="info-value"><a href="mailto:${email}">${email}</a></div>
             </div>
           </div>
-          
-          <div class="divider"></div>
-          
-          <div style="background-color: #f0f4ff; padding: 16px; border-radius: 6px; text-align: center;">
-            <p style="margin: 0; color: #667eea; font-size: 14px;">
-              <strong>💡 Tip:</strong> You can reply directly to this email to respond to the sender.
-            </p>
+
+          <div class="info-row">
+            <div class="info-icon">📌</div>
+            <div class="info-content">
+              <span class="info-label">Subject</span>
+              <div class="info-value">${escapedSubject}</div>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-icon">💬</div>
+            <div class="info-content">
+              <span class="info-label">Message</span>
+              <div class="message-section">
+                <div class="message-content">${escapedMessage}</div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="footer">
-          <p>This is an automated email from your contact form. Please do not reply to this address directly.</p>
-          <p>If you did not expect this email, please contact your website administrator.</p>
-          <p style="margin-top: 12px; opacity: 0.7;">Powered by Resend</p>
+
+        <div class="divider"></div>
+
+        <div class="action-box">
+          <p>💡 Reply directly to this email to respond to the sender</p>
         </div>
       </div>
-    </body>
-    </html>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p>This is an automated notification from your contact form.</p>
+        <p>Do not reply to this address directly.</p>
+        <p class="powered-by">✨ Powered by Resend</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`;
   `;
 };
 

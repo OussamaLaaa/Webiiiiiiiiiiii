@@ -321,7 +321,7 @@ const Contact: React.FC = () => {
       
       if (response.success) {
         setSubmitStatus('success');
-        setSubmitMessage('تم إرسال رسالتك بنجاح! سنتواصل معك قريباً.');
+        setSubmitMessage('Message sent successfully! I\'ll get back to you soon.');
         setFormData({ name: '', email: '', subject: '', message: '' });
         
         // Reset status after 5 seconds
@@ -331,7 +331,7 @@ const Contact: React.FC = () => {
         }, 5000);
       } else {
         setSubmitStatus('error');
-        setSubmitMessage(response.error || 'فشل إرسال الرسالة. يرجى المحاولة مرة أخرى.');
+        setSubmitMessage(response.error || 'Failed to send message. Please try again.');
       }
     } catch (error) {
       setSubmitStatus('error');
