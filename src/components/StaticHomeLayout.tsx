@@ -255,13 +255,13 @@ export const StaticHomeLayout: React.FC = () => {
     designSystem.components.featuredCtaButtonVariant,
     'light',
     'md',
-    'rounded-full w-full',
+    'rounded-full',
   );
   const footerSocialClass = getButtonClass(
     designSystem.components.featuredViewAllButtonVariant,
     'light',
     'icon',
-    'rounded-full h-9 w-9',
+    'rounded-full bg-transparent border-0 h-11 w-11',
   );
 
   const handlePlaceholderLinkClick = (event: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -312,16 +312,6 @@ export const StaticHomeLayout: React.FC = () => {
         <div className="absolute top-20 -right-32 h-96 w-96 rounded-full bg-foreground/[0.04] blur-3xl -z-10" />
 
         <div className="mx-auto max-w-5xl px-6 pt-28 md:pt-36 pb-20 text-center">
-          <div className="flex justify-center mb-8">
-            <Badge className="rounded-full gap-2 py-1.5 px-4 bg-background/60 backdrop-blur-sm border-border/60 shadow-sm">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full rounded-full bg-foreground opacity-60 animate-ping" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-foreground" />
-              </span>
-              <span className="text-xs">{scene05.badge}</span>
-            </Badge>
-          </div>
-
           <h1
             className="tracking-tight mx-auto max-w-4xl"
             style={{
@@ -497,11 +487,20 @@ export const StaticHomeLayout: React.FC = () => {
               </h3>
             </div>
             <div className="flex flex-wrap gap-2">
-              {visibleSkills.map((skill) => (
-                <Badge key={skill} className="rounded-full px-4 py-1.5 text-sm font-normal bg-secondary">
-                  {skill}
-                </Badge>
-              ))}
+              {visibleSkills.map((skill, idx) => {
+                const variants: Array<'default' | 'secondary' | 'outline'> = ['default', 'secondary', 'outline'];
+                const skillVariant = variants[idx % variants.length];
+                const extraClasses = skillVariant === 'default'
+                  ? 'rounded-full px-4 py-1.5 text-sm font-normal border-2 border-foreground/15'
+                  : skillVariant === 'secondary'
+                    ? 'rounded-full px-4 py-1.5 text-sm font-normal bg-secondary/80'
+                    : 'rounded-full px-4 py-1.5 text-sm font-normal border-2 border-foreground/10';
+                return (
+                  <Badge key={skill} variant={skillVariant} className={extraClasses}>
+                    {skill}
+                  </Badge>
+                );
+              })}
             </div>
             <Separator />
             <div>
@@ -558,9 +557,6 @@ export const StaticHomeLayout: React.FC = () => {
                 />
               </div>
               <CardContent className="p-6">
-                <Badge variant="secondary" className="rounded-full mb-3">
-                  {project.tags}
-                </Badge>
                 <h3 className="tracking-tight" style={{ fontSize: '1.25rem', fontWeight: 600 }}>{project.title}</h3>
                 <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{project.summary}</p>
                 <div className="mt-5 inline-flex items-center text-sm text-foreground gap-1 group-hover:gap-2 transition-all">
@@ -630,14 +626,14 @@ export const StaticHomeLayout: React.FC = () => {
 
       {/* ===================== FOOTER ===================== */}
       <footer className="border-t mt-12">
-        <div className="mx-auto max-w-6xl px-6 py-12 grid md:grid-cols-4 gap-8">
-          <div className="space-y-3">
-            <div className="font-semibold tracking-tight">{footer.brandTitle}</div>
-            <p className="text-sm text-muted-foreground">{footer.brandDescription}</p>
+        <div className="mx-auto max-w-6xl px-6 py-16 grid md:grid-cols-12 gap-10">
+          <div className="md:col-span-4 space-y-4">
+            <div className="font-semibold tracking-tight text-lg">{footer.brandTitle}</div>
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">{footer.brandDescription}</p>
           </div>
-          <div>
-            <div className="text-sm mb-3">{footer.quickLinksTitle}</div>
-            <ul className="space-y-2 text-sm text-muted-foreground">
+          <div className="md:col-span-2 md:col-start-6">
+            <div className="text-sm font-medium mb-4 text-foreground">{footer.quickLinksTitle}</div>
+            <ul className="space-y-3 text-sm text-muted-foreground">
               {footerNavLinks.map((link) => (
                 <li key={link.id}>
                   <a
@@ -651,9 +647,9 @@ export const StaticHomeLayout: React.FC = () => {
               ))}
             </ul>
           </div>
-          <div>
-            <div className="text-sm mb-3">{footer.followTitle}</div>
-            <div className="flex gap-2">
+          <div className="md:col-span-2">
+            <div className="text-sm font-medium mb-4 text-foreground">{footer.followTitle}</div>
+            <div className="flex gap-3">
               {footerSocialLinks.map((link) => {
                 const SocialIcon = getSocialIconComponent(link.icon);
                 return (
@@ -666,14 +662,14 @@ export const StaticHomeLayout: React.FC = () => {
                     className={footerSocialClass}
                     aria-label={link.label}
                   >
-                    <SocialIcon className="h-4 w-4" />
+                    <SocialIcon className="h-5 w-5" />
                   </a>
                 );
               })}
             </div>
           </div>
-          <div>
-            <div className="text-sm mb-3">{footer.ctaTitle}</div>
+          <div className="md:col-span-3 md:col-start-10">
+            <div className="text-sm font-medium mb-4 text-foreground">{footer.ctaTitle}</div>
             <a
               href={footer.ctaButtonHref || contactHref}
               onClick={(event) => handlePlaceholderLinkClick(event, footer.ctaButtonHref || contactHref)}
@@ -684,15 +680,15 @@ export const StaticHomeLayout: React.FC = () => {
           </div>
         </div>
         <div className="border-t">
-          <div className="mx-auto max-w-6xl px-6 py-5 flex items-center justify-between text-xs text-muted-foreground">
+          <div className="mx-auto max-w-6xl px-6 py-6 flex items-center justify-between text-xs text-muted-foreground">
             <span>© {new Date().getFullYear()} {footer.copyrightText}</span>
-            <div className="flex gap-4">
+            <div className="flex gap-6">
               {footerLegalLinks.map((link) => (
                 <a
                   key={link.id}
                   href={link.href}
                   onClick={(event) => handlePlaceholderLinkClick(event, link.href)}
-                  className="hover:text-foreground"
+                  className="hover:text-foreground transition-colors"
                 >
                   {link.label}
                 </a>

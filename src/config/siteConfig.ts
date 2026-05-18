@@ -1745,7 +1745,7 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
       featuredProjectCardVariant: 'card-2',
       scene05CardVariant: 'card-1',
       featuredProjectButtonVariant: 'button-2',
-      featuredViewAllButtonVariant: 'button-1',
+      featuredViewAllButtonVariant: 'button-2',
       featuredCtaButtonVariant: 'button-1',
       persistentLetsTalkButtonVariant: 'button-1',
       musicToggleButtonVariant: 'button-3',
@@ -2893,7 +2893,7 @@ export const hydrateSiteConfig = (value: unknown): SiteConfig => {
             name: asString(item.name, ''),
             logoSrc,
             href: asString(item.href, '#'),
-            visible: asBoolean(item.visible, true) && !isClearbitLogo(logoSrc),
+            visible: asBoolean(item.visible, true),
           };
         })
         .filter(
@@ -2914,7 +2914,7 @@ export const hydrateSiteConfig = (value: unknown): SiteConfig => {
             year: asString(item.year, ''),
             credentialUrl: asString(item.credentialUrl, '#'),
             logoSrc,
-            visible: asBoolean(item.visible, true) && !isClearbitLogo(logoSrc),
+            visible: asBoolean(item.visible, true),
           };
         })
         .filter(
