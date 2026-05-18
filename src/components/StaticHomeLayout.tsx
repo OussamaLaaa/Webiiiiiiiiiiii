@@ -277,14 +277,14 @@ export const StaticHomeLayout: React.FC = () => {
       className="min-h-screen bg-background text-foreground"
       style={{
         ['--background' as any]: '#ffffff',
-        ['--foreground' as any]: '#111217',
+        ['--foreground' as any]: '#0a0a0a',
         ['--card' as any]: '#ffffff',
-        ['--card-foreground' as any]: '#111217',
+        ['--card-foreground' as any]: '#0a0a0a',
         ['--popover' as any]: '#ffffff',
-        ['--popover-foreground' as any]: '#111217',
+        ['--popover-foreground' as any]: '#0a0a0a',
         ['--primary' as any]: '#030213',
         ['--primary-foreground' as any]: '#ffffff',
-        ['--secondary' as any]: '#f2f2f7',
+        ['--secondary' as any]: '#ececf0',
         ['--secondary-foreground' as any]: '#030213',
         ['--muted' as any]: '#ececf0',
         ['--muted-foreground' as any]: '#717182',
@@ -294,12 +294,14 @@ export const StaticHomeLayout: React.FC = () => {
       }}
       data-surface="static-home"
     >
+      {/* ===================== HERO SECTION ===================== */}
       <section id="home" className="relative overflow-hidden">
+        {/* Decorative grid background */}
         <div
           className="absolute inset-0 -z-10 opacity-[0.4]"
           style={{
             backgroundImage:
-              'linear-gradient(to right, rgba(17, 18, 23, 0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(17, 18, 23, 0.06) 1px, transparent 1px)',
+              'linear-gradient(to right, rgba(10, 10, 10, 0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(10, 10, 10, 0.06) 1px, transparent 1px)',
             backgroundSize: '56px 56px',
             maskImage: 'radial-gradient(ellipse 80% 60% at 50% 30%, black 40%, transparent 80%)',
             WebkitMaskImage:
@@ -335,7 +337,7 @@ export const StaticHomeLayout: React.FC = () => {
                 className="bg-clip-text text-transparent"
                 style={{
                   backgroundImage:
-                    'linear-gradient(110deg, var(--foreground) 0%, rgba(17, 18, 23, 0.45) 100%)',
+                    'linear-gradient(110deg, var(--foreground) 0%, rgba(10, 10, 10, 0.45) 100%)',
                 }}
               >
                 {scene05.heroTitleLine2}
@@ -373,6 +375,7 @@ export const StaticHomeLayout: React.FC = () => {
             </a>
           </div>
 
+          {/* Avatar + meta strip */}
           <div className="mt-14 flex items-center justify-center gap-4 flex-wrap">
             <div className="flex -space-x-3">
               {heroTestimonials.map((item) => (
@@ -397,6 +400,7 @@ export const StaticHomeLayout: React.FC = () => {
           </div>
         </div>
 
+        {/* Trusted by companies marquee */}
         {companyNames.length > 0 ? (
           <div className="mx-auto max-w-6xl px-6 pb-20">
             <p className="text-center text-xs uppercase tracking-widest text-muted-foreground mb-6">
@@ -432,6 +436,7 @@ export const StaticHomeLayout: React.FC = () => {
         ) : null}
       </section>
 
+      {/* ===================== VALUES SECTION ===================== */}
       <section id="values" className="mx-auto max-w-6xl px-6 py-20">
         <div className="mb-12">
           <SectionEyebrow>{scene05.valuesEyebrow}</SectionEyebrow>
@@ -462,6 +467,7 @@ export const StaticHomeLayout: React.FC = () => {
         </div>
       </section>
 
+      {/* ===================== ABOUT SECTION ===================== */}
       <section id="about" className="mx-auto max-w-6xl px-6 py-20">
         <div className="grid lg:grid-cols-2 gap-10">
           <Card className="rounded-2xl bg-muted/30">
@@ -521,6 +527,7 @@ export const StaticHomeLayout: React.FC = () => {
         </div>
       </section>
 
+      {/* ===================== PROJECTS SECTION ===================== */}
       <section id="projects" className="mx-auto max-w-6xl px-6 py-20">
         <div className="flex items-end justify-between mb-12 flex-wrap gap-4">
           <div>
@@ -566,6 +573,7 @@ export const StaticHomeLayout: React.FC = () => {
         </div>
       </section>
 
+      {/* ===================== TESTIMONIALS SECTION ===================== */}
       {visibility.testimonialsSection ? (
         <section id="testimonials" className="mx-auto max-w-6xl px-6 py-20">
           <div className="mb-12">
@@ -597,6 +605,7 @@ export const StaticHomeLayout: React.FC = () => {
         </section>
       ) : null}
 
+      {/* ===================== CTA SECTION ===================== */}
       <section id="contact" className="mx-auto max-w-5xl px-6 py-32 text-center">
         <h2
           className="tracking-tight mx-auto max-w-4xl"
@@ -619,6 +628,7 @@ export const StaticHomeLayout: React.FC = () => {
         </a>
       </section>
 
+      {/* ===================== FOOTER ===================== */}
       <footer className="border-t mt-12">
         <div className="mx-auto max-w-6xl px-6 py-12 grid md:grid-cols-4 gap-8">
           <div className="space-y-3">
