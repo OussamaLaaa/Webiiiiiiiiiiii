@@ -199,6 +199,48 @@
   }
 }
 
+/* Disable glow effects explicitly when data-glow="off" */
+[data-glow='off'] :where(
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  span,
+  a,
+  button,
+  small,
+  strong,
+  em,
+  li,
+  label,
+  figcaption,
+  blockquote
+) {
+  text-shadow: none !important;
+}
+
+[data-glow='off'] :where(
+  .ds-btn,
+  .ds-card,
+  .ds-glass,
+  .glass-navbar,
+  .glass-tag,
+  .glass-nav-link
+) {
+  filter: none !important;
+}
+
+[data-glow='off'] .cinematic-canvas {
+  filter: none !important;
+}
+
+[data-glow='off'] :where(.ds-btn:hover, .glass-nav-link:hover) {
+  filter: none !important;
+}
+
 [data-glow='on'] :where(
   h1,
   h2,
@@ -769,6 +811,13 @@ body {
 html, body {
   background-color: #08080a;
   overscroll-behavior-y: none;
+}
+
+/* Override body background when static-home layout is active (light mode) */
+[data-surface="static-home"] body,
+body:has([data-surface="static-home"]) {
+  background-color: #ffffff !important;
+  color: #111217 !important;
 }
 
 /* Dashboard specific styles - override dark background */

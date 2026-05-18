@@ -77,8 +77,14 @@ export const Home: React.FC = () => {
     }
   }, [hasStarted]);
 
+  const isStatic = isStaticHomeLayout;
+
   return (
-    <div className="bg-[#111113] min-h-screen text-white selection:bg-white/20" data-surface="base">
+    <div
+      className={isStatic ? "min-h-screen bg-white text-[#111217]" : "bg-[#111113] min-h-screen text-white selection:bg-white/20"}
+      data-surface={isStatic ? "static-home" : "base"}
+      data-glow={isStatic ? "off" : "on"}
+    >
       {!isStaticHomeLayout && !hasStarted ? (
         <LoadingScreen 
           progress={progress} 
@@ -94,7 +100,7 @@ export const Home: React.FC = () => {
 
       {!isStaticHomeLayout && visibility.introOverlay ? <IntroTextOverlay hasStarted={hasStarted} isScrolling={isScrolling} /> : null}
 
-      {isStaticHomeLayout ? (
+      {isStatic ? (
         <StaticHomeLayout />
       ) : hasStarted ? (
         <main className="relative w-full bg-black" data-surface="ambient">
