@@ -104,7 +104,7 @@ export const Footer: React.FC = () => {
   return (
     <footer className="relative z-10 w-full border-t border-[#111217]/10 bg-[#f6f6f7] text-[#111217] selection:bg-[#111217]/10">
       <div className="site-shell pb-8 pt-14 md:pb-10 md:pt-16">
-        <div className="grid items-start gap-8 border-b border-[#111217]/10 pb-12 md:grid-cols-2 md:gap-10 xl:grid-cols-[1.6fr_1fr_0.9fr_1.4fr] xl:gap-8">
+        <div className="grid items-start gap-10 border-b border-[#111217]/10 pb-14 sm:gap-12 md:grid-cols-2 md:gap-12 xl:grid-cols-4 xl:gap-12">
           <div className="space-y-4">
             <p className="text-[1.42rem] font-semibold leading-tight tracking-tight text-[#111217] md:text-[1.56rem]">
               {footer.brandTitle}
@@ -147,7 +147,7 @@ export const Footer: React.FC = () => {
               <p className="text-[1.08rem] font-semibold leading-tight tracking-tight text-[#111217] md:text-[1.15rem]">
                 {footer.followTitle}
               </p>
-              <div className="flex items-center">
+              <div className="flex items-center gap-5">
                 {visibleSocialLinks.map((social, idx) => {
                   const SocialIcon = getSocialIconComponent(social.icon);
                   return (
@@ -159,12 +159,12 @@ export const Footer: React.FC = () => {
                         rel={isPlaceholderHref(social.href) ? undefined : 'noopener noreferrer'}
                         aria-label={social.label}
                         title={social.label}
-                        className="inline-flex items-center justify-center p-0 text-[#111217]/72 transition-colors hover:text-[#111217]"
+                        className="inline-flex items-center justify-center text-[#111217]/72 transition-colors hover:text-[#111217]"
                       >
                         <SocialIcon size={20} strokeWidth={1.7} />
                       </a>
                       {idx < visibleSocialLinks.length - 1 ? (
-                        <span className="mx-4 h-6 w-px bg-[#111217]/10" aria-hidden />
+                        <span className="h-5 w-px bg-[#111217]/10" aria-hidden />
                       ) : null}
                     </React.Fragment>
                   );
@@ -207,7 +207,7 @@ export const Footer: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-6 flex flex-col gap-3.5 pt-4 text-[0.86rem] text-[#111217]/57 md:flex-row md:items-center md:justify-between">
+        <div className="mt-10 flex flex-col gap-4 pt-6 text-[0.86rem] text-[#111217]/57 md:flex-row md:items-center md:justify-between">
           <p>© {new Date().getFullYear()} {footer.copyrightText}</p>
           {visibility.footerLegalLinks && visibleLegalLinks.length > 0 ? (
             <div className="flex flex-wrap items-center gap-2 text-[#111217]/52">
