@@ -1,57 +1,140 @@
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { useSiteConfig } from '../context/SiteConfigContext';
-import { Footer } from './Footer';
-import { getButtonClass, getCardClass, getGlassClass } from './designSystem';
-import { BriefcaseIcon, FileTextIcon, MessageSquareIcon, SlidersHorizontalIcon } from './icons';
+import { getButtonClass } from './designSystem';
+import { getSocialIconComponent } from './icons';
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Sparkles,
+  Layers,
+  MousePointerClick,
+  Lightbulb,
+  CheckCircle2,
+  Award,
+  Quote,
+} from 'lucide-react';
 
 const SECTION_IDS = ['home', 'about', 'projects', 'testimonials', 'contact'] as const;
 
 const isPlaceholderHref = (href: string) => href.trim() === '#';
 
-const Reveal: React.FC<{
-  children: ReactNode;
-  className?: string;
-  delayMs?: number;
-}> = ({ children, className = '', delayMs = 0 }) => {
-  const ref = useRef<HTMLDivElement | null>(null);
-  const [isVisible, setIsVisible] = useState(false);
+const joinClasses = (...parts: Array<string | false | null | undefined>) => parts.filter(Boolean).join(' ');
 
-  useEffect(() => {
-    const element = ref.current;
-    if (!element) return;
+type BadgeVariant = 'default' | 'secondary' | 'outline';
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.18, rootMargin: '0px 0px -8% 0px' },
+const BADGE_VARIANT_CLASSES: Record<BadgeVariant, string> = {
+  default: 'border-transparent bg-primary text-primary-foreground',
+  secondary: 'border-transparent bg-secondary text-secondary-foreground',
+  outline: 'text-foreground',
+};
+
+const Badge: React.FC<{ className?: string; children: ReactNode; variant?: BadgeVariant }> = ({
+  className,
+  children,
+  variant = 'default',
+}) => (
+  <span
+    className={joinClasses(
+      'inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 gap-1 overflow-hidden',
+      BADGE_VARIANT_CLASSES[variant],
+      className,
+    )}
+  >
+    {children}
+  </span>
+);
+
+const Card: React.FC<{ className?: string; children: ReactNode }> = ({ className, children }) => (
+  <div className={joinClasses('bg-card text-card-foreground flex flex-col gap-6 rounded-xl border', className)}>
+    {children}
+  </div>
+);
+
+const CardHeader: React.FC<{ className?: string; children: ReactNode }> = ({ className, children }) => (
+  <div
+    className={joinClasses(
+      '@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 pt-6',
+      className,
+    )}
+  >
+    {children}
+  </div>
+);
+
+const CardTitle: React.FC<{ className?: string; children: ReactNode }> = ({ className, children }) => (
+  <h4 className={joinClasses('leading-none', className)}>{children}</h4>
+);
+
+const CardContent: React.FC<{ className?: string; children: ReactNode }> = ({ className, children }) => (
+  <div className={joinClasses('px-6 [&:last-child]:pb-6', className)}>{children}</div>
+);
+
+const Avatar: React.FC<{ className?: string; children: ReactNode }> = ({ className, children }) => (
+  <div className={joinClasses('relative flex size-10 shrink-0 overflow-hidden rounded-full', className)}>{children}</div>
+);
+
+const AvatarImage: React.FC<React.ImgHTMLAttributes<HTMLImageElement>> = ({ className, ...props }) => (
+  <img className={joinClasses('aspect-square size-full', className)} {...props} />
+);
+
+const AvatarFallback: React.FC<{ className?: string; children: ReactNode }> = ({ className, children }) => (
+  <div className={joinClasses('bg-muted flex size-full items-center justify-center rounded-full', className)}>
+    {children}
+  </div>
+);
+
+const Separator: React.FC<{ className?: string }> = ({ className }) => (
+  <div className={joinClasses('bg-border h-px w-full', className)} />
+);
+
+const ERROR_IMG_SRC =
+  'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODgiIGhlaWdodD0iODgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgc3Ryb2tlPSIjMDAwIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBvcGFjaXR5PSIuMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIzLjciPjxyZWN0IHg9IjE2IiB5PSIxNiIgd2lkdGg9IjU2IiBoZWlnaHQ9IjU2IiByeD0iNiIvPjxwYXRoIGQ9Im0xNiA1OCAxNi0xOCAzMiAzMiIvPjxjaXJjbGUgY3g9IjUzIiBjeT0iMzUiIHI9IjciLz48L3N2Zz4KCg==';
+
+const ImageWithFallback: React.FC<React.ImgHTMLAttributes<HTMLImageElement>> = ({
+  src,
+  alt,
+  className,
+  style,
+  ...rest
+}) => {
+  const [didError, setDidError] = useState(false);
+
+  if (didError) {
+    return (
+      <div className={joinClasses('inline-block bg-gray-100 text-center align-middle', className)} style={style}>
+        <div className="flex h-full w-full items-center justify-center">
+          <img src={ERROR_IMG_SRC} alt="Error loading image" data-original-url={src} {...rest} />
+        </div>
+      </div>
     );
-
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, []);
+  }
 
   return (
-    <div
-      ref={ref}
-      className={`transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform ${
-        isVisible ? 'translate-y-0 opacity-100 blur-0' : 'translate-y-6 opacity-0 blur-[6px]'
-      } ${className}`}
-      style={{ transitionDelay: `${delayMs}ms` }}
-    >
-      {children}
-    </div>
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+      style={style}
+      {...rest}
+      onError={() => setDidError(true)}
+    />
   );
 };
 
-const SectionEyebrow: React.FC<{ children: ReactNode; className?: string }> = ({ children, className = '' }) => (
-  <p className={`font-mono text-[0.7rem] uppercase tracking-[0.3em] ${className}`}>{children}</p>
+const SectionEyebrow: React.FC<{ className?: string; children: ReactNode }> = ({ className, children }) => (
+  <p className={joinClasses('text-sm text-muted-foreground uppercase tracking-widest', className)}>{children}</p>
 );
 
-const VALUE_ICONS = [MessageSquareIcon, SlidersHorizontalIcon, FileTextIcon, BriefcaseIcon];
+const getInitials = (value: string) => {
+  const parts = value
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? '');
+
+  return parts.length > 0 ? parts.join('') : 'NA';
+};
 
 export const StaticHomeLayout: React.FC = () => {
   const { siteConfig } = useSiteConfig();
@@ -79,6 +162,39 @@ export const StaticHomeLayout: React.FC = () => {
   const visibleLogos = visibleCompanyLogos.length > 0 ? visibleCompanyLogos : scene05.companyLogos;
   const visibleCertificates = featuredCertifications.length > 0 ? featuredCertifications : scene05.certifications;
   const valueCards = visibleValueCards.length > 0 ? visibleValueCards : scene05.valueCards;
+
+  const companyNames = useMemo(() => {
+    const names = visibleLogos.map((logo) => logo.name).filter(Boolean);
+    return names.length > 0 ? names : [];
+  }, [visibleLogos]);
+
+  const heroTestimonials = useMemo(() => {
+    const source = visibleTestimonials.length > 0 ? visibleTestimonials : siteConfig.testimonials;
+    return source.filter((item) => item.avatar).slice(0, 3);
+  }, [siteConfig.testimonials, visibleTestimonials]);
+
+  const certificationItems = useMemo(() => {
+    if (featuredCertifications.length > 0) {
+      return featuredCertifications.map((item) => ({
+        title: item.title,
+        org: [item.issuer, item.year].filter(Boolean).join(' - '),
+      }));
+    }
+
+    return (scene05.certifications ?? []).map((title) => ({ title, org: '' }));
+  }, [featuredCertifications, scene05.certifications]);
+
+  const projects = useMemo(() => {
+    return visibleProjects.map((project) => ({
+      ...project,
+      summary: project.summary?.trim() || project.tags,
+    }));
+  }, [visibleProjects]);
+
+  const testimonials = visibleTestimonials;
+  const footerSocialLinks = footer.socialLinks.filter((link) => link.visible);
+  const footerLegalLinks = footer.legalLinks.filter((link) => link.visible);
+  const footerNavLinks = footer.navLinks.filter((link) => link.visible);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -114,34 +230,9 @@ export const StaticHomeLayout: React.FC = () => {
     return () => observer.disconnect();
   }, []);
 
-  const navLabel = (section: string, fallback: string) =>
-    persistentUI.navItems.find((item) => item.section === section)?.label || fallback;
-
-  const testimonialsLabel = navLabel('testimonials', featured.titleLine2);
-
-  const storyParagraphs = useMemo(
-    () => scene05.storyParagraphs.map((item) => item.trim()).filter(Boolean),
-    [scene05.storyParagraphs],
-  );
-  const aboutParagraphs = storyParagraphs.length > 0 ? storyParagraphs : [scene05.visionText];
-  const aboutHighlights = useMemo(() => {
-    const highlights = scene05.aboutHighlights.map((item) => item.trim()).filter(Boolean);
-    if (highlights.length > 0) return highlights;
-    return storyParagraphs.length > 0 ? storyParagraphs : [scene05.visionText];
-  }, [scene05.aboutHighlights, scene05.visionText, storyParagraphs]);
-
-  const heroTestimonials = useMemo(() => {
-    const source = visibleTestimonials.length > 0 ? visibleTestimonials : siteConfig.testimonials;
-    return source.filter((item) => item.avatar).slice(0, 3);
-  }, [siteConfig.testimonials, visibleTestimonials]);
-
-  const companyNames = useMemo(() => {
-    const names = visibleLogos.map((logo) => logo.name).filter(Boolean);
-    return names.length > 0 ? names : [];
-  }, [visibleLogos]);
-
   const contactHref = persistentUI.letsTalkHref || footer.ctaButtonHref || scene05.actionHref;
   const primaryHeroHref = featured.ctaButtonHref || contactHref;
+
   const primaryCtaClass = getButtonClass(
     designSystem.components.featuredCtaButtonVariant,
     'light',
@@ -152,22 +243,25 @@ export const StaticHomeLayout: React.FC = () => {
     designSystem.components.featuredViewAllButtonVariant,
     'light',
     'lg',
-    'rounded-full h-12 px-6 bg-white/60 backdrop-blur-sm border border-[#111217]/12 text-[#111217]',
+    'rounded-full h-12 px-6 bg-background/60 backdrop-blur-sm',
   );
-  const valueCardClass = `${getCardClass(
-    designSystem.components.scene05CardVariant,
+  const viewAllClass = getButtonClass(
+    designSystem.components.featuredViewAllButtonVariant,
     'light',
-    'rounded-2xl p-6 transition-shadow hover:shadow-md',
-  )} ${getGlassClass(designSystem.components.globalGlassVariant, 'light')}`;
-  const aboutCardClass = `${getCardClass(
-    designSystem.components.scene05CardVariant,
+    'sm',
+    'rounded-full',
+  );
+  const footerCtaClass = getButtonClass(
+    designSystem.components.featuredCtaButtonVariant,
     'light',
-    'rounded-2xl bg-white/70 p-8 md:p-10',
-  )} ${getGlassClass(designSystem.components.globalGlassVariant, 'light')}`;
-  const projectCardClass = getCardClass(
-    designSystem.components.featuredProjectCardVariant,
+    'md',
+    'rounded-full w-full',
+  );
+  const footerSocialClass = getButtonClass(
+    designSystem.components.featuredViewAllButtonVariant,
     'light',
-    'rounded-2xl overflow-hidden group cursor-pointer hover:shadow-lg transition-all p-0 gap-0',
+    'icon',
+    'rounded-full h-9 w-9',
   );
 
   const handlePlaceholderLinkClick = (event: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -176,132 +270,136 @@ export const StaticHomeLayout: React.FC = () => {
     }
   };
 
-  return (
-    <main className="min-h-screen bg-[#f7f7f5] text-[#111217]" data-surface="static-home">
-      <section id="home" className="relative overflow-hidden border-b border-[#111217]/8">
-        <div className="absolute inset-0 -z-10">
-          <div
-            className="absolute inset-0 opacity-[0.4]"
-            style={{
-              backgroundImage:
-                'linear-gradient(to right, rgba(17,18,23,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(17,18,23,0.06) 1px, transparent 1px)',
-              backgroundSize: '56px 56px',
-              maskImage: 'radial-gradient(ellipse 80% 60% at 50% 30%, black 40%, transparent 80%)',
-              WebkitMaskImage:
-                'radial-gradient(ellipse 80% 60% at 50% 30%, black 40%, transparent 80%)',
-            }}
-          />
-          <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-[#111217]/5 blur-3xl" />
-          <div className="absolute top-20 -right-32 h-96 w-96 rounded-full bg-[#111217]/5 blur-3xl" />
-        </div>
+  const valueIcons = [Layers, Sparkles, MousePointerClick, Lightbulb];
 
-        <div className="site-shell max-w-5xl px-6 pt-28 pb-20 text-center md:pt-36">
-          <Reveal>
-            <div className="inline-flex items-center gap-2 rounded-full border border-[#111217]/12 bg-white/80 px-4 py-2 text-[0.72rem] font-medium uppercase tracking-[0.24em] text-[#111217]/65 shadow-[0_10px_26px_rgba(17,18,23,0.06)]">
+  return (
+    <main
+      className="min-h-screen bg-background text-foreground"
+      style={{
+        ['--background' as any]: '#ffffff',
+        ['--foreground' as any]: '#111217',
+        ['--card' as any]: '#ffffff',
+        ['--card-foreground' as any]: '#111217',
+        ['--popover' as any]: '#ffffff',
+        ['--popover-foreground' as any]: '#111217',
+        ['--primary' as any]: '#030213',
+        ['--primary-foreground' as any]: '#ffffff',
+        ['--secondary' as any]: '#f2f2f7',
+        ['--secondary-foreground' as any]: '#030213',
+        ['--muted' as any]: '#ececf0',
+        ['--muted-foreground' as any]: '#717182',
+        ['--accent' as any]: '#e9ebef',
+        ['--accent-foreground' as any]: '#030213',
+        ['--border' as any]: 'rgba(0, 0, 0, 0.1)',
+      }}
+      data-surface="static-home"
+    >
+      <section id="home" className="relative overflow-hidden">
+        <div
+          className="absolute inset-0 -z-10 opacity-[0.4]"
+          style={{
+            backgroundImage:
+              'linear-gradient(to right, rgba(17, 18, 23, 0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(17, 18, 23, 0.06) 1px, transparent 1px)',
+            backgroundSize: '56px 56px',
+            maskImage: 'radial-gradient(ellipse 80% 60% at 50% 30%, black 40%, transparent 80%)',
+            WebkitMaskImage:
+              'radial-gradient(ellipse 80% 60% at 50% 30%, black 40%, transparent 80%)',
+          }}
+        />
+        <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-foreground/[0.04] blur-3xl -z-10" />
+        <div className="absolute top-20 -right-32 h-96 w-96 rounded-full bg-foreground/[0.04] blur-3xl -z-10" />
+
+        <div className="mx-auto max-w-5xl px-6 pt-28 md:pt-36 pb-20 text-center">
+          <div className="flex justify-center mb-8">
+            <Badge className="rounded-full gap-2 py-1.5 px-4 bg-background/60 backdrop-blur-sm border-border/60 shadow-sm">
               <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full rounded-full bg-[#111217]/70 opacity-60 animate-ping" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-[#111217]" />
+                <span className="absolute inline-flex h-full w-full rounded-full bg-foreground opacity-60 animate-ping" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-foreground" />
               </span>
               <span className="text-xs">{scene05.badge}</span>
-            </div>
-          </Reveal>
+            </Badge>
+          </div>
 
-          <Reveal delayMs={100}>
-            <h1
-              className="mx-auto mt-8 max-w-4xl tracking-tight"
-              style={{
-                fontSize: 'clamp(2.75rem, 7vw, 5.5rem)',
-                lineHeight: 1.02,
-                fontWeight: 600,
-                letterSpacing: '-0.04em',
-              }}
-            >
-              {scene05.heroTitleLine1}{' '}
-              <span className="relative inline-block">
-                <span
-                  className="bg-clip-text text-transparent"
-                  style={{
-                    backgroundImage:
-                      'linear-gradient(110deg, #111217 0%, rgba(17,18,23,0.45) 100%)',
-                  }}
-                >
-                  {scene05.heroTitleLine2}
-                </span>
-                <svg
-                  viewBox="0 0 300 12"
-                  className="absolute -bottom-2 left-0 h-3 w-full text-[#111217]/30"
-                  preserveAspectRatio="none"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                >
-                  <path d="M2 8 Q 75 2, 150 6 T 298 4" />
-                </svg>
-              </span>
-            </h1>
-          </Reveal>
-
-          <Reveal delayMs={160}>
-            <p className="mx-auto mt-8 max-w-2xl text-lg leading-relaxed text-[#111217]/68 md:text-xl">
-              {scene05.heroSubtitle}
-            </p>
-          </Reveal>
-
-          <Reveal delayMs={220}>
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-              <a
-                href={primaryHeroHref}
-                onClick={(event) => handlePlaceholderLinkClick(event, primaryHeroHref)}
-                target={isPlaceholderHref(primaryHeroHref) ? undefined : '_blank'}
-                rel={isPlaceholderHref(primaryHeroHref) ? undefined : 'noopener noreferrer'}
-                className={primaryCtaClass}
+          <h1
+            className="tracking-tight mx-auto max-w-4xl"
+            style={{
+              fontSize: 'clamp(2.75rem, 7vw, 5.5rem)',
+              lineHeight: 1.02,
+              fontWeight: 600,
+              letterSpacing: '-0.04em',
+            }}
+          >
+            {scene05.heroTitleLine1}{' '}
+            <span className="relative inline-block">
+              <span
+                className="bg-clip-text text-transparent"
+                style={{
+                  backgroundImage:
+                    'linear-gradient(110deg, var(--foreground) 0%, rgba(17, 18, 23, 0.45) 100%)',
+                }}
               >
-                {featured.ctaButtonText}
-                <span aria-hidden="true">-&gt;</span>
-              </a>
-              <a href="#projects" className={secondaryCtaClass}>
-                {featured.viewAllLabel}
-                <span aria-hidden="true">-&gt;</span>
-              </a>
-            </div>
-          </Reveal>
+                {scene05.heroTitleLine2}
+              </span>
+              <svg
+                viewBox="0 0 300 12"
+                className="absolute -bottom-2 left-0 w-full h-3 text-foreground/30"
+                preserveAspectRatio="none"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              >
+                <path d="M2 8 Q 75 2, 150 6 T 298 4" />
+              </svg>
+            </span>
+          </h1>
 
-          {heroTestimonials.length > 0 || scene05.portraitCaption ? (
-            <Reveal delayMs={280}>
-              <div className="mt-14 flex flex-wrap items-center justify-center gap-4">
-                {heroTestimonials.length > 0 ? (
-                  <div className="flex -space-x-3">
-                    {heroTestimonials.map((item) => (
-                      <img
-                        key={item.id}
-                        src={item.avatar}
-                        alt={item.name}
-                        className="h-10 w-10 rounded-full border-2 border-[#f7f7f5] object-cover"
-                      />
-                    ))}
-                  </div>
-                ) : null}
-                <div className="text-left">
-                  <div className="flex items-center gap-1 text-[#111217]">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <svg key={i} viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5">
-                        <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                      </svg>
-                    ))}
-                  </div>
-                  {scene05.portraitCaption ? (
-                    <p className="text-sm text-[#111217]/62">{scene05.portraitCaption}</p>
-                  ) : null}
-                </div>
+          <p className="mx-auto max-w-2xl mt-8 text-lg md:text-xl text-muted-foreground leading-relaxed">
+            {scene05.heroSubtitle}
+          </p>
+
+          <div className="mt-10 flex flex-wrap justify-center items-center gap-3">
+            <a
+              href={primaryHeroHref}
+              onClick={(event) => handlePlaceholderLinkClick(event, primaryHeroHref)}
+              target={isPlaceholderHref(primaryHeroHref) ? undefined : '_blank'}
+              rel={isPlaceholderHref(primaryHeroHref) ? undefined : 'noopener noreferrer'}
+              className={primaryCtaClass}
+            >
+              {featured.ctaButtonText} <ArrowRight className="ml-2 h-4 w-4" />
+            </a>
+            <a href="#projects" className={secondaryCtaClass}>
+              {featured.heroSecondaryLabel || featured.viewAllLabel} <ArrowUpRight className="ml-2 h-4 w-4" />
+            </a>
+          </div>
+
+          <div className="mt-14 flex items-center justify-center gap-4 flex-wrap">
+            <div className="flex -space-x-3">
+              {heroTestimonials.map((item) => (
+                <Avatar key={item.id} className="h-10 w-10 ring-2 ring-background">
+                  <AvatarImage src={item.avatar} alt={item.name} />
+                  <AvatarFallback>{getInitials(item.name)}</AvatarFallback>
+                </Avatar>
+              ))}
+            </div>
+            <div className="text-left">
+              <div className="flex items-center gap-1 text-foreground">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <svg key={i} viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5">
+                    <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                  </svg>
+                ))}
               </div>
-            </Reveal>
-          ) : null}
+              <p className="text-sm text-muted-foreground">
+                {scene05.portraitCaption}
+              </p>
+            </div>
+          </div>
         </div>
 
         {companyNames.length > 0 ? (
-          <div className="site-shell max-w-6xl px-6 pb-20">
-            <p className="mb-6 text-center text-xs uppercase tracking-widest text-[#111217]/55">
+          <div className="mx-auto max-w-6xl px-6 pb-20">
+            <p className="text-center text-xs uppercase tracking-widest text-muted-foreground mb-6">
               {scene05.companyLogosTitle}
             </p>
             <div
@@ -312,11 +410,11 @@ export const StaticHomeLayout: React.FC = () => {
                   'linear-gradient(to right, transparent, black 12%, black 88%, transparent)',
               }}
             >
-              <div className="flex w-max gap-14 whitespace-nowrap animate-[marquee_30s_linear_infinite]">
+              <div className="flex gap-14 animate-[marquee_30s_linear_infinite] whitespace-nowrap w-max">
                 {[...companyNames, ...companyNames].map((name, i) => (
                   <span
                     key={`${name}-${i}`}
-                    className="text-2xl tracking-tight text-[#111217]/55 transition-colors hover:text-[#111217]"
+                    className="text-2xl tracking-tight text-muted-foreground/70 hover:text-foreground transition-colors"
                     style={{ fontWeight: 600 }}
                   >
                     {name}
@@ -334,191 +432,174 @@ export const StaticHomeLayout: React.FC = () => {
         ) : null}
       </section>
 
-      <section id="values" className="site-shell max-w-6xl px-6 py-20">
+      <section id="values" className="mx-auto max-w-6xl px-6 py-20">
         <div className="mb-12">
-          <SectionEyebrow className="text-[#111217]/55">{scene05.valuesEyebrow}</SectionEyebrow>
-          <h2 className="mt-3 text-3xl font-semibold tracking-[-0.03em] md:text-4xl">
+          <SectionEyebrow>{scene05.valuesEyebrow}</SectionEyebrow>
+          <h2 className="tracking-tight max-w-2xl" style={{ fontSize: '2.25rem', fontWeight: 600, lineHeight: 1.15 }}>
             {scene05.visionTitle}
           </h2>
-          <p className="mt-3 max-w-2xl text-[#111217]/65">{scene05.visionText}</p>
+          <p className="text-muted-foreground mt-3 max-w-2xl">
+            {scene05.visionText}
+          </p>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {valueCards.map((card, index) => {
-            const Icon = VALUE_ICONS[index % VALUE_ICONS.length];
+            const Icon = valueIcons[index % valueIcons.length];
             return (
-              <Reveal key={card.id} delayMs={index * 70}>
-                <article className={valueCardClass}>
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#111217]/10 text-[#111217]">
-                    <Icon size={18} strokeWidth={1.6} />
+              <Card key={card.id} className="rounded-2xl hover:shadow-md transition-shadow">
+                <CardHeader>
+                  <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                    <Icon className="h-5 w-5" />
                   </div>
-                  <h3 className="mt-4 text-lg font-semibold">{card.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-[#111217]/65">{card.description}</p>
-                </article>
-              </Reveal>
+                  <CardTitle className="mt-4">{card.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{card.description}</p>
+                </CardContent>
+              </Card>
             );
           })}
         </div>
       </section>
 
-      <section id="about" className="site-shell max-w-6xl px-6 py-20">
-        <div className="grid gap-10 lg:grid-cols-2">
-          <Reveal>
-            <div className={aboutCardClass}>
-              <h2 className="text-2xl font-semibold tracking-[-0.02em] md:text-[2rem]">
+      <section id="about" className="mx-auto max-w-6xl px-6 py-20">
+        <div className="grid lg:grid-cols-2 gap-10">
+          <Card className="rounded-2xl bg-muted/30">
+            <CardContent className="p-8 md:p-10 space-y-6">
+              <h2 className="tracking-tight" style={{ fontSize: '2rem', fontWeight: 600, lineHeight: 1.15 }}>
                 {scene05.storyTitle}
               </h2>
-              <div className="mt-6 space-y-4 text-[#111217]/68">
-                {aboutParagraphs.map((paragraph) => (
-                  <p key={paragraph} className="leading-relaxed">
-                    {paragraph}
-                  </p>
-                ))}
-              </div>
-              {aboutHighlights.length > 0 ? (
-                <ul className="mt-6 space-y-3">
-                  {aboutHighlights.map((line) => (
-                    <li key={line} className="flex items-start gap-3 text-sm">
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="mt-0.5 h-5 w-5 text-[#111217]"
-                      >
-                        <path d="M20 6L9 17l-5-5" />
-                      </svg>
-                      <span>{line}</span>
-                    </li>
-                  ))}
-                </ul>
+              {scene05.storyParagraphs.length > 0 ? (
+                <p className="text-muted-foreground leading-relaxed">{scene05.storyParagraphs[0]}</p>
               ) : null}
-            </div>
-          </Reveal>
+              <ul className="space-y-3">
+                {scene05.aboutHighlights.map((line) => (
+                  <li key={line} className="flex gap-3 text-sm">
+                    <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
+                    <span>{line}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
 
           <div className="space-y-6">
             <div>
-              <SectionEyebrow className="text-[#111217]/55">{scene05.skillsEyebrow}</SectionEyebrow>
-              <h3 className="mt-3 text-xl font-semibold tracking-tight">{scene05.skillsTitle}</h3>
+              <SectionEyebrow>{scene05.skillsEyebrow}</SectionEyebrow>
+              <h3 className="tracking-tight" style={{ fontSize: '1.5rem', fontWeight: 600 }}>
+                {scene05.skillsTitle}
+              </h3>
             </div>
             <div className="flex flex-wrap gap-2">
               {visibleSkills.map((skill) => (
-                <span
-                  key={skill}
-                  className="rounded-full border border-[#111217]/10 bg-white px-4 py-1.5 text-sm text-[#111217]/75"
-                >
+                <Badge key={skill} className="rounded-full px-4 py-1.5 text-sm font-normal bg-secondary">
                   {skill}
-                </span>
+                </Badge>
               ))}
             </div>
-            <div className="h-px bg-[#111217]/10" />
+            <Separator />
             <div>
-              <SectionEyebrow className="text-[#111217]/55">{scene05.certificationsTitle}</SectionEyebrow>
-              <div className="mt-4 space-y-2">
-                {visibleCertificates.map((item, index) => {
-                  const title = typeof item === 'string' ? item : item.title;
-                  const issuer = typeof item === 'string' ? '' : item.issuer;
-                  return (
-                    <div key={`${title}-${index}`} className="rounded-xl border border-[#111217]/10 bg-white/80 p-3">
-                      <div className="text-sm font-medium text-[#111217]">{title}</div>
-                      {issuer ? (
-                        <div className="text-xs uppercase tracking-[0.2em] text-[#111217]/45">{issuer}</div>
-                      ) : null}
+              <SectionEyebrow>{scene05.certificationsTitle}</SectionEyebrow>
+              <div className="space-y-2">
+                {certificationItems.map((item) => (
+                  <div
+                    key={item.title}
+                    className="flex items-start gap-3 p-3 rounded-xl hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Award className="h-4 w-4 text-primary" />
                     </div>
-                  );
-                })}
+                    <div>
+                      <div className="text-sm">{item.title}</div>
+                      {item.org ? <div className="text-xs text-muted-foreground">{item.org}</div> : null}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {visibility.featuredWork ? (
-        <section id="projects" className="site-shell max-w-6xl px-6 py-20">
-          <div className="mb-12 flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <SectionEyebrow className="text-[#111217]/55">{featured.titleLine1}</SectionEyebrow>
-              <h2 className="mt-3 text-3xl font-semibold tracking-[-0.03em] md:text-4xl">
-                {featured.titleLine2}
-              </h2>
-              <p className="mt-3 max-w-xl text-[#111217]/65">{featured.description}</p>
-            </div>
-            <a href="#projects" className={secondaryCtaClass}>
-              {featured.viewAllLabel}
-            </a>
+      <section id="projects" className="mx-auto max-w-6xl px-6 py-20">
+        <div className="flex items-end justify-between mb-12 flex-wrap gap-4">
+          <div>
+            <SectionEyebrow>{featured.titleLine1}</SectionEyebrow>
+            <h2 className="tracking-tight" style={{ fontSize: '2.25rem', fontWeight: 600, lineHeight: 1.15 }}>
+              {featured.titleLine2}
+            </h2>
+            <p className="text-muted-foreground mt-3 max-w-xl">
+              {featured.description}
+            </p>
           </div>
+          <a href="#projects" className={viewAllClass}>
+            {featured.viewAllLabel} <ArrowRight className="ml-1 h-4 w-4" />
+          </a>
+        </div>
 
-          <div className="grid gap-6 md:grid-cols-3">
-            {visibleProjects.map((project, index) => {
-              const targetHref = project.buttonType === 'caseStudy' ? project.behance : project.live;
-              const buttonLabel = project.buttonType === 'caseStudy' ? featured.caseStudyLabel : featured.liveLabel;
-              return (
-                <Reveal key={project.id} delayMs={index * 80}>
-                  <article className={projectCardClass}>
-                    <div className="aspect-[4/3] overflow-hidden bg-[#f1f1f1]">
-                      <img
-                        src={project.img}
-                        alt={project.title}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    </div>
-                    <div className="p-6">
-                      <span className="inline-flex rounded-full border border-[#111217]/10 bg-white px-3 py-1 text-xs uppercase tracking-[0.14em] text-[#111217]/60">
-                        {project.tags}
-                      </span>
-                      <h3 className="mt-3 text-lg font-semibold tracking-tight">{project.title}</h3>
-                      <div className="mt-5 inline-flex items-center text-sm text-[#111217]">
-                        <a
-                          href={targetHref}
-                          onClick={(event) => handlePlaceholderLinkClick(event, targetHref)}
-                          target={isPlaceholderHref(targetHref) ? undefined : '_blank'}
-                          rel={isPlaceholderHref(targetHref) ? undefined : 'noopener noreferrer'}
-                          className="inline-flex items-center gap-2"
-                        >
-                          {buttonLabel}
-                          <span aria-hidden="true">-&gt;</span>
-                        </a>
-                      </div>
-                    </div>
-                  </article>
-                </Reveal>
-              );
-            })}
-          </div>
-        </section>
-      ) : null}
+        <div className="grid md:grid-cols-3 gap-6">
+          {projects.map((project) => (
+            <Card
+              key={project.id}
+              className="rounded-2xl overflow-hidden group cursor-pointer hover:shadow-lg transition-all p-0 gap-0"
+            >
+              <div className="aspect-[4/3] overflow-hidden bg-muted">
+                <ImageWithFallback
+                  src={project.img}
+                  alt={project.title}
+                  className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <CardContent className="p-6">
+                <Badge variant="secondary" className="rounded-full mb-3">
+                  {project.tags}
+                </Badge>
+                <h3 className="tracking-tight" style={{ fontSize: '1.25rem', fontWeight: 600 }}>{project.title}</h3>
+                <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{project.summary}</p>
+                <div className="mt-5 inline-flex items-center text-sm text-foreground gap-1 group-hover:gap-2 transition-all">
+                  {project.buttonType === 'caseStudy' ? featured.caseStudyLabel : featured.liveLabel}{' '}
+                  <ArrowUpRight className="h-4 w-4" />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
 
       {visibility.testimonialsSection ? (
-        <section id="testimonials" className="site-shell max-w-6xl px-6 py-20">
+        <section id="testimonials" className="mx-auto max-w-6xl px-6 py-20">
           <div className="mb-12">
-            <SectionEyebrow className="text-[#111217]/55">{featured.testimonialsEyebrow}</SectionEyebrow>
-            <h2 className="mt-3 text-3xl font-semibold tracking-[-0.03em] md:text-4xl">
-              {testimonialsLabel}
+            <SectionEyebrow>{featured.testimonialsEyebrow}</SectionEyebrow>
+            <h2 className="tracking-tight" style={{ fontSize: '2.25rem', fontWeight: 600, lineHeight: 1.15 }}>
+              {featured.titleLine2}
             </h2>
           </div>
-          <div className="grid gap-6 md:grid-cols-3">
-            {visibleTestimonials.map((testimonial, index) => (
-              <Reveal key={testimonial.id} delayMs={index * 80}>
-                <article className={valueCardClass}>
-                  <p className="text-sm leading-relaxed text-[#111217]/75">{testimonial.quote}</p>
-                  <div className="mt-5 flex items-center gap-3">
-                    <img src={testimonial.avatar} alt={testimonial.name} className="h-10 w-10 rounded-full object-cover" />
+          <div className="grid md:grid-cols-3 gap-6">
+            {testimonials.map((item) => (
+              <Card key={item.id} className="rounded-2xl">
+                <CardContent className="p-6 space-y-5">
+                  <Quote className="h-6 w-6 text-primary/40" />
+                  <p className="text-sm leading-relaxed">{item.quote}</p>
+                  <div className="flex items-center gap-3 pt-2">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={item.avatar} alt={item.name} />
+                      <AvatarFallback>{getInitials(item.name)}</AvatarFallback>
+                    </Avatar>
                     <div>
-                      <div className="text-sm font-medium">{testimonial.name}</div>
-                      <div className="text-xs uppercase tracking-[0.16em] text-[#111217]/50">{testimonial.title}</div>
+                      <div className="text-sm">{item.name}</div>
+                      <div className="text-xs text-muted-foreground">{item.title}</div>
                     </div>
                   </div>
-                </article>
-              </Reveal>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </section>
       ) : null}
 
-      <section id="contact" className="site-shell max-w-5xl px-6 py-28 text-center">
+      <section id="contact" className="mx-auto max-w-5xl px-6 py-32 text-center">
         <h2
-          className="mx-auto max-w-4xl tracking-tight"
+          className="tracking-tight mx-auto max-w-4xl"
           style={{
             fontSize: 'clamp(3rem, 8vw, 6rem)',
             lineHeight: 1,
@@ -530,20 +611,86 @@ export const StaticHomeLayout: React.FC = () => {
           <br />
           {featured.ctaTitleLine2}
         </h2>
-        <p className="mx-auto mt-8 max-w-xl text-[#111217]/65">{featured.ctaDescription}</p>
-        <a
-          href={featured.ctaButtonHref || contactHref}
-          onClick={(event) => handlePlaceholderLinkClick(event, featured.ctaButtonHref || contactHref)}
-          target={isPlaceholderHref(featured.ctaButtonHref || contactHref) ? undefined : '_blank'}
-          rel={isPlaceholderHref(featured.ctaButtonHref || contactHref) ? undefined : 'noopener noreferrer'}
-          className={`${primaryCtaClass} mt-10 inline-flex`}
-        >
-          {featured.ctaButtonText}
-          <span aria-hidden="true">-&gt;</span>
+        <p className="mx-auto max-w-xl mt-8 text-muted-foreground leading-relaxed">
+          {featured.ctaDescription}
+        </p>
+        <a href={featured.ctaButtonHref || contactHref} className={joinClasses(footerCtaClass, 'mt-10')}>
+          {featured.ctaButtonText} <ArrowRight className="ml-2 h-4 w-4" />
         </a>
       </section>
 
-      <Footer />
+      <footer className="border-t mt-12">
+        <div className="mx-auto max-w-6xl px-6 py-12 grid md:grid-cols-4 gap-8">
+          <div className="space-y-3">
+            <div className="font-semibold tracking-tight">{footer.brandTitle}</div>
+            <p className="text-sm text-muted-foreground">{footer.brandDescription}</p>
+          </div>
+          <div>
+            <div className="text-sm mb-3">{footer.quickLinksTitle}</div>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              {footerNavLinks.map((link) => (
+                <li key={link.id}>
+                  <a
+                    href={link.href}
+                    onClick={(event) => handlePlaceholderLinkClick(event, link.href)}
+                    className="hover:text-foreground transition-colors"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <div className="text-sm mb-3">{footer.followTitle}</div>
+            <div className="flex gap-2">
+              {footerSocialLinks.map((link) => {
+                const SocialIcon = getSocialIconComponent(link.icon);
+                return (
+                  <a
+                    key={link.id}
+                    href={link.href}
+                    onClick={(event) => handlePlaceholderLinkClick(event, link.href)}
+                    target={isPlaceholderHref(link.href) ? undefined : '_blank'}
+                    rel={isPlaceholderHref(link.href) ? undefined : 'noopener noreferrer'}
+                    className={footerSocialClass}
+                    aria-label={link.label}
+                  >
+                    <SocialIcon className="h-4 w-4" />
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+          <div>
+            <div className="text-sm mb-3">{footer.ctaTitle}</div>
+            <a
+              href={footer.ctaButtonHref || contactHref}
+              onClick={(event) => handlePlaceholderLinkClick(event, footer.ctaButtonHref || contactHref)}
+              className={footerCtaClass}
+            >
+              {footer.ctaButtonLabel} <ArrowRight className="ml-2 h-4 w-4" />
+            </a>
+          </div>
+        </div>
+        <div className="border-t">
+          <div className="mx-auto max-w-6xl px-6 py-5 flex items-center justify-between text-xs text-muted-foreground">
+            <span>© {new Date().getFullYear()} {footer.copyrightText}</span>
+            <div className="flex gap-4">
+              {footerLegalLinks.map((link) => (
+                <a
+                  key={link.id}
+                  href={link.href}
+                  onClick={(event) => handlePlaceholderLinkClick(event, link.href)}
+                  className="hover:text-foreground"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      </footer>
     </main>
   );
 };

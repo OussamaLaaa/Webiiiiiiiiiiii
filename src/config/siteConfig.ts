@@ -46,6 +46,7 @@ export interface SiteProject {
   id: string;
   title: string;
   tags: string;
+  summary: string;
   img: string;
   behance: string;
   live: string;
@@ -798,6 +799,7 @@ export interface SiteConfig {
     caseStudyLabel: string;
     liveLabel: string;
     viewAllLabel: string;
+    heroSecondaryLabel: string;
     ctaTitleLine1: string;
     ctaTitleLine2: string;
     ctaDescription: string;
@@ -1044,6 +1046,7 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
     caseStudyLabel: 'View Case',
     liveLabel: 'Live Preview',
     viewAllLabel: 'View All',
+    heroSecondaryLabel: 'View My Work',
     ctaTitleLine1: 'Take your product',
     ctaTitleLine2: 'to the next level',
     ctaDescription:
@@ -1056,6 +1059,7 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
       id: 'project-1',
       title: 'Trinya Case Study',
       tags: 'Fintech',
+      summary: 'Redesigning a personal finance dashboard for clarity, trust, and daily delight.',
       img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&q=80',
       behance: '#',
       live: '#',
@@ -1066,6 +1070,7 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
       id: 'project-2',
       title: 'Al-Mihwar',
       tags: 'EdTech',
+      summary: 'Arabic-first learning platform crafted for accessibility on slow connections.',
       img: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&q=80',
       behance: '#',
       live: '#',
@@ -1076,6 +1081,7 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
       id: 'project-3',
       title: 'Old Phone Portfolio',
       tags: 'Experimental',
+      summary: 'A nostalgic, interactive portfolio inspired by 90s mobile interfaces.',
       img: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=1200&q=80',
       behance: '#',
       live: '#',
@@ -2570,6 +2576,7 @@ export const hydrateSiteConfig = (value: unknown): SiteConfig => {
             id: asString(item.id, `project-${index + 1}`),
             title: asString(item.title, ''),
             tags: asString(item.tags, ''),
+            summary: asString(item.summary, fallback?.summary ?? ''),
             img: sanitizeFramePath(asString(item.img, fallbackImg), fallbackImg),
             behance: asString(item.behance, '#'),
             live: asString(item.live, '#'),
@@ -2972,6 +2979,10 @@ export const hydrateSiteConfig = (value: unknown): SiteConfig => {
       caseStudyLabel: asString(featured.caseStudyLabel, DEFAULT_SITE_CONFIG.featured.caseStudyLabel),
       liveLabel: asString(featured.liveLabel, DEFAULT_SITE_CONFIG.featured.liveLabel),
       viewAllLabel: asString(featured.viewAllLabel, DEFAULT_SITE_CONFIG.featured.viewAllLabel),
+      heroSecondaryLabel: asString(
+        featured.heroSecondaryLabel,
+        DEFAULT_SITE_CONFIG.featured.heroSecondaryLabel,
+      ),
       ctaTitleLine1: asString(featured.ctaTitleLine1, DEFAULT_SITE_CONFIG.featured.ctaTitleLine1),
       ctaTitleLine2: asString(featured.ctaTitleLine2, DEFAULT_SITE_CONFIG.featured.ctaTitleLine2),
       ctaDescription: asString(featured.ctaDescription, DEFAULT_SITE_CONFIG.featured.ctaDescription),

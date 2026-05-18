@@ -2159,6 +2159,16 @@ export const Dashboard: React.FC = () => {
                 }
               />
               <Input
+                label="Hero secondary button label"
+                value={siteConfig.featured.heroSecondaryLabel}
+                onChange={(next) =>
+                  updateConfig((prev) => ({
+                    ...prev,
+                    featured: { ...prev.featured, heroSecondaryLabel: next },
+                  }))
+                }
+              />
+              <Input
                 label="CTA title line 1"
                 value={siteConfig.featured.ctaTitleLine1}
                 onChange={(next) =>
@@ -2282,6 +2292,12 @@ export const Dashboard: React.FC = () => {
                     rows={2}
                     onChange={(next) => updateProject(project.id, (item) => ({ ...item, tags: next }))}
                   />
+                  <Textarea
+                    label="Summary"
+                    value={project.summary}
+                    rows={3}
+                    onChange={(next) => updateProject(project.id, (item) => ({ ...item, summary: next }))}
+                  />
                   <Input
                     label="Image path / data URL"
                     value={project.img}
@@ -2330,6 +2346,7 @@ export const Dashboard: React.FC = () => {
                     id: `project-${Date.now()}`,
                     title: 'New Project',
                     tags: 'WEB • DESIGN',
+                    summary: 'Describe the outcome and impact of this project.',
                     img: '/frames/scene-02-desk-focus/ezgif-frame-001.avif',
                     behance: '#',
                     live: '#',
