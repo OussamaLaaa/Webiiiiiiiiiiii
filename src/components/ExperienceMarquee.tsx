@@ -56,18 +56,22 @@ export const ExperienceMarquee: React.FC<ExperienceMarqueeProps> = ({ isActive =
       };
       
       const startAnimation = () => {
-        const contentWidth = content.scrollWidth / 4; // Divide by 4 because we have 4 sets
+        // Calculate the width of ONE set of items
+        const oneSetWidth = content.scrollWidth / 4;
         
-        gsap.fromTo(
-          content,
-          { x: 0 },
-          {
-            x: -contentWidth,
-            ease: 'none',
-            duration: 30,
-            repeat: -1,
-          }
-        );
+        // Create a timeline for seamless looping
+        const tl = gsap.timeline({ repeat: -1 });
+        
+        // Animate from 0 to -oneSetWidth
+        tl.to(content, {
+          x: -oneSetWidth,
+          ease: 'none',
+          duration: 20,
+          immediateRender: false
+        });
+        
+        // Then instantly reset to 0 (seamless because it loops)
+        tl.set(content, { x: 0 }, '+=0');
       };
       
       waitForLoad();

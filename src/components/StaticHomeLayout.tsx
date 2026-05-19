@@ -404,8 +404,8 @@ export const StaticHomeLayout: React.FC = () => {
                   'linear-gradient(to right, transparent, black 12%, black 88%, transparent)',
               }}
             >
-              <div className="flex gap-14 animate-[marquee_30s_linear_infinite] whitespace-nowrap w-max">
-                {[...companyNames, ...companyNames].map((name, i) => (
+              <div className="flex gap-14 animate-[marquee_25s_linear_infinite] whitespace-nowrap w-max">
+                {[...companyNames, ...companyNames, ...companyNames, ...companyNames].map((name, i) => (
                   <span
                     key={`${name}-${i}`}
                     className="text-2xl tracking-tight text-muted-foreground/70 hover:text-foreground transition-colors"
@@ -419,7 +419,7 @@ export const StaticHomeLayout: React.FC = () => {
             <style>{`
               @keyframes marquee {
                 from { transform: translateX(0); }
-                to { transform: translateX(-50%); }
+                to { transform: translateX(calc(-100% / 4)); }
               }
             `}</style>
           </div>
