@@ -2313,13 +2313,13 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
     cursorAnimation: true,
     introOverlay: true,
     scene05Overlay: true,
-    staticHomeLayout: false,
+    staticHomeLayout: true,
     persistentUI: true,
     navigationLogo: true,
     navigationMenu: true,
     musicToggle: true,
     letsTalkButton: true,
-    experienceMarqueeSection: false,
+    experienceMarqueeSection: true,
     featuredWork: true,
     featuredHeader: true,
     featuredProjectsGrid: true,
@@ -2349,6 +2349,13 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
   aiTracking: [],
   aiReports: [],
 };
+
+// Expose to window for debugging
+if (typeof window !== 'undefined') {
+  (window as any).DEFAULT_SITE_CONFIG_DEBUG = {
+    staticHomeLayout: DEFAULT_SITE_CONFIG.visibility.staticHomeLayout,
+  };
+}
 
 const isRecord = (value: unknown): value is Record<string, unknown> => {
   return typeof value === 'object' && value !== null;

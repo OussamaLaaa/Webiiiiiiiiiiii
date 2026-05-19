@@ -411,7 +411,7 @@ export default async (req, res) => {
       console.log('[API:Config] No config found, returning empty data');
       return res.status(200).json({
         success: true,
-        data: {},
+        data: {},  // Return empty object to signal no stored config - client will use defaults
         source: 'none',
         timestamp: Date.now(),
       });

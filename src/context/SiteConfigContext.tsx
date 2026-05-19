@@ -254,7 +254,16 @@ const applyBrowserMetadata = (siteConfig: SiteConfig) => {
 };
 
 export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [siteConfig, setSiteConfig] = useState<SiteConfig>(() => getInitialSiteConfig());
+  const [siteConfig, setSiteConfig] = useState<SiteConfig>(() => {
+    const config = getInitialSiteConfig();
+    if (typeof window !== 'undefined') {
+      (window as any).INITIAL_SITE_CONFIG_DEBUG = {
+        staticHomeLayout: config.visibility.staticHomeLayout,
+        source: 'SiteConfigProvider',
+      };
+    }
+    return config;
+  });
   const [storageInfo, setStorageInfo] = useState(() => getStorageInfo());
 
   useEffect(() => {
@@ -379,10 +388,13 @@ export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       (async () => {
         try {
           const response = await fetchSiteConfig();
-          if (response.success && response.data) {
+          // Only update config if we got actual data back (not an empty object)
+          if (response.success && response.data && Object.keys(response.data).length > 0) {
             const hydratedConfig = hydrateSiteConfig(response.data);
             setSiteConfig(hydratedConfig);
             console.log('Config loaded from API successfully');
+          } else {
+            console.log('API returned empty config, keeping defaults');
           }
         } catch (error) {
           console.error('Failed to fetch config from API:', error);
