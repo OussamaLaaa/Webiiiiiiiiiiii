@@ -461,7 +461,11 @@ export const StaticHomeLayout: React.FC = () => {
             <div className="flex flex-wrap gap-2">
               {visibleSkills.map((skill) => {
                 return (
-                  <Badge key={skill} variant="default" className="rounded-full px-4 py-1.5 text-sm font-normal border-2 border-foreground/15">
+                  <Badge
+                    key={skill}
+                    variant="default"
+                    className="rounded-full border border-[#cdd7ea] bg-[#edf2fb] px-4 py-1.5 text-sm font-normal text-[#2f405f]"
+                  >
                     {skill}
                   </Badge>
                 );
