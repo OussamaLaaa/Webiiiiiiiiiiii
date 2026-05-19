@@ -1,6 +1,4 @@
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useSiteConfig } from '../context/SiteConfigContext';
 import { getButtonClass } from './designSystem';
 import { getSocialIconComponent } from './icons';
@@ -16,8 +14,6 @@ import {
   Quote,
 } from 'lucide-react';
 import { ExperienceMarquee } from './ExperienceMarquee';
-
-gsap.registerPlugin(ScrollTrigger);
 
 const SECTION_IDS = ['home', 'about', 'projects', 'testimonials', 'contact'] as const;
 
@@ -40,7 +36,7 @@ const Badge: React.FC<{ className?: string; children: ReactNode; variant?: Badge
 }) => (
   <span
     className={joinClasses(
-      'inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 gap-1 overflow-hidden transition-transform duration-300 ease-out hover:-translate-y-0.5 hover:scale-[1.02] will-change-transform',
+      'inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 gap-1 overflow-hidden',
       BADGE_VARIANT_CLASSES[variant],
       className,
     )}
@@ -50,12 +46,7 @@ const Badge: React.FC<{ className?: string; children: ReactNode; variant?: Badge
 );
 
 const Card: React.FC<{ className?: string; children: ReactNode }> = ({ className, children }) => (
-  <div
-    className={joinClasses(
-      'bg-card text-card-foreground flex flex-col gap-6 rounded-xl border transition-transform duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_24px_60px_-28px_rgba(0,0,0,0.18)] will-change-transform',
-      className,
-    )}
-  >
+  <div data-motion className={joinClasses('bg-card text-card-foreground flex flex-col gap-6 rounded-xl border', className)}>
     {children}
   </div>
 );
@@ -149,7 +140,6 @@ const getInitials = (value: string) => {
 export const StaticHomeLayout: React.FC = () => {
   const { siteConfig } = useSiteConfig();
   const { scene05, featured, visibility, persistentUI, footer, designSystem } = siteConfig;
-  const rootRef = useRef<HTMLElement>(null);
 
   const visibleProjects = useMemo(() => siteConfig.projects.filter((project) => project.visible), [siteConfig.projects]);
   const visibleTestimonials = useMemo(
@@ -207,138 +197,6 @@ export const StaticHomeLayout: React.FC = () => {
   const footerSocialLinks = footer.socialLinks.filter((link) => link.visible);
   const footerLegalLinks = footer.legalLinks.filter((link) => link.visible);
   const footerNavLinks = footer.navLinks.filter((link) => link.visible);
-
-  useEffect(() => {
-    const root = rootRef.current;
-    if (!root) return;
-
-    const reducedMotion = Boolean(
-      siteConfig.reducedMotion || root.ownerDocument.documentElement.classList.contains('reduced-motion'),
-    );
-
-    const resetVisible = (selector: string) => {
-      gsap.set(root.querySelectorAll(selector), {
-        opacity: 1,
-        x: 0,
-        y: 0,
-        scale: 1,
-        rotate: 0,
-        filter: 'none',
-        clearProps: 'transform,willChange',
-      });
-    };
-
-    if (reducedMotion) {
-      [
-        '[data-ag-hero-item]',
-        '[data-ag-floating-item]',
-        '[data-ag-value-card]',
-        '[data-ag-about-copy]',
-        '[data-ag-skill-chip]',
-        '[data-ag-cert-item]',
-        '[data-ag-project-card]',
-        '[data-ag-testimonial-card]',
-        '[data-ag-cta-item]',
-        '[data-ag-footer-item]',
-      ].forEach(resetVisible);
-      return;
-    }
-
-    const ctx = gsap.context(() => {
-      const heroItems = gsap.utils.toArray<HTMLElement>('[data-ag-hero-item]', root);
-      const floatingItems = gsap.utils.toArray<HTMLElement>('[data-ag-floating-item]', root);
-
-      if (floatingItems.length > 0) {
-        gsap.to(floatingItems, {
-          y: -18,
-          x: 12,
-          duration: 8.5,
-          ease: 'sine.inOut',
-          repeat: -1,
-          yoyo: true,
-          stagger: 0.35,
-        });
-      }
-
-      gsap.to('[data-ag-shimmer]', {
-        backgroundPositionX: '200%',
-        duration: 9,
-        ease: 'none',
-        repeat: -1,
-      });
-
-      if (heroItems.length > 0) {
-        gsap.fromTo(
-          heroItems,
-          { y: 28, opacity: 0, scale: 0.985, filter: 'blur(10px)' },
-          {
-            y: 0,
-            opacity: 1,
-            scale: 1,
-            filter: 'blur(0px)',
-            duration: 1.05,
-            ease: 'power4.out',
-            stagger: 0.12,
-            clearProps: 'filter',
-          },
-        );
-      }
-
-      const sectionPlans: Array<{ trigger: string; selector: string; distance: number; stagger: number }> = [
-        { trigger: '#values', selector: '[data-ag-value-card]', distance: 34, stagger: 0.08 },
-        { trigger: '#about', selector: '[data-ag-about-copy], [data-ag-skill-chip], [data-ag-cert-item]', distance: 28, stagger: 0.08 },
-        { trigger: '#projects', selector: '[data-ag-project-card]', distance: 42, stagger: 0.1 },
-        { trigger: '#testimonials', selector: '[data-ag-testimonial-card]', distance: 32, stagger: 0.1 },
-        { trigger: '#contact', selector: '[data-ag-cta-item]', distance: 26, stagger: 0.12 },
-        { trigger: 'footer', selector: '[data-ag-footer-item]', distance: 18, stagger: 0.08 },
-      ];
-
-      sectionPlans.forEach(({ trigger, selector, distance, stagger }) => {
-        const section = root.querySelector(trigger) as HTMLElement | null;
-        const items = gsap.utils.toArray<HTMLElement>(selector, root);
-
-        if (!section || items.length === 0) return;
-
-        gsap.fromTo(
-          items,
-          { y: distance, opacity: 0, scale: 0.985, filter: 'blur(10px)' },
-          {
-            y: 0,
-            opacity: 1,
-            scale: 1,
-            filter: 'blur(0px)',
-            duration: 1,
-            ease: 'power3.out',
-            stagger,
-            clearProps: 'filter',
-            scrollTrigger: {
-              trigger: section,
-              start: 'top 78%',
-              toggleActions: 'play none none reverse',
-            },
-          },
-        );
-      });
-
-      const underline = root.querySelector('[data-ag-underline]');
-      if (underline) {
-        gsap.fromTo(
-          underline,
-          { opacity: 0.2, scaleX: 0.92 },
-          {
-            opacity: 1,
-            scaleX: 1,
-            duration: 1.15,
-            ease: 'power3.out',
-          },
-        );
-      }
-
-      ScrollTrigger.refresh();
-    }, root);
-
-    return () => ctx.revert();
-  }, [siteConfig.reducedMotion]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -418,7 +276,6 @@ export const StaticHomeLayout: React.FC = () => {
 
   return (
     <main
-      ref={rootRef}
       className="min-h-screen bg-background text-foreground"
       style={{
         ['--background' as any]: '#ffffff',
@@ -453,13 +310,11 @@ export const StaticHomeLayout: React.FC = () => {
               'radial-gradient(ellipse 80% 60% at 50% 30%, black 40%, transparent 80%)',
           }}
         />
-        <div data-ag-floating-item className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-foreground/[0.04] blur-3xl -z-10 ag-orb" />
-        <div data-ag-floating-item className="absolute top-20 -right-32 h-96 w-96 rounded-full bg-foreground/[0.04] blur-3xl -z-10 ag-orb" />
+        <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-foreground/[0.04] blur-3xl -z-10" />
+        <div className="absolute top-20 -right-32 h-96 w-96 rounded-full bg-foreground/[0.04] blur-3xl -z-10" />
 
         <div className="mx-auto max-w-5xl px-6 pt-28 md:pt-36 pb-20 text-center">
           <h1
-            data-ag-hero-item
-            data-ag-hero-title
             className="tracking-tight mx-auto max-w-4xl"
             style={{
               fontSize: 'clamp(2.75rem, 7vw, 5.5rem)',
@@ -471,10 +326,8 @@ export const StaticHomeLayout: React.FC = () => {
             {scene05.heroTitleLine1}{' '}
             <span className="relative inline-block">
               <span
-                data-ag-shimmer
                 className="bg-clip-text text-transparent"
                 style={{
-                  backgroundSize: '200% 100%',
                   backgroundImage:
                     'linear-gradient(110deg, var(--foreground) 0%, rgba(10, 10, 10, 0.45) 100%)',
                 }}
@@ -483,7 +336,6 @@ export const StaticHomeLayout: React.FC = () => {
               </span>
               <svg
                 viewBox="0 0 300 12"
-                data-ag-underline
                 className="absolute -bottom-2 left-0 w-full h-3 text-foreground/30"
                 preserveAspectRatio="none"
                 fill="none"
@@ -496,11 +348,11 @@ export const StaticHomeLayout: React.FC = () => {
             </span>
           </h1>
 
-          <p data-ag-hero-item data-ag-hero-subtitle className="mx-auto max-w-2xl mt-8 text-lg md:text-xl text-muted-foreground leading-relaxed">
+          <p className="mx-auto max-w-2xl mt-8 text-lg md:text-xl text-muted-foreground leading-relaxed">
             {scene05.heroSubtitle}
           </p>
 
-          <div data-ag-hero-item data-ag-hero-actions className="mt-10 flex flex-wrap justify-center items-center gap-3">
+          <div className="mt-10 flex flex-wrap justify-center items-center gap-3">
             <a
               href={primaryHeroHref}
               onClick={(event) => handlePlaceholderLinkClick(event, primaryHeroHref)}
@@ -516,7 +368,7 @@ export const StaticHomeLayout: React.FC = () => {
           </div>
 
           {/* Avatar + meta strip */}
-          <div data-ag-hero-item data-ag-hero-meta className="mt-14 flex items-center justify-center gap-4 flex-wrap">
+          <div className="mt-14 flex items-center justify-center gap-4 flex-wrap">
             <div className="flex -space-x-3">
               {heroTestimonials.map((item) => (
                 <Avatar key={item.id} className="h-10 w-10 ring-2 ring-background">
@@ -561,7 +413,7 @@ export const StaticHomeLayout: React.FC = () => {
           {valueCards.map((card, index) => {
             const Icon = valueIcons[index % valueIcons.length];
             return (
-              <Card key={card.id} data-ag-value-card className="rounded-2xl hover:shadow-md transition-shadow">
+              <Card key={card.id} className="rounded-2xl hover:shadow-md transition-shadow">
                 <CardHeader>
                   <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                     <Icon className="h-5 w-5" />
@@ -581,7 +433,7 @@ export const StaticHomeLayout: React.FC = () => {
       <section id="about" className="mx-auto max-w-6xl px-6 py-20">
         <div className="grid lg:grid-cols-2 gap-10">
           <Card className="rounded-2xl bg-muted/30">
-            <CardContent data-ag-about-copy className="p-8 md:p-10 space-y-6">
+            <CardContent className="p-8 md:p-10 space-y-6">
               <h2 className="tracking-tight" style={{ fontSize: '2rem', fontWeight: 600, lineHeight: 1.15 }}>
                 {scene05.storyTitle}
               </h2>
@@ -609,11 +461,7 @@ export const StaticHomeLayout: React.FC = () => {
             <div className="flex flex-wrap gap-2">
               {visibleSkills.map((skill) => {
                 return (
-                  <Badge
-                    key={skill}
-                    variant="default"
-                    className="rounded-full px-4 py-1.5 text-sm font-normal border-2 border-foreground/15"
-                  >
+                  <Badge key={skill} variant="default" className="rounded-full px-4 py-1.5 text-sm font-normal border-2 border-foreground/15">
                     {skill}
                   </Badge>
                 );
@@ -626,7 +474,6 @@ export const StaticHomeLayout: React.FC = () => {
                 {certificationItems.map((item) => (
                   <div
                     key={item.title}
-                    data-ag-cert-item
                     className="flex items-start gap-3 p-3 rounded-xl hover:bg-muted/50 transition-colors"
                   >
                     <div className="h-9 w-9 rounded-lg bg-background border border-border flex items-center justify-center flex-shrink-0 overflow-hidden">
@@ -680,7 +527,6 @@ export const StaticHomeLayout: React.FC = () => {
                 className="group"
               >
                 <Card
-                  data-ag-project-card
                   className="rounded-2xl overflow-hidden cursor-pointer hover:shadow-lg transition-all p-0 gap-0 h-full"
                 >
                   <div className="aspect-[4/3] overflow-hidden bg-muted">
@@ -716,7 +562,7 @@ export const StaticHomeLayout: React.FC = () => {
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {testimonials.map((item) => (
-              <Card key={item.id} data-ag-testimonial-card className="rounded-2xl">
+              <Card key={item.id} className="rounded-2xl">
                 <CardContent className="p-6 space-y-5">
                   <Quote className="h-6 w-6 text-primary/40" />
                   <p className="text-sm leading-relaxed">{item.quote}</p>
@@ -740,7 +586,6 @@ export const StaticHomeLayout: React.FC = () => {
       {/* ===================== CTA SECTION ===================== */}
       <section id="contact" className="mx-auto max-w-5xl px-6 py-32 text-center">
         <h2
-          data-ag-cta-item
           className="tracking-tight mx-auto max-w-4xl"
           style={{
             fontSize: 'clamp(3rem, 8vw, 6rem)',
@@ -753,10 +598,10 @@ export const StaticHomeLayout: React.FC = () => {
           <br />
           {featured.ctaTitleLine2}
         </h2>
-        <p data-ag-cta-item className="mx-auto max-w-xl mt-8 text-muted-foreground leading-relaxed">
+        <p className="mx-auto max-w-xl mt-8 text-muted-foreground leading-relaxed">
           {featured.ctaDescription}
         </p>
-        <a href={featured.ctaButtonHref || contactHref} data-ag-cta-item className={joinClasses(footerCtaClass, 'mt-10')}>
+        <a href={featured.ctaButtonHref || contactHref} className={joinClasses(footerCtaClass, 'mt-10')}>
           {featured.ctaButtonText} <ArrowRight className="ml-2 h-4 w-4" />
         </a>
       </section>
@@ -764,11 +609,11 @@ export const StaticHomeLayout: React.FC = () => {
       {/* ===================== FOOTER ===================== */}
       <footer className="border-t mt-12">
         <div className="mx-auto max-w-6xl px-6 py-16 grid md:grid-cols-12 gap-10">
-          <div data-ag-footer-item className="md:col-span-4 space-y-4">
+          <div className="md:col-span-4 space-y-4">
             <div className="font-semibold tracking-tight text-lg">{footer.brandTitle}</div>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">{footer.brandDescription}</p>
           </div>
-          <div data-ag-footer-item className="md:col-span-2 md:col-start-6">
+          <div className="md:col-span-2 md:col-start-6">
             <div className="text-sm font-medium mb-4 text-foreground">{footer.quickLinksTitle}</div>
             <ul className="space-y-3 text-sm text-muted-foreground">
               {footerNavLinks.map((link) => (
@@ -784,7 +629,7 @@ export const StaticHomeLayout: React.FC = () => {
               ))}
             </ul>
           </div>
-          <div data-ag-footer-item className="md:col-span-2">
+          <div className="md:col-span-2">
             <div className="text-sm font-medium mb-4 text-foreground">{footer.followTitle}</div>
             <div className="flex gap-3">
               {footerSocialLinks.map((link) => {
@@ -805,7 +650,7 @@ export const StaticHomeLayout: React.FC = () => {
               })}
             </div>
           </div>
-          <div data-ag-footer-item className="md:col-span-3 md:col-start-10">
+          <div className="md:col-span-3 md:col-start-10">
             <div className="text-sm font-medium mb-4 text-foreground">{footer.ctaTitle}</div>
             <a
               href={footer.ctaButtonHref || contactHref}

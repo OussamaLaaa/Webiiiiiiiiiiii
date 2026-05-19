@@ -5,7 +5,7 @@ import { MasterSequence } from '../components/MasterSequence';
 import { IntroTextOverlay } from '../components/IntroTextOverlay';
 import { PersistentUI } from '../components/PersistentUI';
 import CursorAnimationLayer from '../components/CursorAnimationLayer';
-import ParallaxLights from '../components/ParallaxLights';
+import GlobalMotionLayer from '../components/GlobalMotionLayer';
 import { useSiteConfig } from '../context/SiteConfigContext';
 
 import { Scene05Overlay } from '../components/Scene05Overlay';
@@ -114,14 +114,13 @@ export const Home: React.FC = () => {
         <CursorAnimationLayer animation={siteConfig.animation} />
       ) : null}
 
-      {hasStarted && isStaticHomeLayout ? (
-        <ParallaxLights reducedMotion={siteConfig.reducedMotion} />
-      ) : null}
-
       {!isStaticHomeLayout && visibility.introOverlay ? <IntroTextOverlay hasStarted={hasStarted} isScrolling={isScrolling} /> : null}
 
       {isStatic ? (
-        <StaticHomeLayout />
+        <>
+          <StaticHomeLayout />
+          <GlobalMotionLayer />
+        </>
       ) : hasStarted ? (
         <main className="relative w-full bg-black" data-surface="ambient">
           
