@@ -1,14 +1,18 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
-import './LoadingScreen.css';
+import './StaticLoadingScreen.css';
 
-interface LoadingScreenProps {
+interface StaticLoadingScreenProps {
   progress: number;
   isComplete: boolean;
   onFadeComplete: () => void;
 }
 
-export const LoadingScreen: React.FC<LoadingScreenProps> = ({ progress, isComplete, onFadeComplete }) => {
+export const StaticLoadingScreen: React.FC<StaticLoadingScreenProps> = ({
+  progress,
+  isComplete,
+  onFadeComplete,
+}) => {
   const preRef = useRef<HTMLDivElement | null>(null);
   const logoRef = useRef<SVGSVGElement | null>(null);
   const completeRef = useRef(isComplete);
@@ -30,9 +34,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ progress, isComple
     onFadeCompleteRef.current = onFadeComplete;
   }, [onFadeComplete]);
 
-  // Animate numeric counter smoothly toward `progress`.
   useEffect(() => {
-    // use gsap to animate the displayed number for smooth counting
     const ctx = gsap.context(() => {
       gsap.to({ val: displayProgress }, {
         val: isComplete ? 100 : progress,
@@ -50,9 +52,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ progress, isComple
   }, [progress, isComplete]);
 
   const launch = useCallback(() => {
-    if (launchStartedRef.current || !introDoneRef.current || !completeRef.current) {
-      return;
-    }
+    if (launchStartedRef.current || !introDoneRef.current || !completeRef.current) return;
 
     launchStartedRef.current = true;
     setIsWaiting(false);
@@ -67,7 +67,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ progress, isComple
     }
 
     gsap.to(logoEl, {
-      scale: 4,
+      scale: 3.8,
       opacity: 0,
       rotation: 8,
       duration: 0.6,
@@ -76,9 +76,9 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ progress, isComple
 
     gsap.to(preEl, {
       y: '-100%',
-      duration: 1.1,
+      duration: 1.0,
       ease: 'power4.inOut',
-      delay: 0.48,
+      delay: 0.42,
       onComplete: () => {
         setIsVisible(false);
         onFadeCompleteRef.current();
@@ -94,38 +94,28 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ progress, isComple
         opacity: 1,
         scale: 1,
         rotation: 0,
-        duration: 0.9,
+        duration: 0.95,
         delay: 0.1,
         ease: 'back.out(1.4)',
       });
     }
 
-    const fillTimer = window.setTimeout(() => {
-      setIsFilled(true);
-    }, 100);
+    const fillTimer = window.setTimeout(() => setIsFilled(true), 120);
+    const glowTimer = window.setTimeout(() => setIsGlowing(true), 180);
 
-    const glowTimer = window.setTimeout(() => {
-      setIsGlowing(true);
-    }, 150);
-
+    // Keep static loader visible long enough to actually be seen.
     const readyTimer = window.setTimeout(() => {
       introDoneRef.current = true;
       setIsWaiting(!completeRef.current);
       launch();
-    }, 150);
+    }, 1450);
 
     return () => {
       window.clearTimeout(fillTimer);
       window.clearTimeout(glowTimer);
       window.clearTimeout(readyTimer);
-
-      if (logoEl) {
-        gsap.killTweensOf(logoEl);
-      }
-
-      if (preRef.current) {
-        gsap.killTweensOf(preRef.current);
-      }
+      if (logoEl) gsap.killTweensOf(logoEl);
+      if (preRef.current) gsap.killTweensOf(preRef.current);
     };
   }, [launch]);
 
@@ -136,18 +126,21 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ progress, isComple
     }
   }, [isComplete, launch]);
 
-  if (!isVisible) {
-    return null;
-  }
+  if (!isVisible) return null;
 
-  const logoClassName = [isFilled ? 'filled' : '', isGlowing ? 'glowing' : '']
-    .filter(Boolean)
-    .join(' ');
+  const logoClassName = [isFilled ? 'filled' : '', isGlowing ? 'glowing' : ''].filter(Boolean).join(' ');
 
   return (
-    <div id="pre" className={isWaiting ? 'is-waiting' : undefined} ref={preRef}>
+    <div className={isWaiting ? 'static-pre is-waiting' : 'static-pre'} ref={preRef}>
+      <div className="static-pre-topbar" aria-hidden>
+        <div className="static-pre-logo-word">Oussama</div>
+        <div className="static-pre-pills">
+          <div className="static-pre-pill static-pre-pill-ghost">View</div>
+          <div className="static-pre-pill static-pre-pill-light">Contact</div>
+        </div>
+      </div>
+
       <svg
-        id="pre-logo"
         ref={logoRef}
         viewBox="0 0 827.12 827.12"
         xmlns="http://www.w3.org/2000/svg"
@@ -166,7 +159,8 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ progress, isComple
         />
       </svg>
 
-      <div id="pre-counter" aria-live="polite">{displayProgress}</div>
+      <div className="static-pre-line" aria-hidden />
+      <div className="static-pre-counter" aria-live="polite">{displayProgress}</div>
     </div>
   );
 };

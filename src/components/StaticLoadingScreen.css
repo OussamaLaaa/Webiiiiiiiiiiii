@@ -1,0 +1,203 @@
+.static-pre {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: #080808;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.static-pre svg {
+  width: min(240px, 36vw);
+  height: min(240px, 36vw);
+  opacity: 0;
+  transform: scale(0.5) rotate(-20deg);
+}
+
+.static-pre .cls-2 {
+  fill: #080808 !important;
+  stroke: none !important;
+}
+
+.static-pre .cls-1 {
+  fill: none !important;
+  stroke: #f5f5f5;
+  stroke-width: 7px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: fill 0.5s ease 0.3s;
+}
+
+.static-pre .path-top {
+  stroke-dasharray: 2400;
+  stroke-dashoffset: 2400;
+  animation: staticDrawPath 1.3s cubic-bezier(0.4, 0, 0.2, 1) 0.4s forwards;
+}
+
+.static-pre .path-bot {
+  stroke-dasharray: 2400;
+  stroke-dashoffset: 2400;
+  animation: staticDrawPath 1.3s cubic-bezier(0.4, 0, 0.2, 1) 0.75s forwards;
+}
+
+@keyframes staticDrawPath {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.static-pre svg.filled .cls-1 {
+  fill: #f5f5f5 !important;
+}
+
+.static-pre svg.glowing .cls-1 {
+  filter: drop-shadow(0 0 16px rgba(245, 245, 245, 0.65)) !important;
+}
+
+.static-pre-line {
+  width: min(240px, 36vw);
+  height: 1px;
+  background: rgba(245, 245, 245, 0.08);
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  animation: staticFadeUp 0.6s ease 0.9s forwards;
+}
+
+.static-pre-line::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, #f5f5f5, transparent);
+  transform: translateX(-100%);
+  animation: staticLineSweep 2.4s cubic-bezier(0.4, 0, 0.2, 1) 0.4s forwards;
+}
+
+.static-pre.is-waiting .static-pre-line::after {
+  animation: staticLineSweepLoop 1.8s linear infinite;
+}
+
+@keyframes staticFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes staticLineSweep {
+  0% {
+    transform: translateX(-100%);
+    opacity: 1;
+  }
+  70% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes staticLineSweepLoop {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0.3;
+  }
+}
+
+.static-pre-counter {
+  position: fixed;
+  left: 18px;
+  bottom: 26px;
+  z-index: 9100;
+  color: #fff;
+  font-size: min(64px, 8.3vw);
+  font-weight: 300;
+  line-height: 0.9;
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.9), 0 0 18px rgba(255, 255, 255, 0.12);
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.08));
+  animation: staticCounterGlow 2.4s ease-in-out infinite;
+}
+
+@keyframes staticCounterGlow {
+  0% {
+    text-shadow: 0 0 4px rgba(255, 255, 255, 0.85), 0 0 12px rgba(255, 255, 255, 0.08);
+  }
+  50% {
+    text-shadow: 0 0 14px rgba(255, 255, 255, 0.95), 0 0 30px rgba(255, 255, 255, 0.18);
+  }
+  100% {
+    text-shadow: 0 0 4px rgba(255, 255, 255, 0.85), 0 0 12px rgba(255, 255, 255, 0.08);
+  }
+}
+
+.static-pre-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9010;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px min(80px, 8vw);
+  opacity: 0.92;
+}
+
+.static-pre-logo-word {
+  font-size: clamp(28px, 4vw, 52px);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  color: #f5f5f5;
+  line-height: 1;
+}
+
+.static-pre-pills {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.static-pre-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 16px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+}
+
+.static-pre-pill-light {
+  background: #f5f5f5;
+  color: #080808;
+}
+
+.static-pre-pill-ghost {
+  background: transparent;
+  color: rgba(245, 245, 245, 0.6);
+  border: 1px solid rgba(245, 245, 245, 0.2);
+}
