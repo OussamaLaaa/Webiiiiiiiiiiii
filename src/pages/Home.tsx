@@ -47,19 +47,15 @@ export const Home: React.FC = () => {
   
   const { progress, images, isComplete } = usePreloadFrames(isStaticHomeLayout ? [] : SCENES);
    
-  const [hasStarted, setHasStarted] = useState(() => hasHomeBootCompleted || isStaticHomeLayout);
+  const [hasStarted, setHasStarted] = useState(() => hasHomeBootCompleted);
   const [finalFadeOpacity, setFinalFadeOpacity] = useState(0);
   const [isPortfolioActive, setIsPortfolioActive] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
   const [scene05Progress, setScene05Progress] = useState(-1);
   const lastNavSectionRef = useRef<string>('home');
 
-  React.useEffect(() => {
-    if (isStaticHomeLayout && !hasStarted) {
-      hasHomeBootCompleted = true;
-      setHasStarted(true);
-    }
-  }, [hasStarted, isStaticHomeLayout]);
+  // Note: do not auto-start static layout here so the LoadingScreen can run its intro.
+  // The LoadingScreen's onFadeComplete will call handleFadeComplete to set hasStarted(true).
 
   const handleFadeComplete = () => {
     hasHomeBootCompleted = true;
