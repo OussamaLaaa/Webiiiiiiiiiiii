@@ -29,13 +29,14 @@
 /* ══════════ RESET & BASE */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%;overflow:hidden;background:#080808}
-body{cursor:none;-webkit-font-smoothing:antialiased;font-family:'Space Mono',monospace}
+body{cursor:auto;-webkit-font-smoothing:antialiased;font-family:'Space Mono',monospace}
 
 /* ══════════ CURSOR */
 #cur{position:fixed;z-index:9999;pointer-events:none}
 #cur::before{content:'';display:block;width:7px;height:7px;background:#f5f5f5;border-radius:50%;transform:translate(-50%,-50%)}
 #cur-r{position:fixed;z-index:9998;width:28px;height:28px;border:1px solid rgba(245,245,245,.22);border-radius:50%;pointer-events:none;transition:width .35s,height .35s}
 body.hov #cur-r{width:44px;height:44px;border-color:rgba(245,245,245,.5)}
+#cur,#cur-r{display:none !important}
 
 /* ══════════ PRELOADER — Logo draw animation */
 #pre{
@@ -1102,7 +1103,7 @@ addEventListener('mousedown',e=>{
 });
 addEventListener('mouseup',e=>{
   if(e.button!==0 || mode!=='dragging') return;
-  document.body.style.cursor='none';
+  document.body.style.cursor='auto';
   mode='returning';
   returningTween=gsap.to(phonePose,{rx:basePose.rx,ry:basePose.ry,rz:basePose.rz,x:basePose.x,y:basePose.y,scale:basePose.scale,duration:.9,ease:'power3.out',onUpdate:renderPhone,onComplete:()=>{returningTween=null;startParallax(basePose);}});
 });
@@ -2045,7 +2046,7 @@ function enter(n){
 
 /* ══════ SCREEN CLICK */
 const scrZone=document.getElementById('screen-wrap');
-scrZone.style.cursor='none';
+scrZone.style.cursor='auto';
 scrZone.addEventListener('click',e=>{
   if(!screenOn)return;
   const rect=scrZone.getBoundingClientRect();
