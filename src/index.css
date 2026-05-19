@@ -399,6 +399,60 @@
   }
 }
 
+/* Parallax lights: layered moving orbs to create antigravity depth */
+.parallax-lights {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  overflow: hidden;
+  isolation: isolate;
+}
+.parallax-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.parallax-layer--bg { transform: translateZ(-100px) scale(1.05); }
+.parallax-layer--mid { transform: translateZ(0px) scale(1); }
+.parallax-layer--fg { transform: translateZ(100px) scale(1); }
+
+.parallax-orb {
+  position: absolute;
+  border-radius: 9999px;
+  mix-blend-mode: screen;
+  filter: blur(12px) saturate(1.15) contrast(1.05);
+  opacity: 0.9;
+  will-change: transform, opacity;
+}
+.parallax-orb--bg { background: radial-gradient(circle at 30% 30%, rgba(255,230,200,0.18), rgba(255,130,90,0.05)); width: 280px; height: 280px; }
+.parallax-orb--mid { background: radial-gradient(circle at 30% 30%, rgba(255,240,210,0.22), rgba(255,170,80,0.06)); width: 180px; height: 180px; }
+.parallax-orb--fg { background: radial-gradient(circle at 30% 30%, rgba(255,250,230,0.28), rgba(255,200,120,0.08)); width: 110px; height: 110px; }
+
+/* Spread orbs across viewport with deterministic offsets */
+.parallax-orb--bg { top: 12%; left: 6%; }
+.parallax-orb--bg.parallax-orb--1 { top: 18%; left: 68%; }
+.parallax-orb--bg.parallax-orb--2 { top: 62%; left: 10%; }
+.parallax-orb--bg.parallax-orb--3 { top: 48%; left: 82%; }
+.parallax-orb--bg.parallax-orb--4 { top: 78%; left: 44%; }
+.parallax-orb--bg.parallax-orb--5 { top: 28%; left: 36%; }
+
+.parallax-orb--mid.parallax-orb--0 { top: 22%; left: 12%; }
+.parallax-orb--mid.parallax-orb--1 { top: 12%; left: 72%; }
+.parallax-orb--mid.parallax-orb--2 { top: 58%; left: 22%; }
+.parallax-orb--mid.parallax-orb--3 { top: 38%; left: 86%; }
+.parallax-orb--mid.parallax-orb--4 { top: 68%; left: 56%; }
+
+.parallax-orb--fg.parallax-orb--0 { top: 14%; left: 26%; }
+.parallax-orb--fg.parallax-orb--1 { top: 36%; left: 46%; }
+.parallax-orb--fg.parallax-orb--2 { top: 56%; left: 68%; }
+.parallax-orb--fg.parallax-orb--3 { top: 74%; left: 84%; }
+
+@media (prefers-reduced-motion: reduce) {
+  .parallax-lights,
+  .parallax-orb { display: none !important; }
+}
+
 /* Disable glow effects explicitly when data-glow="off" */
 [data-glow='off'] :where(
   h1, h2, h3, h4, h5, h6, p, span, a, button, small, strong, em, li, label, figcaption, blockquote

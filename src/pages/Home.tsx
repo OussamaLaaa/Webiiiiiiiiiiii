@@ -5,6 +5,7 @@ import { MasterSequence } from '../components/MasterSequence';
 import { IntroTextOverlay } from '../components/IntroTextOverlay';
 import { PersistentUI } from '../components/PersistentUI';
 import CursorAnimationLayer from '../components/CursorAnimationLayer';
+import ParallaxLights from '../components/ParallaxLights';
 import { useSiteConfig } from '../context/SiteConfigContext';
 
 import { Scene05Overlay } from '../components/Scene05Overlay';
@@ -111,6 +112,10 @@ export const Home: React.FC = () => {
       {hasStarted && <PersistentUI isLightMode={isStaticHomeLayout || scene05Progress >= 0 || isPortfolioActive} />}
       {hasStarted && visibility.cursorAnimation ? (
         <CursorAnimationLayer animation={siteConfig.animation} />
+      ) : null}
+
+      {hasStarted && isStaticHomeLayout ? (
+        <ParallaxLights reducedMotion={siteConfig.reducedMotion} />
       ) : null}
 
       {!isStaticHomeLayout && visibility.introOverlay ? <IntroTextOverlay hasStarted={hasStarted} isScrolling={isScrolling} /> : null}
