@@ -314,7 +314,7 @@ export const StaticHomeLayout: React.FC = () => {
         <div className="absolute top-20 -right-32 h-96 w-96 rounded-full bg-foreground/[0.04] blur-3xl -z-10" />
 
         <div className="mx-auto max-w-5xl px-6 pt-28 md:pt-36 pb-20 text-center">
-          <h1
+          <h1 data-motion
             className="tracking-tight mx-auto max-w-4xl"
             style={{
               fontSize: 'clamp(2.75rem, 7vw, 5.5rem)',
@@ -348,11 +348,11 @@ export const StaticHomeLayout: React.FC = () => {
             </span>
           </h1>
 
-          <p className="mx-auto max-w-2xl mt-8 text-lg md:text-xl text-muted-foreground leading-relaxed">
+          <p data-motion className="mx-auto max-w-2xl mt-8 text-lg md:text-xl text-muted-foreground leading-relaxed">
             {scene05.heroSubtitle}
           </p>
 
-          <div className="mt-10 flex flex-wrap justify-center items-center gap-3">
+          <div data-motion className="mt-10 flex flex-wrap justify-center items-center gap-3">
             <a
               href={primaryHeroHref}
               onClick={(event) => handlePlaceholderLinkClick(event, primaryHeroHref)}

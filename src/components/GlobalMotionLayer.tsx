@@ -18,39 +18,40 @@ const GlobalMotionLayer: React.FC<GlobalMotionLayerProps> = () => {
     if (typeof window === 'undefined') return;
     if (prefersReduced()) return;
 
-    // subtle entrance for headings
     try {
+      // Entrance: headings and section titles
       gsap.fromTo(
-        '.tracking-tight, .fw-reveal h1, .fw-reveal h2',
-        { y: 18, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.9, ease: 'power3.out', stagger: 0.06 },
+        '.tracking-tight, .fw-reveal h1, .fw-reveal h2, h1.tracking-tight',
+        { y: 22, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.9, ease: 'power3.out', stagger: 0.05 },
       );
 
-      // continuous gentle float for elements marked with data-motion
-      const floatTargets = document.querySelectorAll<HTMLElement>('[data-motion]');
-      floatTargets.forEach((el, i) => {
-        const amplitude = 4 + (i % 3);
-        const dur = 3 + (i % 4) * 0.6;
-        gsap.to(el, {
-          y: `+=${amplitude}`,
-          repeat: -1,
-          yoyo: true,
-          ease: 'sine.inOut',
-          duration: dur,
-          delay: (i % 5) * 0.08,
-          force3D: true,
-        });
-      });
-
-      // gentle staggered reveal for paragraph text
+      // Paragraphs and small text entrance
       gsap.fromTo(
-        'section p, .CardContent p, .text-sm',
+        'section p, .CardContent p, .text-sm, .text-muted-foreground',
         { y: 8, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.7, ease: 'power2.out', stagger: 0.03, delay: 0.12 },
+        { y: 0, opacity: 1, duration: 0.7, ease: 'power2.out', stagger: 0.02, delay: 0.08 },
       );
+
+      // Antigravity float: for elements flagged with data-motion apply gentle multi-axis drift + rotation
+      const floatTargets = Array.from(document.querySelectorAll<HTMLElement>('[data-motion]'));
+
+      floatTargets.forEach((el, i) => {
+        const seed = i + 1;
+        const ampY = 6 + (seed % 4); // vertical amplitude
+        const ampX = 4 + (seed % 3); // horizontal amplitude
+        const rot = (seed % 2 === 0 ? 1 : -1) * (2 + (seed % 3));
+        const baseDur = 3 + (seed % 5) * 0.5;
+
+        // composite timeline for each element
+        const tl = gsap.timeline({ repeat: -1, yoyo: true });
+        tl.to(el, { y: `+=${ampY}`, x: `+=${ampX}`, rotation: rot, duration: baseDur, ease: 'sine.inOut', force3D: true });
+        tl.to(el, { y: `-=${ampY}`, x: `-=${ampX}`, rotation: -rot, duration: baseDur * 1.1, ease: 'sine.inOut' }, '+=0');
+        // slight scale breathing
+        gsap.to(el, { scale: 1.005 + (seed % 2) * 0.003, duration: baseDur * 2, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: (i % 4) * 0.05 });
+      });
     } catch (err) {
-      // fail silently if gsap isn't available or selectors mismatch
-      // console.warn('GlobalMotionLayer error', err);
+      // ignore
     }
 
     return () => {
