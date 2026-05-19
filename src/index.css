@@ -872,6 +872,44 @@ body.dashboard-page {
   }
 }
 
+@keyframes ag-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate3d(0, -14px, 0) scale(1.03);
+  }
+}
+
+@keyframes ag-shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+.ag-orb {
+  animation: ag-float 12s ease-in-out infinite;
+  will-change: transform;
+}
+
+.ag-shimmer {
+  animation: ag-shimmer 8s linear infinite;
+  background-size: 200% 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ag-orb,
+  .ag-shimmer {
+    animation: none !important;
+  }
+}
+
 .dashboard-shell .dashboard-range {
   background: linear-gradient(90deg, rgba(59, 130, 246, 0.24), rgba(59, 130, 246, 0.78));
 }
