@@ -5,8 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Oussama Lassoued — UX/UI Designer</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+<script src="/gsap.min.js"></script>
 <style>
 :root{
   --sp:80px;
@@ -30,6 +29,11 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%;overflow:hidden;background:#080808}
 body{cursor:auto;-webkit-font-smoothing:antialiased;font-family:'Space Mono',monospace}
+
+/* Keep the browser cursor normal everywhere in the static preloader */
+a, button, [role='button'], #phone-wrap, #screen-wrap, .tb-logo, .ct-em, .ct-sa, .ct-subcta {
+  cursor: auto !important;
+}
 
 /* ══════════ CURSOR */
 #cur{position:fixed;z-index:9999;pointer-events:none}
@@ -1098,12 +1102,10 @@ addEventListener('mousedown',e=>{
   mode='dragging';
   dragStartX=e.clientX; dragStartY=e.clientY;
   dragStartRX=phonePose.rx; dragStartRY=phonePose.ry;
-  document.body.style.cursor='grabbing';
   e.preventDefault();
 });
 addEventListener('mouseup',e=>{
   if(e.button!==0 || mode!=='dragging') return;
-  document.body.style.cursor='auto';
   mode='returning';
   returningTween=gsap.to(phonePose,{rx:basePose.rx,ry:basePose.ry,rz:basePose.rz,x:basePose.x,y:basePose.y,scale:basePose.scale,duration:.9,ease:'power3.out',onUpdate:renderPhone,onComplete:()=>{returningTween=null;startParallax(basePose);}});
 });
