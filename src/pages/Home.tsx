@@ -6,6 +6,7 @@ import { IntroTextOverlay } from '../components/IntroTextOverlay';
 import { PersistentUI } from '../components/PersistentUI';
 import CursorAnimationLayer from '../components/CursorAnimationLayer';
 import GlobalMotionLayer from '../components/GlobalMotionLayer';
+import DesignHoverOverlay from '../components/DesignHoverOverlay';
 import { useSiteConfig } from '../context/SiteConfigContext';
 
 import { Scene05Overlay } from '../components/Scene05Overlay';
@@ -120,6 +121,7 @@ export const Home: React.FC = () => {
         <>
           <StaticHomeLayout />
           <GlobalMotionLayer />
+          <DesignHoverOverlay />
         </>
       ) : hasStarted ? (
         <main className="relative w-full bg-black" data-surface="ambient">
