@@ -1335,7 +1335,10 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
   },
   persistentUI: {
     logoAlt: 'Oussama Lassoued',
+    // Use a properly sized logo for the navbar and preloader. Prefer WebP/AVIF in production.
     logoLightSrc: '/logo-black.png',
+    logoWidth: 76,
+    logoHeight: 52,
     logoDarkSrc: '/logo-white.png',
     musicToggleAriaLabel: 'تشغيل/إيقاف الموسيقى / Toggle Music',
     navItems: [

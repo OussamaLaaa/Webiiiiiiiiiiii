@@ -77,18 +77,15 @@ export const CreativeLoadingScreen: React.FC<CreativeLoadingScreenProps> = ({
           }
         }
       `}</style>
-      <div style={{ position: 'relative', width: 114, height: 151 }}>
-        <div style={layer}>
-          <svg viewBox="0 0 436.52 578.79" xmlns="http://www.w3.org/2000/svg" style={sharedSvg}>
-            <path fill="#161616" d={TOP} />
-          </svg>
-        </div>
-
-        <div style={layer}>
-          <svg viewBox="0 0 436.52 578.79" xmlns="http://www.w3.org/2000/svg" style={sharedSvg}>
-            <path fill="#161616" d={BOT} />
-          </svg>
-        </div>
+      <div style={{ position: 'relative', width: 120, height: 80 }}>
+        <img
+          src="/logo-black.png"
+          alt="Site Logo"
+          width={120}
+          height={80}
+          style={{ display: 'block', objectFit: 'contain' }}
+          loading="eager"
+        />
       </div>
     </div>
   );

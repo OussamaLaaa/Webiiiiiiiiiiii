@@ -383,19 +383,46 @@ export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     // Prevent duplicate
     if (document.getElementById(scriptId)) return;
 
-    const script = document.createElement('script');
-    script.id = scriptId;
-    script.async = true;
-    script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(gaId)}`;
-    document.head.appendChild(script);
+    // Defer GA load until after initial load or 2000ms to avoid blocking LCP/TBT
+    const scheduleGa = () => {
+      // Avoid multiple inserts
+      if (document.getElementById(scriptId)) return;
+      const script = document.createElement('script');
+      script.id = scriptId;
+      script.async = true;
+      script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(gaId)}`;
+      document.head.appendChild(script);
 
-    const inline = document.createElement('script');
-    inline.id = inlineId;
-    inline.innerHTML = `window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${gaId}');`;
-    document.head.appendChild(inline);
+      const inline = document.createElement('script');
+      inline.id = inlineId;
+      inline.innerHTML = `window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${gaId}');`;
+      document.head.appendChild(inline);
+    };
+
+    let loadTimer: number | null = null;
+    const onLoaded = () => {
+      if (loadTimer) {
+        window.clearTimeout(loadTimer);
+        loadTimer = null;
+      }
+      scheduleGa();
+    };
+
+    if (document.readyState === 'complete') {
+      // If page already loaded, schedule immediately
+      scheduleGa();
+    } else {
+      // Wait for window load (resources) or fallback after 2000ms
+      window.addEventListener('load', onLoaded, { once: true });
+      loadTimer = window.setTimeout(() => scheduleGa(), 2000);
+    }
 
     return () => {
       removeExisting();
+      try {
+        window.removeEventListener('load', onLoaded as any);
+      } catch {}
+      if (loadTimer) window.clearTimeout(loadTimer);
     };
   }, [siteConfig.dashboard.integrations.googleAnalyticsEnabled, siteConfig.dashboard.integrations.googleAnalyticsMeasurementId, siteConfig]);
 

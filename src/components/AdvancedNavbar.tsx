@@ -311,6 +311,8 @@ export const AdvancedNavbar: React.FC<AdvancedNavbarProps> = ({ isLightMode = fa
                 <img
                   src={navigationLogoSrc}
                   alt={persistentUI.logoAlt}
+                  width={persistentUI.logoWidth || 76}
+                  height={persistentUI.logoHeight || 52}
                   className="h-10 md:h-12 w-auto object-contain transition-transform duration-400 group-hover:scale-105"
                 />
               </a>
