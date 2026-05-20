@@ -1,7 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { usePreloadFrames } from '../hooks/usePreloadFrames';
-import { LoadingScreen } from '../components/LoadingScreen';
-import { StaticLoadingScreen } from '../components/StaticLoadingScreen';
+import { CreativeLoadingScreen } from '../components/CreativeLoadingScreen';
 import { MasterSequence } from '../components/MasterSequence';
 import { IntroTextOverlay } from '../components/IntroTextOverlay';
 import { PersistentUI } from '../components/PersistentUI';
@@ -99,19 +98,9 @@ export const Home: React.FC = () => {
       data-glow={isStatic ? "off" : "on"}
     >
       {!hasStarted ? (
-        isStaticHomeLayout ? (
-          <StaticLoadingScreen
-            progress={progress}
-            isComplete={isComplete}
-            onFadeComplete={handleFadeComplete}
-          />
-        ) : (
-          <LoadingScreen
-            progress={progress}
-            isComplete={isComplete}
-            onFadeComplete={handleFadeComplete}
-          />
-        )
+        <CreativeLoadingScreen
+          onFadeComplete={handleFadeComplete}
+        />
       ) : null}
 
       {hasStarted && <PersistentUI isLightMode={isStaticHomeLayout || scene05Progress >= 0 || isPortfolioActive} />}
