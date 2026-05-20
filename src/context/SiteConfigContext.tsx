@@ -15,6 +15,7 @@
     type SiteAITracking,
     type SiteAIReport,
   } from '../config/siteConfig';
+import LOCAL_SITE_CONFIG from '../config/localSiteConfig';
   import {
     loadSiteConfig,
     saveSiteConfig,
@@ -49,6 +50,15 @@ const SiteConfigContext = createContext<SiteConfigContextValue | null>(null);
     if (result.success && result.data) {
       // Hydrate the loaded config to ensure all properties are valid
       return hydrateSiteConfig(result.data);
+    }
+
+    // No stored config found — fall back to local customization package if available
+    try {
+      if (LOCAL_SITE_CONFIG) {
+        return hydrateSiteConfig(LOCAL_SITE_CONFIG as unknown as SiteConfig);
+      }
+    } catch (err) {
+      // ignore and fall back
     }
 
     return DEFAULT_SITE_CONFIG;
