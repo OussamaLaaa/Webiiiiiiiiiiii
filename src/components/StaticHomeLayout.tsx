@@ -45,6 +45,15 @@ const Badge: React.FC<{ className?: string; children: ReactNode; variant?: Badge
   </span>
 );
 
+const SkillChip: React.FC<{ children: string }> = ({ children }) => (
+  <span
+    className="inline-flex items-center justify-center rounded-full border border-[#d1ccc0] bg-[#faf8f2] px-4 py-2 text-[12px] font-medium tracking-[0.01em] text-[#111827] shadow-[0_1px_2px_rgba(0,0,0,0.05)] transition-[transform,border-color,background-color,box-shadow] duration-300 ease-out hover:-translate-y-0.5 hover:border-[#111111] hover:bg-white hover:shadow-[0_8px_18px_-14px_rgba(0,0,0,0.18)]"
+    style={{ minHeight: '38px' }}
+  >
+    {children}
+  </span>
+);
+
 const Card: React.FC<{ className?: string; children: ReactNode }> = ({ className, children }) => (
   <div data-motion className={joinClasses('bg-card text-card-foreground flex flex-col gap-6 rounded-xl border', className)}>
     {children}
@@ -413,9 +422,9 @@ export const StaticHomeLayout: React.FC = () => {
           {valueCards.map((card, index) => {
             const Icon = valueIcons[index % valueIcons.length];
             return (
-                <Card key={card.id} className="rounded-2xl border border-[#d7d7d7] bg-white shadow-[0_8px_24px_-18px_rgba(0,0,0,0.16)] hover:border-black hover:shadow-[0_12px_28px_-18px_rgba(0,0,0,0.22)] transition-all duration-300 cursor-pointer">
+                <Card key={card.id} className="rounded-2xl border border-[#d0d0cb] bg-[#fbfbf8] shadow-[0_8px_24px_-18px_rgba(0,0,0,0.14)] hover:border-[#111111] hover:shadow-[0_12px_28px_-18px_rgba(0,0,0,0.2)] transition-all duration-300 cursor-pointer">
                 <CardHeader>
-                    <div className="h-12 w-12 rounded-xl bg-[#f7f7f4] flex items-center justify-center text-[#111827] border border-[#d7d7d7]">
+                    <div className="h-12 w-12 rounded-xl bg-[#f3f2ee] flex items-center justify-center text-[#111827] border border-[#d0d0cb]">
                     <Icon className="h-6 w-6" />
                   </div>
                     <CardTitle className="mt-4 text-[#111827]">{card.title}</CardTitle>
@@ -461,13 +470,9 @@ export const StaticHomeLayout: React.FC = () => {
             <div className="flex flex-wrap gap-2">
               {visibleSkills.map((skill) => {
                 return (
-                  <Badge
-                    key={skill}
-                    variant="default"
-                    className="rounded-full border border-[#d6d3cb] bg-white px-4 py-1.5 text-sm font-normal text-[#111827] shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
-                  >
+                  <SkillChip key={skill}>
                     {skill}
-                  </Badge>
+                  </SkillChip>
                 );
               })}
             </div>

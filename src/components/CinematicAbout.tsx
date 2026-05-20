@@ -23,6 +23,24 @@ const isPlaceholderHref = (href: string) => href.trim() === '#';
 
 const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
 
+const SkillBadge: React.FC<{ skill: string; reveal: number; tilt: number; delayMs: number }> = ({
+  skill,
+  reveal,
+  tilt,
+  delayMs,
+}) => (
+  <span
+    className="inline-flex items-center justify-center rounded-full border border-[#d8d3c7] bg-[#faf9f4] px-4 py-2 text-[12px] font-medium tracking-[0.01em] text-[#111827] shadow-[0_6px_16px_-14px_rgba(0,0,0,0.16)] transition-[transform,border-color,background-color,box-shadow] duration-500 ease-out hover:-translate-y-0.5 hover:border-[#111111] hover:bg-white hover:shadow-[0_10px_20px_-16px_rgba(0,0,0,0.22)]"
+    style={{
+      opacity: 1,
+      transform: `translate3d(0, ${(1 - reveal) * 18}px, 0) rotate(${tilt}deg)`,
+      transitionDelay: `${delayMs}ms`,
+    }}
+  >
+    {skill}
+  </span>
+);
+
 const getInitials = (value: string) => {
   const parts = value
     .trim()
@@ -405,17 +423,14 @@ export const CinematicAbout: React.FC<CinematicAboutProps> = ({ progress }) => {
                     const tilt = (1 - localReveal) * (index % 2 === 0 ? -5 : 5);
 
                     return (
-                      <span
+                      <SkillBadge
                         key={`${skill}-${index}`}
-                        className="inline-flex rounded-full border border-gray-300 bg-white px-3 py-1.5 text-[11px] font-medium text-gray-900 shadow-[0_8px_18px_-14px_rgba(0,0,0,0.1)] transition-[transform,opacity] duration-500 ease-out md:text-xs hover:border-black hover:bg-black hover:text-white"
-                        style={{
-                          opacity: 0.15 + localReveal * 0.85,
-                          transform: `translate3d(0, ${(1 - localReveal) * 30}px, 0) rotate(${tilt}deg)`,
-                          transitionDelay: `${index * 38}ms`,
-                        }}
+                        skill={skill}
+                        reveal={localReveal}
+                        tilt={tilt}
+                        delayMs={index * 38}
                       >
-                        {skill}
-                      </span>
+                      </SkillBadge>
                     );
                   })}
                 </div>
