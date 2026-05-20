@@ -30,7 +30,7 @@ const CSS = `
 `;
 
 export const CreativeLoadingScreen: React.FC<CreativeLoadingScreenProps> = ({
-  duration = 5700,
+  duration = 3600,
   onFadeComplete,
 }) => {
   const [hidden, setHidden] = useState(false);
@@ -52,47 +52,47 @@ export const CreativeLoadingScreen: React.FC<CreativeLoadingScreenProps> = ({
     const p2 = fp2Ref.current!;
 
     at(() => {
-      sc.style.transition = 'background 650ms ease';
+      sc.style.transition = 'background 500ms ease';
       sc.style.background = '#0a0a0a';
-      p1.style.transition = 'fill 650ms ease';
-      p2.style.transition = 'fill 650ms ease';
+      p1.style.transition = 'fill 500ms ease';
+      p2.style.transition = 'fill 500ms ease';
       p1.setAttribute('fill', '#dfdfdf');
       p2.setAttribute('fill', '#dfdfdf');
-    }, 2500);
-
-    at(() => {
-      lw.style.transition = 'filter 700ms ease';
-      lw.style.filter =
-        'drop-shadow(0 0 10px rgba(255,255,255,.55)) drop-shadow(0 0 30px rgba(255,255,255,.3)) drop-shadow(0 0 65px rgba(255,255,255,.15))';
-    }, 3250);
+    }, 1500);
 
     at(() => {
       lw.style.transition = 'filter 550ms ease';
-      lw.style.filter = 'drop-shadow(0 0 3px rgba(255,255,255,.2))';
-    }, 4050);
+      lw.style.filter =
+        'drop-shadow(0 0 10px rgba(255,255,255,.55)) drop-shadow(0 0 30px rgba(255,255,255,.3)) drop-shadow(0 0 65px rgba(255,255,255,.15))';
+    }, 2150);
 
     at(() => {
-      lw.style.transition = 'filter 650ms ease';
+      lw.style.transition = 'filter 450ms ease';
+      lw.style.filter = 'drop-shadow(0 0 3px rgba(255,255,255,.2))';
+    }, 2750);
+
+    at(() => {
+      lw.style.transition = 'filter 500ms ease';
       lw.style.filter =
         'drop-shadow(0 0 16px rgba(255,255,255,.9)) drop-shadow(0 0 45px rgba(255,255,255,.55)) drop-shadow(0 0 90px rgba(255,255,255,.28)) drop-shadow(0 0 150px rgba(255,255,255,.12))';
-    }, 4700);
+    }, 3150);
 
     at(() => {
-      lw.style.transition = 'transform 850ms cubic-bezier(0.55,0,1,0.45), opacity 850ms ease, filter 850ms ease';
-      lw.style.transform = 'scale(2.4)';
+      lw.style.transition = 'transform 650ms cubic-bezier(0.55,0,1,0.45), opacity 650ms ease, filter 650ms ease';
+      lw.style.transform = 'scale(2.1)';
       lw.style.opacity = '0';
       lw.style.filter = 'drop-shadow(0 0 70px rgba(255,255,255,1)) drop-shadow(0 0 140px rgba(255,255,255,.6))';
     }, duration);
 
     at(() => {
-      sc.style.transition = 'background 550ms ease';
+      sc.style.transition = 'background 450ms ease';
       sc.style.background = '#fff';
-    }, duration + 400);
+    }, duration + 220);
 
     at(() => {
       setHidden(true);
       onFadeComplete?.();
-    }, duration + 1000);
+    }, duration + 620);
 
     return () => timers.current.forEach(clearTimeout);
   }, [duration, onFadeComplete]);
