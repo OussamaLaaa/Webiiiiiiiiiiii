@@ -8,14 +8,14 @@ function LoadingScreenRemover() {
   useEffect(() => {
     const loadingScreen = document.getElementById('loading-screen');
     if (loadingScreen) {
-      // Small delay to ensure smooth transition
+      // Keep the logo splash visible for 5 seconds while the app/data initialize.
       setTimeout(() => {
         loadingScreen.classList.add('hidden');
         // Remove from DOM after transition
         setTimeout(() => {
           loadingScreen.remove();
         }, 300);
-      }, 100);
+      }, 5000);
     }
   }, []);
   return null;
