@@ -189,8 +189,8 @@ const Contact: React.FC = () => {
     letterSpacing: '-0.03em',
   };
   const sectionEyebrowClass = 'text-sm text-muted-foreground uppercase tracking-widest mb-4';
-  const cardShellClass = 'rounded-2xl border border-[#d0d0cb] bg-[#fbfbf8] shadow-none transition-colors duration-300';
-  const cardIconClass = 'h-11 w-11 rounded-xl border border-[#d0d0cb] bg-[#f3f2ee] flex items-center justify-center text-[#111827] transition-colors';
+  const cardShellClass = 'rounded-2xl border border-[#d0d0cb] bg-transparent shadow-none transition-colors duration-300';
+  const cardIconClass = 'h-11 w-11 rounded-xl border border-[#d0d0cb] bg-transparent flex items-center justify-center text-[#111827] transition-colors';
   const cardMetaClass = 'text-xs font-medium uppercase tracking-widest text-muted-foreground';
   const cardBodyClass = 'text-sm leading-relaxed text-[#111827]';
   const labelClass = 'block text-xs font-medium uppercase tracking-widest text-muted-foreground';
@@ -420,7 +420,7 @@ const Contact: React.FC = () => {
                     <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground transition-colors group-hover:text-white">
                       {card.action}
                     </span>
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full border border-[#d0d0cb] bg-[#f3f2ee] transition-colors group-hover:border-white/20 group-hover:bg-white/15">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full border border-[#d0d0cb] bg-transparent transition-colors group-hover:border-white/20 group-hover:bg-white/15">
                       <ArrowUpRight className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-white" />
                     </div>
                   </div>
