@@ -23,7 +23,6 @@ const SECURITY_CONFIG = {
   maxMessageAge: 1000 * 60 * 60 * 24 * 30, // 30 days
   rateLimit: { windowMs: 60 * 1000, maxRequests: 6 },
 };
-const REQUEST_TIMEOUT_MS = 2000;
 
 // Load environment variables (development only)
 // Vercel automatically loads from Environment Variables dashboard
@@ -560,9 +559,6 @@ const sendUpstashCommand = async (commandParts) => {
     });
 
     request.on('error', (error) => { resolve({ error: error.message }); });
-    request.setTimeout(REQUEST_TIMEOUT_MS, () => {
-      request.destroy(new Error(`Upstash request timed out after ${REQUEST_TIMEOUT_MS}ms`));
-    });
     request.write(postData);
     request.end();
   });
@@ -609,9 +605,6 @@ const readFromVercelKv = async () => {
       request.on('error', (error) => {
         console.error('[API:Messages] Vercel KV request error:', error.message);
         resolve([]);
-      });
-      request.setTimeout(REQUEST_TIMEOUT_MS, () => {
-        request.destroy(new Error(`Vercel KV request timed out after ${REQUEST_TIMEOUT_MS}ms`));
       });
       request.end();
     });
@@ -662,9 +655,6 @@ const writeToVercelKv = async (messages) => {
         console.error('[API:Messages] Vercel KV write error:', error.message);
         lastStorageError = error?.message || String(error);
         resolve(false);
-      });
-      request.setTimeout(REQUEST_TIMEOUT_MS, () => {
-        request.destroy(new Error(`Vercel KV write timed out after ${REQUEST_TIMEOUT_MS}ms`));
       });
       request.write(postData);
       request.end();
@@ -833,45 +823,23 @@ export default async (req, res) => {
     if (req.method === 'GET') {
       console.log('[API:Messages] GET request received');
       
-      // Try reads in parallel and pick the fastest non-empty result to avoid sequential timeouts
-      const parallelReadMessages = async () => {
-        return new Promise((resolve) => {
-          let resolved = false;
-          const overallTimer = setTimeout(() => {
-            if (!resolved) {
-              resolved = true;
-              resolve({ messages: null, source: null });
-            }
-          }, 2500);
+      // Try each backend in priority order
+      let messages = await readFromVercelKv();
+      let source = 'vercel-kv';
 
-          const tryResolve = (msgs, source) => {
-            if (resolved) return;
-            if (msgs && Array.isArray(msgs)) {
-              resolved = true;
-              clearTimeout(overallTimer);
-              resolve({ messages: msgs, source });
-            }
-          };
+      if (!messages) {
+        messages = await readFromUpstashRedis();
+        source = 'upstash-redis';
+      }
 
-          readFromVercelKv().then((m) => tryResolve(m, 'vercel-kv')).catch(() => {});
-          readFromUpstashRedis().then((m) => tryResolve(m, 'upstash-redis')).catch(() => {});
-
-          try {
-            const local = readFromLocalFile();
-            if (local) tryResolve(local, 'local-file');
-          } catch (e) {
-            // ignore
-          }
-        });
-      };
-
-      const { messages: readMessages, source } = await parallelReadMessages();
-      let messages = readMessages;
-      let finalSource = source;
+      if (!messages) {
+        messages = readFromLocalFile();
+        source = 'local-file';
+      }
 
       if (!messages) {
         messages = [];
-        finalSource = 'none';
+        source = 'none';
       }
 
       // Decrypt messages
@@ -889,12 +857,12 @@ export default async (req, res) => {
       // Sort by timestamp (newest first)
       filteredMessages.sort((a, b) => b.timestamp - a.timestamp);
 
-      console.log(`[API:Messages] Returning ${filteredMessages.length} messages from ${finalSource}`);
-
+      console.log(`[API:Messages] Returning ${filteredMessages.length} messages from ${source}`);
+      
       return res.status(200).json({
         success: true,
         data: filteredMessages,
-        source: finalSource,
+        source,
         timestamp: Date.now(),
         count: filteredMessages.length,
       });

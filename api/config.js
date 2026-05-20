@@ -15,7 +15,6 @@ import https from 'https';
 const CONFIG_KEY = 'site:config';
 const isProduction = process.env.NODE_ENV === 'production';
 const isVercel = !!process.env.VERCEL;
-const REQUEST_TIMEOUT_MS = 2000;
 
 const storageConfig = {
   vercelKv: {
@@ -76,10 +75,6 @@ const sendUpstashCommand = async (commandParts) => {
 
     request.on('error', (error) => {
       resolve({ error: error.message });
-    });
-
-    request.setTimeout(REQUEST_TIMEOUT_MS, () => {
-      request.destroy(new Error(`Upstash request timed out after ${REQUEST_TIMEOUT_MS}ms`));
     });
 
     request.write(postData);
@@ -151,10 +146,6 @@ const readFromVercelKv = async () => {
         resolve(null);
       });
 
-      request.setTimeout(REQUEST_TIMEOUT_MS, () => {
-        request.destroy(new Error(`Vercel KV request timed out after ${REQUEST_TIMEOUT_MS}ms`));
-      });
-
       request.end();
     });
   } catch (error) {
@@ -210,10 +201,6 @@ const writeToVercelKv = async (data) => {
       request.on('error', (error) => {
         console.error('[API:Config] Vercel KV write error:', error.message);
         resolve(false);
-      });
-
-      request.setTimeout(REQUEST_TIMEOUT_MS, () => {
-        request.destroy(new Error(`Vercel KV write timed out after ${REQUEST_TIMEOUT_MS}ms`));
       });
 
       request.write(postData);
@@ -386,56 +373,48 @@ export default async (req, res) => {
     if (req.method === 'GET') {
       console.log('[API:Config] GET request received');
       
-          // Attempt reads in parallel and return the first non-null result quickly
-          const parallelReadConfig = async () => {
-            return new Promise((resolve) => {
-              let resolved = false;
-              const overallTimer = setTimeout(() => {
-                if (!resolved) {
-                  resolved = true;
-                  resolve({ data: null, source: null });
-                }
-              }, 2500);
+      // Try each backend in priority order
+      const kvData = await readFromVercelKv();
+      if (kvData) {
+        console.log('[API:Config] Returning data from Vercel KV');
+        return res.status(200).json({
+          success: true,
+          data: kvData,
+          source: 'vercel-kv',
+          timestamp: Date.now(),
+        });
+      }
 
-              const tryResolve = (data, source) => {
-                if (resolved) return;
-                if (data) {
-                  resolved = true;
-                  clearTimeout(overallTimer);
-                  resolve({ data, source });
-                }
-              };
+      const redisData = await readFromUpstashRedis();
+      if (redisData) {
+        console.log('[API:Config] Returning data from Upstash Redis');
+        return res.status(200).json({
+          success: true,
+          data: redisData,
+          source: 'upstash-redis',
+          timestamp: Date.now(),
+        });
+      }
 
-              readFromVercelKv().then((d) => tryResolve(d, 'vercel-kv')).catch(() => {});
-              readFromUpstashRedis().then((d) => tryResolve(d, 'upstash-redis')).catch(() => {});
+      const fileData = readFromLocalFile();
+      if (fileData) {
+        console.log('[API:Config] Returning data from local file');
+        return res.status(200).json({
+          success: true,
+          data: fileData,
+          source: 'local-file',
+          timestamp: Date.now(),
+          warning: 'Using local file storage - not shared across instances',
+        });
+      }
 
-              try {
-                const local = readFromLocalFile();
-                if (local) tryResolve(local, 'local-file');
-              } catch (e) {
-                // ignore
-              }
-            });
-          };
-
-          const { data: bestData, source: bestSource } = await parallelReadConfig();
-          if (bestData) {
-            console.log('[API:Config] Returning data from', bestSource);
-            return res.status(200).json({
-              success: true,
-              data: bestData,
-              source: bestSource || 'unknown',
-              timestamp: Date.now(),
-            });
-          }
-
-          console.log('[API:Config] No config found (parallel read), returning empty data');
-          return res.status(200).json({
-            success: true,
-            data: {},
-            source: 'none',
-            timestamp: Date.now(),
-          });
+      console.log('[API:Config] No config found, returning empty data');
+      return res.status(200).json({
+        success: true,
+        data: {},  // Return empty object to signal no stored config - client will use defaults
+        source: 'none',
+        timestamp: Date.now(),
+      });
     }
 
     // PUT/POST /api/config - Write configuration

@@ -17,15 +17,6 @@ export default async (req, res) => {
   }
 
   try {
-    const createTimeoutSignal = (timeoutMs = 4000) => {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-      return {
-        signal: controller.signal,
-        clear: () => clearTimeout(timeoutId),
-      };
-    };
-
     // Check environment variables
     const hasVercelKv = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
     const hasUpstashRedis = !!(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN);
@@ -37,15 +28,12 @@ export default async (req, res) => {
 
     if (hasVercelKv) {
       try {
-        const { signal, clear } = createTimeoutSignal();
         const response = await fetch(`${process.env.KV_REST_API_URL}/ping`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${process.env.KV_REST_API_TOKEN}`,
           },
-          signal,
         });
-        clear();
         vercelKvStatus = response.ok ? 'connected' : 'error';
       } catch (error) {
         vercelKvStatus = 'unreachable';
@@ -54,15 +42,12 @@ export default async (req, res) => {
 
     if (hasUpstashRedis) {
       try {
-        const { signal, clear } = createTimeoutSignal();
         const response = await fetch(`${process.env.UPSTASH_REDIS_REST_URL}/ping`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`,
           },
-          signal,
         });
-        clear();
         upstashRedisStatus = response.ok ? 'connected' : 'error';
       } catch (error) {
         upstashRedisStatus = 'unreachable';
