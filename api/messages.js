@@ -23,7 +23,7 @@ const SECURITY_CONFIG = {
   maxMessageAge: 1000 * 60 * 60 * 24 * 30, // 30 days
   rateLimit: { windowMs: 60 * 1000, maxRequests: 6 },
 };
-const REQUEST_TIMEOUT_MS = 4000;
+const REQUEST_TIMEOUT_MS = 2000;
 
 // Load environment variables (development only)
 // Vercel automatically loads from Environment Variables dashboard
@@ -833,23 +833,45 @@ export default async (req, res) => {
     if (req.method === 'GET') {
       console.log('[API:Messages] GET request received');
       
-      // Try each backend in priority order
-      let messages = await readFromVercelKv();
-      let source = 'vercel-kv';
+      // Try reads in parallel and pick the fastest non-empty result to avoid sequential timeouts
+      const parallelReadMessages = async () => {
+        return new Promise((resolve) => {
+          let resolved = false;
+          const overallTimer = setTimeout(() => {
+            if (!resolved) {
+              resolved = true;
+              resolve({ messages: null, source: null });
+            }
+          }, 2500);
 
-      if (!messages) {
-        messages = await readFromUpstashRedis();
-        source = 'upstash-redis';
-      }
+          const tryResolve = (msgs, source) => {
+            if (resolved) return;
+            if (msgs && Array.isArray(msgs)) {
+              resolved = true;
+              clearTimeout(overallTimer);
+              resolve({ messages: msgs, source });
+            }
+          };
 
-      if (!messages) {
-        messages = readFromLocalFile();
-        source = 'local-file';
-      }
+          readFromVercelKv().then((m) => tryResolve(m, 'vercel-kv')).catch(() => {});
+          readFromUpstashRedis().then((m) => tryResolve(m, 'upstash-redis')).catch(() => {});
+
+          try {
+            const local = readFromLocalFile();
+            if (local) tryResolve(local, 'local-file');
+          } catch (e) {
+            // ignore
+          }
+        });
+      };
+
+      const { messages: readMessages, source } = await parallelReadMessages();
+      let messages = readMessages;
+      let finalSource = source;
 
       if (!messages) {
         messages = [];
-        source = 'none';
+        finalSource = 'none';
       }
 
       // Decrypt messages
@@ -867,12 +889,12 @@ export default async (req, res) => {
       // Sort by timestamp (newest first)
       filteredMessages.sort((a, b) => b.timestamp - a.timestamp);
 
-      console.log(`[API:Messages] Returning ${filteredMessages.length} messages from ${source}`);
-      
+      console.log(`[API:Messages] Returning ${filteredMessages.length} messages from ${finalSource}`);
+
       return res.status(200).json({
         success: true,
         data: filteredMessages,
-        source,
+        source: finalSource,
         timestamp: Date.now(),
         count: filteredMessages.length,
       });

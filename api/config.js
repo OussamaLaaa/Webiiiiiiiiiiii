@@ -15,7 +15,7 @@ import https from 'https';
 const CONFIG_KEY = 'site:config';
 const isProduction = process.env.NODE_ENV === 'production';
 const isVercel = !!process.env.VERCEL;
-const REQUEST_TIMEOUT_MS = 4000;
+const REQUEST_TIMEOUT_MS = 2000;
 
 const storageConfig = {
   vercelKv: {
@@ -386,48 +386,56 @@ export default async (req, res) => {
     if (req.method === 'GET') {
       console.log('[API:Config] GET request received');
       
-      // Try each backend in priority order
-      const kvData = await readFromVercelKv();
-      if (kvData) {
-        console.log('[API:Config] Returning data from Vercel KV');
-        return res.status(200).json({
-          success: true,
-          data: kvData,
-          source: 'vercel-kv',
-          timestamp: Date.now(),
-        });
-      }
+          // Attempt reads in parallel and return the first non-null result quickly
+          const parallelReadConfig = async () => {
+            return new Promise((resolve) => {
+              let resolved = false;
+              const overallTimer = setTimeout(() => {
+                if (!resolved) {
+                  resolved = true;
+                  resolve({ data: null, source: null });
+                }
+              }, 2500);
 
-      const redisData = await readFromUpstashRedis();
-      if (redisData) {
-        console.log('[API:Config] Returning data from Upstash Redis');
-        return res.status(200).json({
-          success: true,
-          data: redisData,
-          source: 'upstash-redis',
-          timestamp: Date.now(),
-        });
-      }
+              const tryResolve = (data, source) => {
+                if (resolved) return;
+                if (data) {
+                  resolved = true;
+                  clearTimeout(overallTimer);
+                  resolve({ data, source });
+                }
+              };
 
-      const fileData = readFromLocalFile();
-      if (fileData) {
-        console.log('[API:Config] Returning data from local file');
-        return res.status(200).json({
-          success: true,
-          data: fileData,
-          source: 'local-file',
-          timestamp: Date.now(),
-          warning: 'Using local file storage - not shared across instances',
-        });
-      }
+              readFromVercelKv().then((d) => tryResolve(d, 'vercel-kv')).catch(() => {});
+              readFromUpstashRedis().then((d) => tryResolve(d, 'upstash-redis')).catch(() => {});
 
-      console.log('[API:Config] No config found, returning empty data');
-      return res.status(200).json({
-        success: true,
-        data: {},  // Return empty object to signal no stored config - client will use defaults
-        source: 'none',
-        timestamp: Date.now(),
-      });
+              try {
+                const local = readFromLocalFile();
+                if (local) tryResolve(local, 'local-file');
+              } catch (e) {
+                // ignore
+              }
+            });
+          };
+
+          const { data: bestData, source: bestSource } = await parallelReadConfig();
+          if (bestData) {
+            console.log('[API:Config] Returning data from', bestSource);
+            return res.status(200).json({
+              success: true,
+              data: bestData,
+              source: bestSource || 'unknown',
+              timestamp: Date.now(),
+            });
+          }
+
+          console.log('[API:Config] No config found (parallel read), returning empty data');
+          return res.status(200).json({
+            success: true,
+            data: {},
+            source: 'none',
+            timestamp: Date.now(),
+          });
     }
 
     // PUT/POST /api/config - Write configuration
