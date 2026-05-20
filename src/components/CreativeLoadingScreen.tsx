@@ -78,21 +78,22 @@ export const CreativeLoadingScreen: React.FC<CreativeLoadingScreenProps> = ({
     }, 3150);
 
     at(() => {
-      lw.style.transition = 'transform 650ms cubic-bezier(0.55,0,1,0.45), opacity 650ms ease, filter 650ms ease';
-      lw.style.transform = 'scale(2.1)';
+      lw.style.transition = 'transform 520ms cubic-bezier(0.55,0,1,0.45), opacity 520ms ease, filter 520ms ease';
+      lw.style.transform = 'scale(1.8)';
       lw.style.opacity = '0';
-      lw.style.filter = 'drop-shadow(0 0 70px rgba(255,255,255,1)) drop-shadow(0 0 140px rgba(255,255,255,.6))';
+      lw.style.filter = 'drop-shadow(0 0 18px rgba(255,255,255,.35))';
     }, duration);
 
     at(() => {
-      sc.style.transition = 'background 450ms ease';
+      sc.style.transition = 'opacity 520ms ease, background 450ms ease';
       sc.style.background = '#fff';
-    }, duration + 220);
+      sc.style.opacity = '0';
+    }, duration + 120);
 
     at(() => {
       setHidden(true);
       onFadeComplete?.();
-    }, duration + 620);
+    }, duration + 520);
 
     return () => timers.current.forEach(clearTimeout);
   }, [duration, onFadeComplete]);
@@ -124,6 +125,7 @@ export const CreativeLoadingScreen: React.FC<CreativeLoadingScreenProps> = ({
           alignItems: 'center',
           justifyContent: 'center',
           overflow: 'hidden',
+          opacity: 1,
         }}
       >
         <div ref={wrapRef} style={{ position: 'relative', width: 114, height: 151 }}>
