@@ -5,21 +5,10 @@ import { getButtonClass, getCardClass, getScaledRem } from '../components/design
 import { AdvancedNavbar } from '../components/AdvancedNavbar';
 import { sendMessage, type MessageData } from '../utils/apiClient';
 import { validateMessage, sanitizeMessageData } from '../utils/messageValidator';
-
-interface ContactCard {
-  id: string;
-  title: string;
-  subtitle: string;
-  icon: React.ReactNode;
-  href: string;
-  action: string;
-  color: string;
-  hoverColor: string;
-}
+import { ArrowRight, ArrowUpRight, CheckCircle2, Phone, Mail, MapPin, Clock, Copy, Send, Loader2, MessageSquare } from 'lucide-react';
 
 const iconSize = 24;
 
-// Icon mapping for contact cards
 const iconMap: Record<string, React.ReactNode> = {
   linkedin: (
     <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="currentColor">
@@ -127,8 +116,7 @@ const Contact: React.FC = () => {
     canonicalUrl: 'https://www.oussamalassoued.me/contact',
   });
 
-  // Build contact cards from siteConfig.contactPage
-  const contactCards: ContactCard[] = useMemo(() => {
+  const contactCards = useMemo(() => {
     return contactPage.contactCards
       .filter(card => card.visible)
       .map(card => ({
@@ -143,24 +131,13 @@ const Contact: React.FC = () => {
       }));
   }, [contactPage.contactCards]);
 
-  useEffect(() => {
-    // Animations intentionally removed for static contact page.
-    return;
-  }, []);
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
-  // Hover JS animations removed; keep markup simple and static.
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validate form data
+
     const validation = validateMessage(formData);
     if (!validation.isValid) {
       setSubmitStatus('error');
@@ -168,7 +145,6 @@ const Contact: React.FC = () => {
       return;
     }
 
-    // Sanitize data
     const sanitizedData = sanitizeMessageData(formData);
 
     setIsSubmitting(true);
@@ -177,13 +153,11 @@ const Contact: React.FC = () => {
 
     try {
       const response = await sendMessage(sanitizedData);
-      
+
       if (response.success) {
         setSubmitStatus('success');
         setSubmitMessage('Message sent successfully! I\'ll get back to you soon.');
         setFormData({ name: '', email: '', subject: '', message: '', company: '' });
-        
-        // Reset status after 5 seconds
         setTimeout(() => {
           setSubmitStatus('idle');
           setSubmitMessage('');
@@ -194,202 +168,218 @@ const Contact: React.FC = () => {
       }
     } catch (error) {
       setSubmitStatus('error');
-      setSubmitMessage('حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة مرة أخرى.');
-      console.error('Error submitting form:', error);
+      setSubmitMessage('An error occurred. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  if (!persistentUI) {
-    return null;
-  }
+  if (!persistentUI) return null;
+
+  const cardBorder = 'border border-[#d0d0cb]';
+  const cardBg = 'bg-[#fbfbf8]';
+  const cardShadow = 'shadow-[0_8px_24px_-18px_rgba(0,0,0,0.14)]';
+  const inputClass = 'w-full px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 bg-[#f3f2ee] border border-[#d0d0cb] text-[#111827] placeholder-[#9ca3af] focus:outline-none focus:border-[#111111] focus:shadow-[0_0_0_3px_rgba(0,0,0,0.06)]';
+  const labelClass = 'block text-xs font-medium uppercase tracking-widest text-[#717182]';
 
   return (
     <div
       ref={containerRef}
-      className="min-h-screen bg-white"
-      data-surface="base"
+      className="min-h-screen"
+      data-surface="static-home"
+      style={{
+        ['--background' as any]: '#ffffff',
+        ['--foreground' as any]: '#0a0a0a',
+        ['--card' as any]: '#ffffff',
+        ['--card-foreground' as any]: '#0a0a0a',
+        ['--primary' as any]: '#030213',
+        ['--primary-foreground' as any]: '#ffffff',
+        ['--muted' as any]: '#ececf0',
+        ['--muted-foreground' as any]: '#717182',
+        ['--border' as any]: 'rgba(0, 0, 0, 0.1)',
+      }}
     >
-      {/* Navigation */}
       <AdvancedNavbar isLightMode={true} />
 
-      {/* Main Content */}
-      <main className="relative pt-24 md:pt-32 pb-16 md:pb-20 px-4 md:px-8 lg:px-12">
-        <div className="max-w-[1152px] mx-auto">
-          {/* Hero Section */}
-          <div className="mb-8 md:mb-12 lg:mb-16">
+      <main className="min-h-screen bg-background text-foreground">
+        <section className="mx-auto max-w-6xl px-6 pt-28 md:pt-36 pb-20">
+          {/* Hero */}
+          <div data-motion className="max-w-3xl">
+            <p className="text-sm text-muted-foreground uppercase tracking-widest mb-4">
+              {contactPage.heroEyebrow || 'Contact'}
+            </p>
             <h1
               ref={titleRef}
-              className="fw-header-text opacity-0 mb-4 md:mb-6"
+              className="tracking-tight"
               style={{
-                color: '#000000',
-                fontSize: `clamp(${getScaledRem(siteConfig.designSystem.theme.displayTitleSizeRem * 1.05, siteConfig.designSystem.theme.headingScale)}, 15vw, ${getScaledRem(siteConfig.designSystem.theme.displayTitleSizeRem * 1.9, siteConfig.designSystem.theme.headingScale)})`,
-                lineHeight: 0.9,
-                letterSpacing: `${siteConfig.designSystem.theme.headingLetterSpacingEm - 0.01}em`,
-                fontWeight: Math.min(400, Math.max(300, siteConfig.designSystem.theme.headingWeight - 40)),
+                fontSize: 'clamp(2.75rem, 7vw, 5.5rem)',
+                lineHeight: 1.02,
+                fontWeight: 600,
+                letterSpacing: '-0.04em',
               }}
             >
-              {contactPage.heroTitleLine1}
-              <br />
-              {contactPage.heroTitleLine2}
+              {contactPage.heroTitleLine1}{' '}
+              <span className="relative inline-block">
+                <span
+                  className="bg-clip-text text-transparent"
+                  style={{
+                    backgroundImage: 'linear-gradient(110deg, var(--foreground) 0%, rgba(10, 10, 10, 0.45) 100%)',
+                  }}
+                >
+                  {contactPage.heroTitleLine2}
+                </span>
+                <svg viewBox="0 0 300 12" className="absolute -bottom-2 left-0 w-full h-3 text-foreground/30" preserveAspectRatio="none" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <path d="M2 8 Q 75 2, 150 6 T 298 4" />
+                </svg>
+              </span>
             </h1>
             <p
               ref={subtitleRef}
-              className="text-sm md:text-base lg:text-lg text-gray-600 max-w-[576px] leading-relaxed"
+              className="mt-6 text-lg md:text-xl text-muted-foreground leading-relaxed max-w-2xl"
             >
               {contactPage.heroSubtitle}
             </p>
           </div>
 
-          <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-8 md:mb-12 lg:mb-16" />
+          {/* Decorative divider */}
+          <div data-motion className="my-16 h-px w-full bg-gradient-to-r from-transparent via-[#d0d0cb] to-transparent" />
 
-          {/* Contact Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 mb-12 md:mb-16">
+          {/* Contact Info + Form Grid */}
+          <div className="grid lg:grid-cols-12 gap-8 mb-20">
             {/* Sidebar */}
-            <div className="contact-sidebar lg:col-span-4 space-y-4 md:space-y-6">
+            <div data-motion className="lg:col-span-4 space-y-6">
               {/* Direct Contact Card */}
-              <div className={`p-4 md:p-6 rounded-2xl ${getCardClass('card-2', 'light')}`} style={{ borderColor: 'rgba(0,0,0,0.1)', boxShadow: '0 2px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)' }}>
-                <div className="flex items-center justify-between mb-4 md:mb-6">
-                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-black flex items-center justify-center">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                    </svg>
+              <div className={`rounded-2xl ${cardBorder} ${cardBg} ${cardShadow} p-6`}>
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="h-10 w-10 rounded-xl bg-[#f3f2ee] flex items-center justify-center text-[#111827] border border-[#d0d0cb]">
+                    <MessageSquare className="h-5 w-5" />
                   </div>
-                  <span className="text-xs font-medium uppercase tracking-wider text-gray-500">{contactPage.directContactTitle}</span>
+                  <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+                    {contactPage.directContactTitle}
+                  </span>
                 </div>
 
-                <div className="space-y-4 md:space-y-5">
+                <div className="space-y-5">
                   <div className="flex items-start gap-3">
-                    <div className="w-5 h-5 mt-1 flex-shrink-0 text-gray-500">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.0 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-                      </svg>
-                    </div>
+                    <Phone className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" />
                     <div>
-                      <p className="text-xs font-medium uppercase tracking-wider mb-1 text-gray-500">{contactPage.phoneLabel}</p>
-                      <p className="text-sm font-medium text-gray-900">{contactPage.phoneNumber}</p>
+                      <p className="text-xs uppercase tracking-widest text-muted-foreground mb-0.5">{contactPage.phoneLabel}</p>
+                      <p className="text-sm font-medium text-[#111827]">{contactPage.phoneNumber}</p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <div className="w-5 h-5 mt-1 flex-shrink-0 text-gray-500">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                        <polyline points="22,6 12,13 2,6" />
-                      </svg>
-                    </div>
+                    <Mail className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" />
                     <div className="flex-1">
-                      <p className="text-xs font-medium uppercase tracking-wider mb-1 text-gray-500">{contactPage.emailLabel}</p>
+                      <p className="text-xs uppercase tracking-widest text-muted-foreground mb-0.5">{contactPage.emailLabel}</p>
                       <div className="flex items-center gap-2">
-                        <a href={`mailto:${contactPage.emailAddress}`} className="text-sm font-medium hover:underline text-gray-900">{contactPage.emailAddress}</a>
-                        <button onClick={() => navigator.clipboard.writeText(contactPage.emailAddress)} className="w-6 h-6 md:w-7 md:h-7 rounded-full flex items-center justify-center transition-colors bg-gray-100 hover:bg-gray-200">
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                          </svg>
+                        <a href={`mailto:${contactPage.emailAddress}`} className="text-sm font-medium text-[#111827] hover:underline">
+                          {contactPage.emailAddress}
+                        </a>
+                        <button
+                          onClick={() => navigator.clipboard.writeText(contactPage.emailAddress)}
+                          className="h-6 w-6 rounded-full flex items-center justify-center bg-[#f3f2ee] hover:bg-[#e5e4df] transition-colors"
+                        >
+                          <Copy className="h-3 w-3 text-muted-foreground" />
                         </button>
                       </div>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <div className="w-5 h-5 mt-1 flex-shrink-0 text-gray-500">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                        <circle cx="12" cy="10" r="3" />
-                      </svg>
-                    </div>
+                    <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" />
                     <div>
-                      <p className="text-xs font-medium uppercase tracking-wider mb-1 text-gray-500">{contactPage.officeLabel}</p>
-                      <p className="text-sm font-medium leading-relaxed text-gray-900">
-                        {contactPage.officeAddress}
-                      </p>
+                      <p className="text-xs uppercase tracking-widest text-muted-foreground mb-0.5">{contactPage.officeLabel}</p>
+                      <p className="text-sm leading-relaxed text-[#111827]">{contactPage.officeAddress}</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-4 md:pt-6 mt-4 md:mt-6 border-t border-gray-200/80">
+                <div className="mt-6 pt-6 border-t border-[#d0d0cb]">
                   <div className="flex items-center gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
-                    <p className="text-sm text-gray-600">{contactPage.availabilityText}</p>
+                    <div className="h-2 w-2 rounded-full bg-green-500" />
+                    <p className="text-sm text-muted-foreground">{contactPage.availabilityText}</p>
                   </div>
                 </div>
               </div>
 
-              {/* Response Time Card - Hidden on mobile */}
-              <div className={`hidden lg:block p-6 rounded-2xl border ${getCardClass('card-2', 'light')}`} style={{ borderColor: 'rgba(0,0,0,0.1)', boxShadow: '0 2px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)' }}>
-                <p className="text-xs font-medium uppercase tracking-wider mb-2 text-gray-500">{contactPage.responseTimeLabel}</p>
-                <p className="text-lg font-semibold mb-2 text-gray-900">{contactPage.responseTimeValue}</p>
-                <p className="text-sm leading-relaxed text-gray-600">{contactPage.responseTimeDescription}</p>
+              {/* Response Time Card */}
+              <div className={`rounded-2xl ${cardBorder} ${cardBg} ${cardShadow} p-6 hidden lg:block`}>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-10 w-10 rounded-xl bg-[#f3f2ee] flex items-center justify-center text-[#111827] border border-[#d0d0cb]">
+                    <Clock className="h-5 w-5" />
+                  </div>
+                  <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground">{contactPage.responseTimeLabel}</span>
+                </div>
+                <p className="text-lg font-semibold text-[#111827] mb-2">{contactPage.responseTimeValue}</p>
+                <p className="text-sm leading-relaxed text-muted-foreground">{contactPage.responseTimeDescription}</p>
               </div>
             </div>
 
-            {/* Form Section */}
-            <div ref={formRef} className="lg:col-span-8">
-              <div className={`p-4 md:p-6 lg:p-8 rounded-2xl ${getCardClass('card-2', 'light')}`} style={{ borderColor: 'rgba(0,0,0,0.1)', boxShadow: '0 2px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)' }}>
-                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-6 md:mb-8 gap-4">
+            {/* Form */}
+            <div ref={formRef} data-motion className="lg:col-span-8">
+              <div className={`rounded-2xl ${cardBorder} ${cardBg} ${cardShadow} p-6 md:p-8`}>
+                <div className="flex items-center justify-between mb-8">
                   <div>
-                    <h2 className="text-xl md:text-2xl font-semibold mb-2" style={{ color: '#000000' }}>{contactPage.formTitle}</h2>
-                    <p className="text-sm text-gray-500">{contactPage.formSubtitle}</p>
+                    <h2 className="tracking-tight text-2xl font-semibold text-[#111827]">{contactPage.formTitle}</h2>
+                    <p className="text-sm text-muted-foreground mt-1">{contactPage.formSubtitle}</p>
                   </div>
-                  <span className="text-xs font-medium uppercase tracking-wider text-gray-400">01 / Form</span>
+                  <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground">01 / Form</span>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4 md:space-y-5">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="space-y-1.5">
-                      <label className="block text-xs font-medium uppercase tracking-wider text-gray-500">{contactPage.formNameLabel}</label>
-                      <input type="text" name="name" value={formData.name} onChange={handleInputChange} placeholder={contactPage.formNamePlaceholder} className="w-full px-4 py-3 rounded-xl text-sm font-medium transition-colors bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900" required />
+                      <label className={labelClass}>{contactPage.formNameLabel}</label>
+                      <input type="text" name="name" value={formData.name} onChange={handleInputChange} placeholder={contactPage.formNamePlaceholder} className={inputClass} required />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="block text-xs font-medium uppercase tracking-wider text-gray-500">{contactPage.formEmailLabel}</label>
-                      <input type="email" name="email" value={formData.email} onChange={handleInputChange} placeholder={contactPage.formEmailPlaceholder} className="w-full px-4 py-3 rounded-xl text-sm font-medium transition-colors bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900" required />
+                      <label className={labelClass}>{contactPage.formEmailLabel}</label>
+                      <input type="email" name="email" value={formData.email} onChange={handleInputChange} placeholder={contactPage.formEmailPlaceholder} className={inputClass} required />
                     </div>
                   </div>
                   <div className="space-y-1.5">
-                    <label className="block text-xs font-medium uppercase tracking-wider text-gray-500">{contactPage.formSubjectLabel}</label>
-                    <input type="text" name="subject" value={formData.subject} onChange={handleInputChange} placeholder={contactPage.formSubjectPlaceholder} className="w-full px-4 py-3 rounded-xl text-sm font-medium transition-colors bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900" required />
+                    <label className={labelClass}>{contactPage.formSubjectLabel}</label>
+                    <input type="text" name="subject" value={formData.subject} onChange={handleInputChange} placeholder={contactPage.formSubjectPlaceholder} className={inputClass} required />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="block text-xs font-medium uppercase tracking-wider text-gray-500">{contactPage.formCompanyLabel || 'Company'}</label>
-                    <input type="text" name="company" value={formData.company} onChange={handleInputChange} placeholder={contactPage.formCompanyPlaceholder || ''} className="w-full px-4 py-3 rounded-xl text-sm font-medium transition-colors bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900" />
+                    <label className={labelClass}>{contactPage.formCompanyLabel || 'Company'}</label>
+                    <input type="text" name="company" value={formData.company} onChange={handleInputChange} placeholder={contactPage.formCompanyPlaceholder || ''} className={inputClass} />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="block text-xs font-medium uppercase tracking-wider text-gray-500">{contactPage.formMessageLabel}</label>
-                    <textarea name="message" value={formData.message} onChange={handleInputChange} placeholder={contactPage.formMessagePlaceholder} rows={5} className="w-full px-4 py-3 rounded-xl text-sm font-medium transition-colors resize-none bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900" required />
+                    <label className={labelClass}>{contactPage.formMessageLabel}</label>
+                    <textarea name="message" value={formData.message} onChange={handleInputChange} placeholder={contactPage.formMessagePlaceholder} rows={5} className={`${inputClass} resize-none`} required />
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-2">
-                    <p className="text-xs text-gray-500">By sending, you agree to our <a href={contactPage.formPrivacyLink} className="underline text-gray-700">{contactPage.formPrivacyText}</a>.</p>
-                    <button 
-                      type="submit" 
+                    <p className="text-xs text-muted-foreground">
+                      By sending, you agree to our{' '}
+                      <a href={contactPage.formPrivacyLink} className="underline text-[#111827] hover:text-foreground">
+                        {contactPage.formPrivacyText}
+                      </a>.
+                    </p>
+                    <button
+                      type="submit"
                       disabled={isSubmitting}
-                      className="px-6 md:px-8 py-3 md:py-3.5 rounded-xl bg-black text-white font-medium text-sm flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#030213] text-white text-sm font-medium hover:bg-[#1a1a2e] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
                     >
                       {isSubmitting ? (
                         <>
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
-                            <path d="M12 2a10 10 0 0 1 10 10" strokeOpacity="1" />
-                          </svg>
-                          جاري الإرسال...
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Sending...
                         </>
                       ) : (
                         <>
                           {contactPage.formSubmitButton}
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M5 12h14M12 5l7 7-7 7" />
-                          </svg>
+                          <ArrowRight className="h-4 w-4" />
                         </>
                       )}
                     </button>
                   </div>
 
-                  {/* Status Message */}
                   {submitStatus !== 'idle' && (
-                    <div className={`mt-4 p-4 rounded-xl text-sm ${
-                      submitStatus === 'success' 
-                        ? 'bg-green-50 text-green-800 border border-green-200' 
+                    <div className={`p-4 rounded-xl text-sm ${
+                      submitStatus === 'success'
+                        ? 'bg-green-50 text-green-800 border border-green-200'
                         : 'bg-red-50 text-red-800 border border-red-200'
                     }`}>
                       {submitMessage}
@@ -400,51 +390,57 @@ const Contact: React.FC = () => {
             </div>
           </div>
 
-          {/* Social Channels Section */}
-          <div className="space-y-6 md:space-y-8">
-            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+          {/* Social Channels */}
+          <div data-motion className="space-y-8">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
               <div>
-                <span className="text-xs font-medium uppercase tracking-wider mb-2 block text-gray-400">{contactPage.socialSectionLabel}</span>
-                <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold" style={{ color: '#000000' }}>{contactPage.socialSectionTitle}</h2>
+                <p className="text-sm text-muted-foreground uppercase tracking-widest mb-3">
+                  {contactPage.socialSectionLabel}
+                </p>
+                <h2 className="tracking-tight" style={{ fontSize: 'clamp(1.75rem, 4vw, 2.5rem)', fontWeight: 600, lineHeight: 1.1 }}>
+                  {contactPage.socialSectionTitle}
+                </h2>
               </div>
-              <p className="text-sm max-w-[384px] text-gray-500">{contactPage.socialSectionDescription}</p>
+              <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
+                {contactPage.socialSectionDescription}
+              </p>
             </div>
 
-            <div ref={cardsRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            <div ref={cardsRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {contactCards.map((card) => (
                 <a
                   key={card.id}
                   href={card.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`social-card group relative p-4 md:p-6 rounded-2xl border ${getCardClass('card-2', 'light')}`}
-                  style={{ borderColor: 'rgba(0,0,0,0.08)', boxShadow: '0 2px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)' }}
+                  className={`group rounded-2xl ${cardBorder} ${cardBg} ${cardShadow} p-5 transition-all duration-300 cursor-pointer hover:border-[#111111] hover:shadow-[0_12px_28px_-18px_rgba(0,0,0,0.2)]`}
                 >
-                  <div className="card-header flex items-center justify-between mb-4 md:mb-6">
-                    <span className="text-xs font-medium uppercase tracking-wider text-gray-500 group-hover:text-white/90 transition-colors duration-300">{card.action}</span>
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center transition-colors bg-gray-100 group-hover:bg-white/20">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-white transition-colors duration-300">
-                        <path d="M5 12h14M12 5l7 7-7 7" />
-                      </svg>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground group-hover:text-[#111827] transition-colors">
+                      {card.action}
+                    </span>
+                    <div className="h-8 w-8 rounded-full bg-[#f3f2ee] flex items-center justify-center group-hover:bg-[#111827] transition-colors">
+                      <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-white transition-colors" />
                     </div>
                   </div>
-                  <div className="card-content flex items-center gap-3">
-                    <div className="card-icon w-10 h-10 md:w-11 md:h-11 rounded-xl flex items-center justify-center transition-colors duration-300" style={{ backgroundColor: '#F3F4F6' }}>
-                      <div style={{ color: card.color }}>{card.icon}</div>
+                  <div className="flex items-center gap-3">
+                    <div className="h-11 w-11 rounded-xl bg-[#f3f2ee] flex items-center justify-center border border-[#d0d0cb] group-hover:border-[#111111] transition-colors" style={{ color: card.color }}>
+                      {card.icon}
                     </div>
-                    <div className="flex-1">
-                      <h3 className="text-sm md:text-base font-semibold mb-0.5 transition-colors duration-300" style={{ color: '#000000' }}>{card.title}</h3>
-                      <p className="text-xs text-gray-500 transition-colors duration-300">{card.subtitle}</p>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-semibold text-[#111827] truncate">{card.title}</h3>
+                      <p className="text-xs text-muted-foreground truncate">{card.subtitle}</p>
                     </div>
                   </div>
                 </a>
               ))}
             </div>
           </div>
-        </div>
+        </section>
       </main>
     </div>
   );
 };
 
 export default Contact;
+
