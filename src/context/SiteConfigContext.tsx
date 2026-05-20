@@ -439,32 +439,69 @@ export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   // Fetch config from API on mount (for public site)
   useEffect(() => {
-    // Only fetch from API if we're not in dashboard mode
+    // Only fetch from API if we're not in dashboard mode. We also start a safe
+    // background poll (stale-while-revalidate) so remote DB changes appear faster
+    // without blocking rendering.
     const isDashboard = window.location.pathname.includes('/dashboard');
-    if (!isDashboard) {
-      isBootstrappingRef.current = true;
-      (async () => {
-        try {
-          setIsHydratingFromApi(true);
-          const response = await fetchSiteConfig();
-          // Only update config if we got actual data back (not an empty object)
-          if (response.success && response.data && Object.keys(response.data).length > 0) {
-            const hydratedConfig = hydrateSiteConfig(response.data);
-            setSiteConfig(hydratedConfig);
-            console.log('Config loaded from API successfully');
-          } else {
-            console.log('API returned empty config, keeping defaults');
-          }
-        } catch (error) {
-          console.error('Failed to fetch config from API:', error);
-        } finally {
-          isBootstrappingRef.current = false;
-          setIsHydratingFromApi(false);
-        }
-      })();
-    } else {
+    if (isDashboard) {
       isBootstrappingRef.current = false;
+      return;
     }
+
+    let mounted = true;
+    let pollTimer: number | null = null;
+
+    const runFetch = async () => {
+      try {
+        // mark hydration attempt but don't block rendering
+        setIsHydratingFromApi(true);
+        const response = await fetchSiteConfig();
+
+        if (!mounted) return;
+
+        if (response.success && response.data && Object.keys(response.data).length > 0) {
+          // Only replace local config when the remote version or timestamp changed
+          try {
+            const incoming = hydrateSiteConfig(response.data);
+            const currentVersion = (siteConfig as any)?.version || (siteConfig as any)?.lastUpdated || 0;
+            const incomingVersion = (incoming as any)?.version || (incoming as any)?.lastUpdated || 0;
+
+            if (incomingVersion && incomingVersion === currentVersion) {
+              // nothing new
+            } else {
+              setSiteConfig(incoming);
+              console.log('[Config] Applied updated config from API');
+            }
+          } catch (err) {
+            console.warn('[Config] Failed to hydrate incoming config, skipping apply', err);
+          }
+        } else {
+          console.log('[Config] API returned empty or invalid config');
+        }
+      } catch (error) {
+        console.error('Failed to fetch config from API:', error);
+      } finally {
+        if (!mounted) return;
+        setIsHydratingFromApi(false);
+        // schedule next poll
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          const { CONFIG_POLL_INTERVAL_MS } = require('../config/runtimeConfig');
+          pollTimer = window.setTimeout(runFetch, Number(CONFIG_POLL_INTERVAL_MS) || 30000) as unknown as number;
+        } catch (err) {
+          pollTimer = window.setTimeout(runFetch, 30000) as unknown as number;
+        }
+      }
+    };
+
+    // initial fetch (non-blocking)
+    isBootstrappingRef.current = true;
+    runFetch();
+
+    return () => {
+      mounted = false;
+      if (pollTimer) window.clearTimeout(pollTimer);
+    };
   }, []);
 
   const value = useMemo<SiteConfigContextValue>(() => {
