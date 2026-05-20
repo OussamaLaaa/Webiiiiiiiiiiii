@@ -413,12 +413,12 @@ export const StaticHomeLayout: React.FC = () => {
           {valueCards.map((card, index) => {
             const Icon = valueIcons[index % valueIcons.length];
             return (
-              <Card key={card.id} className="rounded-2xl hover:shadow-md transition-shadow">
+                <Card key={card.id} className="rounded-2xl border border-secondary/40 bg-gradient-to-br from-secondary/8 to-transparent hover:shadow-lg hover:border-secondary/60 transition-all duration-300 cursor-pointer">
                 <CardHeader>
-                  <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                    <Icon className="h-5 w-5" />
+                    <div className="h-12 w-12 rounded-xl bg-secondary/15 flex items-center justify-center text-secondary-foreground/70 border border-secondary/40">
+                    <Icon className="h-6 w-6" />
                   </div>
-                  <CardTitle className="mt-4">{card.title}</CardTitle>
+                    <CardTitle className="mt-4 text-secondary-foreground">{card.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground leading-relaxed">{card.description}</p>
