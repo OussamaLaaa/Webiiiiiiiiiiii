@@ -327,13 +327,15 @@ export const StaticHomeLayout: React.FC = () => {
         <div className="absolute top-20 -right-32 h-96 w-96 rounded-full bg-foreground/[0.04] blur-3xl -z-10" />
 
         <div className="mx-auto max-w-6xl px-6 pt-28 md:pt-36 pb-20 text-center">
-          <h1 data-motion
-            className="tracking-tight mx-auto max-w-5xl"
+          <h1
+            data-motion
+            className="tracking-tight mx-auto max-w-4xl"
             style={{
-              fontSize: 'clamp(2.75rem, 7vw, 5.5rem)',
-              lineHeight: 1.02,
+              fontSize: 'clamp(2rem, 5.5vw, 4.4rem)',
+              lineHeight: 1.04,
               fontWeight: 600,
-              letterSpacing: '-0.04em',
+              letterSpacing: '-0.02em',
+              wordBreak: 'break-word',
             }}
           >
             {scene05.heroTitleLine1}{' '}
@@ -349,7 +351,7 @@ export const StaticHomeLayout: React.FC = () => {
               </span>
               <svg
                 viewBox="0 0 300 12"
-                className="absolute -bottom-2 left-0 w-full h-3 text-foreground/30"
+                className="absolute -bottom-3 left-0 w-full h-3 text-foreground/30"
                 preserveAspectRatio="none"
                 fill="none"
                 stroke="currentColor"
